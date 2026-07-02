@@ -8,7 +8,7 @@ import { parseDate } from "../utils/dateUtils";
 //
 // Tages-genaue Gantt-Matrix, angelehnt an das Original-Planungstool:
 // Zeilen = Lehrlinge (gruppiert nach Lehrjahr), Spalten = jeder einzelne Tag
-// im Ausbildungsjahr (01.09. – 31.08. des Folgejahres). Durchgehend farbige
+// im Ausbildungsjahr (01.09.2026 – 31.08.2027). Durchgehend farbige
 // Balken zeigen zusammenhängende Planeinträge. Horizontal + vertikal
 // scrollbar, Personalnummer/Name bleiben links fixiert (sticky).
 // ----------------------------------------------------------------------------
@@ -37,16 +37,14 @@ export const planTypeBarColors: Record<PlanEntryType, string> = {
 interface AusbildungsplanMatrixProps {
   lehrlinge: Lehrling[];
   planData: PlanEntry[];
-  jahresStart?: string; // ISO-Datum, Default: 01.09. des aktuellen "Ausbildungsjahres"
-  highlightPersonalnummer?: string; // eigene Zeile hervorheben (für Lehrling-Ansicht)
+  highlightPersonalnummer?: string;
 }
 
-function getAusbildungsjahrRange(referenceDate = new Date()): { start: Date; end: Date } {
-  // Ausbildungsjahr läuft 01.09. – 31.08. des Folgejahres
-  const year = referenceDate.getMonth() >= 8 ? referenceDate.getFullYear() : referenceDate.getFullYear() - 1;
+function getAusbildungsjahrRange(): { start: Date; end: Date } {
+  // Ausbildungsjahr 2026/2027 läuft fix 01.09.2026 – 31.08.2027
   return {
-    start: new Date(year, 8, 1), // 1. September
-    end: new Date(year + 1, 7, 31), // 31. August Folgejahr
+    start: new Date(2026, 8, 1),
+    end: new Date(2027, 7, 31),
   };
 }
 
@@ -118,7 +116,6 @@ export function AusbildungsplanMatrix({
   }
 
   useEffect(() => {
-    // Beim ersten Rendern automatisch zu "heute" scrollen
     scrollToToday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -140,7 +137,6 @@ export function AusbildungsplanMatrix({
       <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
         <div ref={scrollRef} className="overflow-x-auto overflow-y-auto max-h-[70vh] scroll-thin">
           <div style={{ width: LABEL_WIDTH + totalWidth, minWidth: "100%" }}>
-            {/* Monats-Kopfzeile (sticky oben) */}
             <div
               className="sticky top-0 z-20 flex bg-gray-50 border-b border-gray-200"
               style={{ height: 28 }}
@@ -162,7 +158,6 @@ export function AusbildungsplanMatrix({
               </div>
             </div>
 
-            {/* Tages-Kopfzeile (sticky unter Monatszeile) */}
             <div
               className="sticky z-20 flex bg-gray-50 border-b border-gray-200 text-[8px] text-gray-400"
               style={{ top: 28, height: 16 }}
@@ -188,7 +183,6 @@ export function AusbildungsplanMatrix({
               })}
             </div>
 
-            {/* Lehrjahr-Gruppen + Lehrlings-Zeilen */}
             {[1, 2, 3, 4].map((lj) => {
               const gruppe = lehrjahrGruppen[lj] ?? [];
               if (gruppe.length === 0) return null;
@@ -264,7 +258,6 @@ export function AusbildungsplanMatrix({
         </div>
       </div>
 
-      {/* Legende */}
       <div className="flex flex-wrap gap-3 pt-1">
         {(Object.keys(planTypeLabels) as PlanEntryType[]).map((type) => (
           <span key={type} className="flex items-center gap-1.5 text-xs text-gray-500">
