@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RefreshCcw, Trash2, CalendarX2, Archive, Database } from "lucide-react";
+import { RefreshCcw, Trash2, CalendarX2, Archive, Database, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { DataStore } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
@@ -8,6 +8,7 @@ import { isSupabaseConfigured } from "../lib/supabase";
 
 export function AdminDatenManagementTab() {
   const [busy, setBusy] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const lastUpload = DataStore.getLastUpload();
 
   async function handleReload() {
@@ -18,6 +19,29 @@ export function AdminDatenManagementTab() {
       toast.success("Daten neu von Supabase geladen.");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleManualSeed() {
+    setSeeding(true);
+    try {
+      const mod = await import("../data/seedData");
+      DataStore.setLehrlinge(mod.SEED_LEHRLINGE);
+      DataStore.setPlanData(mod.SEED_PLAN_DATA);
+      DataStore.setLastUpload({
+        date: new Date().toISOString(),
+        fileName: "Lehrlingsplan_2026_2027.html (manueller Import)",
+      });
+      toast.success(
+        `${mod.SEED_LEHRLINGE.length} Lehrlinge und ${mod.SEED_PLAN_DATA.length} Plan-Einträge importiert.`,
+      );
+    } catch (err) {
+      console.error("Seed-Import fehlgeschlagen:", err);
+      toast.error(
+        `Import fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    } finally {
+      setSeeding(false);
     }
   }
 
@@ -45,6 +69,22 @@ export function AdminDatenManagementTab() {
 
   return (
     <div className="space-y-4">
+      <GlassCard className="p-6 border-2 border-blue-300">
+        <div className="flex items-center gap-2 mb-1">
+          <UploadCloud size={18} className="text-blue-600" />
+          <h3 className="font-bold text-gray-800">
+            Lehrlinge &amp; Ausbildungsplan importieren
+          </h3>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          Lädt die 59 Lehrlinge und den kompletten Ausbildungsplan 2026/2027 direkt in
+          die App. Bestehende Lehrlinge/Plandaten werden dabei überschrieben.
+        </p>
+        <Button onClick={handleManualSeed} disabled={seeding} icon={<UploadCloud size={16} />}>
+          {seeding ? "Wird importiert…" : "Jetzt importieren"}
+        </Button>
+      </GlassCard>
+
       <GlassCard className="p-6">
         <div className="flex items-center gap-2 mb-1">
           <Database size={18} className="text-blue-600" />
