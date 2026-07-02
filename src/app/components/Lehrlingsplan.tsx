@@ -5,6 +5,7 @@ import { DataStore, subscribeToDataChanges } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
 import { SectionHeader } from "./ui/SectionHeader";
 import { AusbildungsplanMatrix } from "./AusbildungsplanMatrix";
+import { LehrlingMonatskalender } from "./LehrlingMonatskalender";
 
 interface LehrlingsplanProps {
   user: User;
@@ -22,6 +23,26 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
   const alleLehrlinge = DataStore.getLehrlinge();
   const allePlanEntries = DataStore.getPlanData();
 
+  if (!isAdmin) {
+    const eigenePlanEntries = allePlanEntries.filter(
+      (e) => e.personalnummer === user.personalnummer,
+    );
+    return (
+      <div className="space-y-4">
+        <GlassCard>
+          <SectionHeader
+            icon={<CalendarDays size={22} />}
+            title="Lehrlingsplan"
+            subtitle={`Dein Ausbildungsplan – Lehrjahr ${user.lehrjahr}`}
+          />
+          <div className="p-6">
+            <LehrlingMonatskalender planData={eigenePlanEntries} />
+          </div>
+        </GlassCard>
+      </div>
+    );
+  }
+
   const gefilterteLehrlinge = alleLehrlinge.filter((l) => {
     if (lehrjahrFilter !== "alle" && l.lehrjahr !== lehrjahrFilter) return false;
     return true;
@@ -38,11 +59,7 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
         <SectionHeader
           icon={<CalendarDays size={22} />}
           title="Lehrlingsplan"
-          subtitle={
-            isAdmin
-              ? "Ausbildungsplan aller Lehrlinge"
-              : `Dein Ausbildungsplan – Lehrjahr ${user.lehrjahr} (deine Zeile ist hervorgehoben)`
-          }
+          subtitle="Ausbildungsplan aller Lehrlinge"
         />
         <div className="p-6 space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -69,7 +86,6 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
             <AusbildungsplanMatrix
               lehrlinge={gefilterteLehrlinge}
               planData={gefiltertePlanEntries}
-              highlightPersonalnummer={isAdmin ? undefined : user.personalnummer}
             />
           )}
         </div>

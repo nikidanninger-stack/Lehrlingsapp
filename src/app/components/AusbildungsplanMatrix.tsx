@@ -1,21 +1,12 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Lehrling, PlanEntry, PlanEntryType } from "../types";
 import { planTypeLabels } from "./ui/TypeBadge";
 import { parseDate } from "../utils/dateUtils";
+import { getHolidayName } from "../data/holidays";
 
-// ----------------------------------------------------------------------------
-// AusbildungsplanMatrix
-//
-// Tages-genaue Gantt-Matrix, angelehnt an das Original-Planungstool:
-// Zeilen = Lehrlinge (gruppiert nach Lehrjahr), Spalten = jeder einzelne Tag
-// im Ausbildungsjahr (01.09.2026 – 31.08.2027). Durchgehend farbige
-// Balken zeigen zusammenhängende Planeinträge. Horizontal + vertikal
-// scrollbar, Personalnummer/Name bleiben links fixiert (sticky).
-// ----------------------------------------------------------------------------
-
-const DAY_WIDTH = 10; // px pro Tag
-const ROW_HEIGHT = 32; // px pro Lehrling-Zeile
-const LABEL_WIDTH = 220; // px für die linke Personalnummer/Name-Spalte
+const DAY_WIDTH = 10;
+const ROW_HEIGHT = 32;
+const LABEL_WIDTH = 220;
 
 export const planTypeBarColors: Record<PlanEntryType, string> = {
   grundlagen: "#4CAF50",
@@ -34,6 +25,13 @@ export const planTypeBarColors: Record<PlanEntryType, string> = {
   "werkstatt-st-martin": "#F8CBAD",
 };
 
+interface TooltipState {
+  x: number;
+  y: number;
+  title: string;
+  subtitle: string;
+}
+
 interface AusbildungsplanMatrixProps {
   lehrlinge: Lehrling[];
   planData: PlanEntry[];
@@ -41,7 +39,6 @@ interface AusbildungsplanMatrixProps {
 }
 
 function getAusbildungsjahrRange(): { start: Date; end: Date } {
-  // Ausbildungsjahr 2026/2027 läuft fix 01.09.2026 – 31.08.2027
   return {
     start: new Date(2026, 8, 1),
     end: new Date(2027, 7, 31),
@@ -64,6 +61,13 @@ function fmt(date: Date): string {
   return `${dd}.${mm}.${date.getFullYear()}`;
 }
 
+function dayInfo(date: Date): { isWeekend: boolean; holidayName: string | null } {
+  const day = date.getDay();
+  const isWeekend = day === 0 || day === 6;
+  const holidayName = getHolidayName(fmt(date));
+  return { isWeekend, holidayName };
+}
+
 export function AusbildungsplanMatrix({
   lehrlinge,
   planData,
@@ -72,6 +76,7 @@ export function AusbildungsplanMatrix({
   const scrollRef = useRef<HTMLDivElement>(null);
   const { start, end } = useMemo(() => getAusbildungsjahrRange(), []);
   const days = useMemo(() => daysBetweenInclusive(start, end), [start, end]);
+  const [tooltip, setTooltip] = useState<TooltipState | null>(null);
 
   const lehrjahrGruppen = useMemo(() => {
     const groups: Record<number, Lehrling[]> = { 1: [], 2: [], 3: [], 4: [] };
@@ -92,6 +97,8 @@ export function AusbildungsplanMatrix({
     });
     return map;
   }, [planData]);
+
+  const dayInfos = useMemo(() => days.map(dayInfo), [days]);
 
   const monthMarkers = useMemo(() => {
     const markers: { index: number; label: string }[] = [];
@@ -120,6 +127,24 @@ export function AusbildungsplanMatrix({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function showEntryTooltip(e: React.MouseEvent, entry: PlanEntry) {
+    setTooltip({
+      x: e.clientX,
+      y: e.clientY,
+      title: entry.details,
+      subtitle: `${entry.startDate} – ${entry.endDate} · ${entry.location}`,
+    });
+  }
+
+  function showDayTooltip(e: React.MouseEvent, date: Date, holidayName: string) {
+    setTooltip({
+      x: e.clientX,
+      y: e.clientY,
+      title: holidayName,
+      subtitle: fmt(date),
+    });
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -134,8 +159,21 @@ export function AusbildungsplanMatrix({
         </button>
       </div>
 
-      <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-        <div ref={scrollRef} className="overflow-x-auto overflow-y-auto max-h-[70vh] scroll-thin">
+      <div className="border border-gray-200 rounded-xl overflow-hidden bg-white relative">
+        {tooltip && (
+          <div
+            className="fixed z-50 pointer-events-none bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl max-w-xs"
+            style={{ left: tooltip.x + 12, top: tooltip.y + 12 }}
+          >
+            <p className="font-semibold">{tooltip.title}</p>
+            <p className="text-gray-300">{tooltip.subtitle}</p>
+          </div>
+        )}
+        <div
+          ref={scrollRef}
+          onMouseLeave={() => setTooltip(null)}
+          className="overflow-x-auto overflow-y-auto max-h-[70vh] scroll-thin"
+        >
           <div style={{ width: LABEL_WIDTH + totalWidth, minWidth: "100%" }}>
             <div
               className="sticky top-0 z-20 flex bg-gray-50 border-b border-gray-200"
@@ -168,12 +206,21 @@ export function AusbildungsplanMatrix({
               />
               {days.map((d, idx) => {
                 const isToday = fmt(d) === fmt(new Date());
-                const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+                const { isWeekend, holidayName } = dayInfos[idx];
                 return (
                   <div
                     key={idx}
+                    onMouseEnter={
+                      holidayName ? (e) => showDayTooltip(e, d, holidayName) : undefined
+                    }
                     className={`flex items-center justify-center shrink-0 ${
-                      isToday ? "bg-blue-100 font-bold text-blue-700" : isWeekend ? "bg-gray-100" : ""
+                      isToday
+                        ? "bg-blue-100 font-bold text-blue-700"
+                        : holidayName
+                          ? "bg-red-100"
+                          : isWeekend
+                            ? "bg-gray-200"
+                            : ""
                     }`}
                     style={{ width: DAY_WIDTH }}
                   >
@@ -224,6 +271,24 @@ export function AusbildungsplanMatrix({
                           </span>
                         </div>
                         <div className="relative" style={{ width: totalWidth }}>
+                          {days.map((d, idx) => {
+                            const { isWeekend, holidayName } = dayInfos[idx];
+                            if (!isWeekend && !holidayName) return null;
+                            return (
+                              <div
+                                key={idx}
+                                onMouseEnter={
+                                  holidayName
+                                    ? (e) => showDayTooltip(e, d, holidayName)
+                                    : undefined
+                                }
+                                className={`absolute top-0 h-full ${
+                                  holidayName ? "bg-red-50" : "bg-gray-50"
+                                }`}
+                                style={{ left: idx * DAY_WIDTH, width: DAY_WIDTH }}
+                              />
+                            );
+                          })}
                           {entries.map((entry) => {
                             const entryStart = parseDate(entry.startDate);
                             const entryEnd = parseDate(entry.endDate) ?? entryStart;
@@ -236,13 +301,14 @@ export function AusbildungsplanMatrix({
                             return (
                               <div
                                 key={entry.id}
-                                title={`${entry.details} (${entry.startDate}–${entry.endDate})`}
+                                onMouseEnter={(e) => showEntryTooltip(e, entry)}
                                 className="absolute top-1 rounded-sm opacity-90 hover:opacity-100 hover:ring-2 hover:ring-blue-400 transition-all cursor-default"
                                 style={{
                                   left,
                                   width: Math.max(width - 1, 2),
                                   height: ROW_HEIGHT - 8,
                                   backgroundColor: planTypeBarColors[entry.type],
+                                  zIndex: 1,
                                 }}
                               />
                             );
@@ -268,6 +334,14 @@ export function AusbildungsplanMatrix({
             {planTypeLabels[type]}
           </span>
         ))}
+        <span className="flex items-center gap-1.5 text-xs text-gray-500">
+          <span className="w-2.5 h-2.5 rounded-sm bg-gray-200" />
+          Wochenende
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-gray-500">
+          <span className="w-2.5 h-2.5 rounded-sm bg-red-100" />
+          Feiertag
+        </span>
       </div>
     </div>
   );

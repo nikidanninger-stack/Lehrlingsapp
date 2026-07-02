@@ -14,7 +14,7 @@ function easterSunday(year: number): Date {
   const k = c % 4;
   const l = (32 + 2 * e + 2 * i - h - k) % 7;
   const m = Math.floor((a + 11 * h + 22 * l) / 451);
-  const month = Math.floor((h + l - 7 * m + 114) / 31); // 3=März, 4=April
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
   const day = ((h + l - 7 * m + 114) % 31) + 1;
   return new Date(year, month - 1, day);
 }
@@ -52,14 +52,19 @@ export function getAustrianHolidays(year: number): { date: string; name: string 
 }
 
 export function isAustrianHoliday(dateStr: string): boolean {
-  // dateStr im Format "DD.MM.YYYY"
   const year = parseInt(dateStr.split(".")[2] ?? "0", 10);
   if (!year) return false;
   return getAustrianHolidays(year).some((h) => h.date === dateStr);
 }
 
+export function getHolidayName(dateStr: string): string | null {
+  const year = parseInt(dateStr.split(".")[2] ?? "0", 10);
+  if (!year) return null;
+  const match = getAustrianHolidays(year).find((h) => h.date === dateStr);
+  return match?.name ?? null;
+}
+
 export function isWeekend(dateStr: string): boolean {
-  // dateStr im Format "DD.MM.YYYY"
   const [dd, mm, yyyy] = dateStr.split(".").map((v) => parseInt(v, 10));
   if (!dd || !mm || !yyyy) return false;
   const date = new Date(yyyy, mm - 1, dd);
