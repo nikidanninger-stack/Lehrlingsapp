@@ -9,6 +9,7 @@ import { isSupabaseConfigured } from "../lib/supabase";
 export function AdminDatenManagementTab() {
   const [busy, setBusy] = useState(false);
   const [seeding, setSeeding] = useState(false);
+  const [seedingContent, setSeedingContent] = useState(false);
   const lastUpload = DataStore.getLastUpload();
 
   async function handleReload() {
@@ -42,6 +43,31 @@ export function AdminDatenManagementTab() {
       );
     } finally {
       setSeeding(false);
+    }
+  }
+
+  async function handleManualContentSeed() {
+    setSeedingContent(true);
+    try {
+      const mod = await import("../data/seedContentData");
+      DataStore.setAnsprechpartner(mod.SEED_ANSPRECHPARTNER);
+      DataStore.setWerkzeuge(mod.SEED_WERKZEUGE);
+      DataStore.setLeitfadenEintraege(mod.SEED_LEITFADEN);
+
+      const seedIds = new Set(mod.SEED_LERNABSCHNITTE.map((a) => a.id));
+      const bestehende = DataStore.getLernAbschnitte().filter((a) => !seedIds.has(a.id));
+      DataStore.setLernAbschnitte([...bestehende, ...mod.SEED_LERNABSCHNITTE]);
+
+      toast.success(
+        `${mod.SEED_ANSPRECHPARTNER.length} Ansprechpartner, ${mod.SEED_WERKZEUGE.length} Werkzeuge, ${mod.SEED_LEITFADEN.length} Leitfaden-Einträge und ${mod.SEED_LERNABSCHNITTE.length} Lernmodule importiert.`,
+      );
+    } catch (err) {
+      console.error("Content-Seed-Import fehlgeschlagen:", err);
+      toast.error(
+        `Import fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    } finally {
+      setSeedingContent(false);
     }
   }
 
@@ -82,6 +108,29 @@ export function AdminDatenManagementTab() {
         </p>
         <Button onClick={handleManualSeed} disabled={seeding} icon={<UploadCloud size={16} />}>
           {seeding ? "Wird importiert…" : "Jetzt importieren"}
+        </Button>
+      </GlassCard>
+
+      <GlassCard className="p-6 border-2 border-purple-300">
+        <div className="flex items-center gap-2 mb-1">
+          <UploadCloud size={18} className="text-purple-600" />
+          <h3 className="font-bold text-gray-800">
+            Ansprechpartner, Werkzeuge, Leitfaden &amp; LernApp importieren
+          </h3>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          Lädt 4 Ansprechpartner, den vollständigen Werkzeugkatalog, alle
+          Leitfaden-Kapitel sowie die LernApp-Module (Allgemeine Kältetechnik &amp;
+          Verdichter) direkt in die App. Bestehende Einträge in diesen Bereichen
+          werden überschrieben.
+        </p>
+        <Button
+          onClick={handleManualContentSeed}
+          disabled={seedingContent}
+          icon={<UploadCloud size={16} />}
+          variant="secondary"
+        >
+          {seedingContent ? "Wird importiert…" : "Jetzt importieren"}
         </Button>
       </GlassCard>
 
