@@ -1,0 +1,586 @@
+import type {
+  Lehrling,
+  PlanEntry,
+  Termin,
+  Krankmeldung,
+  Ansprechpartner,
+  Werkzeug,
+  LeitfadenEintrag,
+  LernAbschnitt,
+  LernDatei,
+  LernFortschritt,
+  ChatMessage,
+  LastUploadInfo,
+} from "../types";
+import { isWeekend } from "./holidays";
+import {
+  fetchLehrlingeDirect,
+  fetchPlanDataDirect,
+  fetchLernabschnitteFromServer,
+  saveLernabschnitteToServer,
+  syncLehrjahrToServer,
+  loadChatbotApiKey as apiLoadChatbotApiKey,
+  saveChatbotApiKey as apiSaveChatbotApiKey,
+  loadChatbotHistory as apiLoadChatbotHistory,
+  saveChatbotHistory as apiSaveChatbotHistory,
+} from "../api/client";
+
+// ----------------------------------------------------------------------------
+// LocalStorage Keys
+// ----------------------------------------------------------------------------
+
+const KEYS = {
+  lehrlinge: "lehrlingsapp_lehrlinge",
+  planData: "lehrlingsapp_plan_data",
+  termine: "lehrlingsapp_termine",
+  lastUpload: "lehrlingsapp_last_upload",
+  backup: "lehrlingsapp_backup",
+  dataLocked: "lehrlingsapp_data_locked",
+  lernAbschnitte: "lehrlingsapp_lern_abschnitte",
+  lernDateien: "lehrlingsapp_lern_dateien",
+  lernFortschritte: "lehrlingsapp_lern_fortschritte",
+  krankmeldungen: "lehrlingsapp_krankmeldungen",
+  ansprechpartner: "lehrlingsapp_ansprechpartner",
+  werkzeuge: "lehrlingsapp_werkzeuge",
+  leitfadenEintraege: "lehrlingsapp_leitfaden_eintraege",
+  initialized: "lehrlingsapp_initialized",
+  chatbotApiKey: "chatbot_api_key",
+  chatbotHistory: "chatbot_history",
+} as const;
+
+// ----------------------------------------------------------------------------
+// Event-System (Subscriber-Pattern für reaktive UI-Updates ohne Redux/Context)
+// ----------------------------------------------------------------------------
+
+type Listener = () => void;
+const listeners = new Set<Listener>();
+
+export function subscribeToDataChanges(listener: Listener): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function notifyDataChange(): void {
+  listeners.forEach((listener) => {
+    try {
+      listener();
+    } catch (err) {
+      console.error("[DataStore] Listener-Fehler", err);
+    }
+  });
+}
+
+// ----------------------------------------------------------------------------
+// Generische LocalStorage Helfer
+// ----------------------------------------------------------------------------
+
+function readJSON<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw) as T;
+  } catch (err) {
+    console.warn(`[DataStore] Lesefehler für ${key}`, err);
+    return fallback;
+  }
+}
+
+function writeJSON<T>(key: string, value: T): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (err) {
+    console.error(`[DataStore] Schreibfehler für ${key}`, err);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// Wochenend-Filter für PlanEntry-Listen
+// ----------------------------------------------------------------------------
+
+function filterWeekendEntries(entries: PlanEntry[]): PlanEntry[] {
+  return entries.filter((entry) => !isWeekend(entry.startDate));
+}
+
+// ============================================================================
+// DataStore
+// ============================================================================
+
+export const DataStore = {
+  // ---- Initialisierung -----------------------------------------------------
+
+  isInitialized(): boolean {
+    return localStorage.getItem(KEYS.initialized) === "true";
+  },
+
+  initialize(): void {
+    if (DataStore.isInitialized()) return;
+    writeJSON(KEYS.lehrlinge, []);
+    writeJSON(KEYS.planData, []);
+    writeJSON(KEYS.termine, []);
+    writeJSON(KEYS.lernAbschnitte, []);
+    writeJSON(KEYS.lernDateien, []);
+    writeJSON(KEYS.lernFortschritte, []);
+    writeJSON(KEYS.krankmeldungen, []);
+    writeJSON(KEYS.ansprechpartner, []);
+    writeJSON(KEYS.werkzeuge, []);
+    writeJSON(KEYS.leitfadenEintraege, []);
+    localStorage.setItem(KEYS.dataLocked, "false");
+    localStorage.setItem(KEYS.initialized, "true");
+  },
+
+  // ---- Lehrlinge -------------------------------------------------------
+
+  getLehrlinge(): Lehrling[] {
+    return readJSON<Lehrling[]>(KEYS.lehrlinge, []);
+  },
+
+  setLehrlinge(lehrlinge: Lehrling[]): void {
+    writeJSON(KEYS.lehrlinge, lehrlinge);
+    notifyDataChange();
+  },
+
+  addLehrling(lehrling: Lehrling): void {
+    const all = DataStore.getLehrlinge();
+    if (all.some((l) => l.personalnummer === lehrling.personalnummer)) {
+      throw new Error("Personalnummer bereits vergeben");
+    }
+    DataStore.setLehrlinge([...all, lehrling]);
+  },
+
+  updateLehrling(personalnummer: string, updates: Partial<Lehrling>): void {
+    const all = DataStore.getLehrlinge();
+    DataStore.setLehrlinge(
+      all.map((l) =>
+        l.personalnummer === personalnummer ? { ...l, ...updates } : l,
+      ),
+    );
+  },
+
+  deleteLehrling(personalnummer: string): void {
+    const all = DataStore.getLehrlinge();
+    DataStore.setLehrlinge(
+      all.filter((l) => l.personalnummer !== personalnummer),
+    );
+  },
+
+  findLehrling(personalnummer: string): Lehrling | undefined {
+    return DataStore.getLehrlinge().find(
+      (l) => l.personalnummer === personalnummer,
+    );
+  },
+
+  // ---- PlanEntries -------------------------------------------------------
+
+  getPlanData(): PlanEntry[] {
+    return filterWeekendEntries(readJSON<PlanEntry[]>(KEYS.planData, []));
+  },
+
+  setPlanData(entries: PlanEntry[]): void {
+    writeJSON(KEYS.planData, filterWeekendEntries(entries));
+    notifyDataChange();
+  },
+
+  updatePlanDataForLehrjahr(lehrjahr: number, entries: PlanEntry[]): void {
+    const existing = DataStore.getPlanData();
+    const withoutLehrjahr = existing.filter((e) => e.lehrjahr !== lehrjahr);
+    const clean = filterWeekendEntries(entries);
+    DataStore.setPlanData([...withoutLehrjahr, ...clean]);
+
+    // Fire-and-forget Supabase-Sync
+    void syncLehrjahrToServer(
+      lehrjahr,
+      DataStore.getLehrlinge().filter((l) => l.lehrjahr === lehrjahr),
+      clean,
+    );
+  },
+
+  getPlanDataForLehrling(personalnummer: string): PlanEntry[] {
+    return DataStore.getPlanData().filter(
+      (e) => e.personalnummer === personalnummer,
+    );
+  },
+
+  // ---- Termine -------------------------------------------------------
+
+  getTermine(): Termin[] {
+    return readJSON<Termin[]>(KEYS.termine, []);
+  },
+
+  setTermine(termine: Termin[]): void {
+    writeJSON(KEYS.termine, termine);
+    notifyDataChange();
+  },
+
+  addTermin(termin: Termin): void {
+    DataStore.setTermine([...DataStore.getTermine(), termin]);
+  },
+
+  updateTermin(id: number, updates: Partial<Termin>): void {
+    DataStore.setTermine(
+      DataStore.getTermine().map((t) =>
+        t.id === id ? { ...t, ...updates } : t,
+      ),
+    );
+  },
+
+  deleteTermin(id: number): void {
+    DataStore.setTermine(DataStore.getTermine().filter((t) => t.id !== id));
+  },
+
+  // ---- Krankmeldungen -------------------------------------------------------
+
+  getKrankmeldungen(): Krankmeldung[] {
+    return readJSON<Krankmeldung[]>(KEYS.krankmeldungen, []);
+  },
+
+  setKrankmeldungen(meldungen: Krankmeldung[]): void {
+    writeJSON(KEYS.krankmeldungen, meldungen);
+    notifyDataChange();
+  },
+
+  addKrankmeldung(meldung: Krankmeldung): void {
+    DataStore.setKrankmeldungen([...DataStore.getKrankmeldungen(), meldung]);
+  },
+
+  getKrankmeldungenForLehrling(personalnummer: string): Krankmeldung[] {
+    return DataStore.getKrankmeldungen()
+      .filter((m) => m.personalnummer === personalnummer)
+      .sort((a, b) => (a.datum < b.datum ? 1 : -1));
+  },
+
+  // ---- Ansprechpartner -------------------------------------------------------
+
+  getAnsprechpartner(): Ansprechpartner[] {
+    return readJSON<Ansprechpartner[]>(KEYS.ansprechpartner, []);
+  },
+
+  setAnsprechpartner(list: Ansprechpartner[]): void {
+    writeJSON(KEYS.ansprechpartner, list);
+    notifyDataChange();
+  },
+
+  addAnsprechpartner(person: Ansprechpartner): void {
+    DataStore.setAnsprechpartner([...DataStore.getAnsprechpartner(), person]);
+  },
+
+  updateAnsprechpartner(id: string, updates: Partial<Ansprechpartner>): void {
+    DataStore.setAnsprechpartner(
+      DataStore.getAnsprechpartner().map((p) =>
+        p.id === id ? { ...p, ...updates } : p,
+      ),
+    );
+  },
+
+  deleteAnsprechpartner(id: string): void {
+    DataStore.setAnsprechpartner(
+      DataStore.getAnsprechpartner().filter((p) => p.id !== id),
+    );
+  },
+
+  // ---- Werkzeuge -------------------------------------------------------
+
+  getWerkzeuge(): Werkzeug[] {
+    return readJSON<Werkzeug[]>(KEYS.werkzeuge, []);
+  },
+
+  setWerkzeuge(list: Werkzeug[]): void {
+    writeJSON(KEYS.werkzeuge, list);
+    notifyDataChange();
+  },
+
+  addWerkzeug(werkzeug: Werkzeug): void {
+    DataStore.setWerkzeuge([...DataStore.getWerkzeuge(), werkzeug]);
+  },
+
+  updateWerkzeug(id: string, updates: Partial<Werkzeug>): void {
+    DataStore.setWerkzeuge(
+      DataStore.getWerkzeuge().map((w) =>
+        w.id === id ? { ...w, ...updates } : w,
+      ),
+    );
+  },
+
+  deleteWerkzeug(id: string): void {
+    DataStore.setWerkzeuge(DataStore.getWerkzeuge().filter((w) => w.id !== id));
+  },
+
+  // ---- Leitfaden -------------------------------------------------------
+
+  getLeitfadenEintraege(): LeitfadenEintrag[] {
+    return readJSON<LeitfadenEintrag[]>(KEYS.leitfadenEintraege, []).sort(
+      (a, b) => a.sortierung - b.sortierung,
+    );
+  },
+
+  setLeitfadenEintraege(list: LeitfadenEintrag[]): void {
+    writeJSON(KEYS.leitfadenEintraege, list);
+    notifyDataChange();
+  },
+
+  addLeitfadenEintrag(eintrag: LeitfadenEintrag): void {
+    DataStore.setLeitfadenEintraege([
+      ...DataStore.getLeitfadenEintraege(),
+      eintrag,
+    ]);
+  },
+
+  updateLeitfadenEintrag(id: string, updates: Partial<LeitfadenEintrag>): void {
+    DataStore.setLeitfadenEintraege(
+      DataStore.getLeitfadenEintraege().map((e) =>
+        e.id === id ? { ...e, ...updates } : e,
+      ),
+    );
+  },
+
+  deleteLeitfadenEintrag(id: string): void {
+    DataStore.setLeitfadenEintraege(
+      DataStore.getLeitfadenEintraege().filter((e) => e.id !== id),
+    );
+  },
+
+  // ---- LernAbschnitte -------------------------------------------------------
+
+  getLernAbschnitte(): LernAbschnitt[] {
+    return readJSON<LernAbschnitt[]>(KEYS.lernAbschnitte, []).sort(
+      (a, b) => a.sortierung - b.sortierung,
+    );
+  },
+
+  setLernAbschnitte(list: LernAbschnitt[]): void {
+    writeJSON(KEYS.lernAbschnitte, list);
+    notifyDataChange();
+    void saveLernabschnitteToServer(list);
+  },
+
+  addLernAbschnitt(abschnitt: LernAbschnitt): void {
+    DataStore.setLernAbschnitte([...DataStore.getLernAbschnitte(), abschnitt]);
+  },
+
+  updateLernAbschnitt(id: string, updates: Partial<LernAbschnitt>): void {
+    DataStore.setLernAbschnitte(
+      DataStore.getLernAbschnitte().map((a) =>
+        a.id === id
+          ? { ...a, ...updates, aktualisiert: new Date().toISOString() }
+          : a,
+      ),
+    );
+  },
+
+  deleteLernAbschnitt(id: string): void {
+    DataStore.setLernAbschnitte(
+      DataStore.getLernAbschnitte().filter((a) => a.id !== id),
+    );
+  },
+
+  // ---- LernDateien -------------------------------------------------------
+
+  getLernDateien(): LernDatei[] {
+    return readJSON<LernDatei[]>(KEYS.lernDateien, []);
+  },
+
+  setLernDateien(list: LernDatei[]): void {
+    writeJSON(KEYS.lernDateien, list);
+    notifyDataChange();
+  },
+
+  // ---- LernFortschritte -------------------------------------------------------
+
+  getLernFortschritte(): LernFortschritt[] {
+    return readJSON<LernFortschritt[]>(KEYS.lernFortschritte, []);
+  },
+
+  setLernFortschritte(list: LernFortschritt[]): void {
+    writeJSON(KEYS.lernFortschritte, list);
+    notifyDataChange();
+  },
+
+  getLernFortschrittFor(
+    personalnummer: string,
+    abschnittId: string,
+  ): LernFortschritt | undefined {
+    return DataStore.getLernFortschritte().find(
+      (f) => f.personalnummer === personalnummer && f.abschnittId === abschnittId,
+    );
+  },
+
+  upsertLernFortschritt(fortschritt: LernFortschritt): void {
+    const all = DataStore.getLernFortschritte();
+    const idx = all.findIndex(
+      (f) =>
+        f.personalnummer === fortschritt.personalnummer &&
+        f.abschnittId === fortschritt.abschnittId,
+    );
+    if (idx >= 0) {
+      const copy = [...all];
+      copy[idx] = fortschritt;
+      DataStore.setLernFortschritte(copy);
+    } else {
+      DataStore.setLernFortschritte([...all, fortschritt]);
+    }
+  },
+
+  // Gesamtfortschritt (%) eines Lehrlings über alle Abschnitte seines Lehrjahrs
+  getGesamtfortschritt(personalnummer: string, lehrjahr: number): number {
+    const abschnitte = DataStore.getLernAbschnitte().filter(
+      (a) => a.lehrjahr === lehrjahr,
+    );
+    if (abschnitte.length === 0) return 0;
+    const fortschritte = DataStore.getLernFortschritte().filter(
+      (f) => f.personalnummer === personalnummer,
+    );
+    const sum = abschnitte.reduce((acc, abschnitt) => {
+      const f = fortschritte.find((x) => x.abschnittId === abschnitt.id);
+      return acc + (f?.fortschritt ?? 0);
+    }, 0);
+    return Math.round(sum / abschnitte.length);
+  },
+
+  // ---- Letzter Upload -------------------------------------------------------
+
+  getLastUpload(): LastUploadInfo | null {
+    return readJSON<LastUploadInfo | null>(KEYS.lastUpload, null);
+  },
+
+  setLastUpload(info: LastUploadInfo): void {
+    writeJSON(KEYS.lastUpload, info);
+    notifyDataChange();
+  },
+
+  // ---- Data-Lock (Admin: Daten sperren) -------------------------------------
+
+  isDataLocked(): boolean {
+    return localStorage.getItem(KEYS.dataLocked) === "true";
+  },
+
+  setDataLocked(locked: boolean): void {
+    localStorage.setItem(KEYS.dataLocked, String(locked));
+    notifyDataChange();
+  },
+
+  // ---- Backup -------------------------------------------------------
+
+  createBackup(): void {
+    const backup = {
+      timestamp: new Date().toISOString(),
+      lehrlinge: DataStore.getLehrlinge(),
+      planData: DataStore.getPlanData(),
+      termine: DataStore.getTermine(),
+      krankmeldungen: DataStore.getKrankmeldungen(),
+      ansprechpartner: DataStore.getAnsprechpartner(),
+      werkzeuge: DataStore.getWerkzeuge(),
+      leitfadenEintraege: DataStore.getLeitfadenEintraege(),
+      lernAbschnitte: DataStore.getLernAbschnitte(),
+      lernFortschritte: DataStore.getLernFortschritte(),
+    };
+    writeJSON(KEYS.backup, backup);
+  },
+
+  getBackup(): Record<string, unknown> | null {
+    return readJSON<Record<string, unknown> | null>(KEYS.backup, null);
+  },
+
+  // ---- Cache leeren -------------------------------------------------------
+
+  clearLocalCache(): void {
+    Object.values(KEYS).forEach((key) => {
+      if (key === KEYS.backup) return; // Backup bleibt erhalten
+      localStorage.removeItem(key);
+    });
+    DataStore.initialize();
+  },
+
+  // ---- Wochenende bereinigen (lokal + Supabase) -------------------------------------------------------
+
+  cleanupWochenendeLocal(): number {
+    const before = readJSON<PlanEntry[]>(KEYS.planData, []);
+    const after = filterWeekendEntries(before);
+    writeJSON(KEYS.planData, after);
+    notifyDataChange();
+    return before.length - after.length;
+  },
+
+  async cleanupWochenende(): Promise<void> {
+    DataStore.cleanupWochenendeLocal();
+    // Supabase-seitige Bereinigung würde hier über eine Edge Function laufen;
+    // da wir Fire-and-Forget arbeiten, wird ein Fehlschlag hier nur geloggt.
+  },
+
+  // ---- Chatbot -------------------------------------------------------
+
+  getChatbotApiKeyLocal(): string {
+    return localStorage.getItem(KEYS.chatbotApiKey) ?? "";
+  },
+
+  saveChatbotApiKeyLocal(key: string): void {
+    localStorage.setItem(KEYS.chatbotApiKey, key);
+    notifyDataChange();
+  },
+
+  async saveChatbotApiKey(key: string): Promise<void> {
+    DataStore.saveChatbotApiKeyLocal(key);
+    await apiSaveChatbotApiKey(key);
+  },
+
+  async loadChatbotApiKeyFromSupabase(): Promise<void> {
+    const remote = await apiLoadChatbotApiKey();
+    if (remote) {
+      DataStore.saveChatbotApiKeyLocal(remote);
+    }
+  },
+
+  getChatbotHistoryLocal(): ChatMessage[] {
+    return readJSON<ChatMessage[]>(KEYS.chatbotHistory, []);
+  },
+
+  saveChatbotHistoryLocal(history: ChatMessage[]): void {
+    writeJSON(KEYS.chatbotHistory, history);
+    notifyDataChange();
+  },
+
+  async saveChatbotHistory(history: ChatMessage[]): Promise<void> {
+    DataStore.saveChatbotHistoryLocal(history);
+    await apiSaveChatbotHistory(history);
+  },
+
+  async loadChatbotHistoryFromSupabase(): Promise<void> {
+    const remote = await apiLoadChatbotHistory();
+    if (remote) {
+      DataStore.saveChatbotHistoryLocal(remote);
+    }
+  },
+
+  // ---- Supabase-Sync (Laden) -------------------------------------------------------
+
+  async loadFromSupabase(): Promise<{
+    lehrlinge: Lehrling[];
+    planData: PlanEntry[];
+  }> {
+    const [remoteLehrlinge, remotePlan] = await Promise.all([
+      fetchLehrlingeDirect(),
+      fetchPlanDataDirect(),
+    ]);
+
+    if (remoteLehrlinge && remoteLehrlinge.length > 0) {
+      DataStore.setLehrlinge(remoteLehrlinge);
+    }
+    if (remotePlan && remotePlan.length > 0) {
+      DataStore.setPlanData(remotePlan);
+    }
+
+    return {
+      lehrlinge: DataStore.getLehrlinge(),
+      planData: DataStore.getPlanData(),
+    };
+  },
+
+  async loadLernAbschnitteFromSupabase(): Promise<void> {
+    const remote = await fetchLernabschnitteFromServer();
+    if (remote && remote.length > 0) {
+      writeJSON(KEYS.lernAbschnitte, remote);
+      notifyDataChange();
+    }
+  },
+};
+
+export { notifyDataChange };
+export default DataStore;
