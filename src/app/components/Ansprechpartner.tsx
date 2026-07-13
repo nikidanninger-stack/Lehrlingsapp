@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, Search, Phone, Mail, Plus, Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, Search, Phone, Mail, Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Ansprechpartner as AnsprechpartnerType, User } from "../types";
 import { DataStore, subscribeToDataChanges } from "../data/store";
@@ -17,7 +17,6 @@ export function Ansprechpartner({ user }: AnsprechpartnerProps) {
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<AnsprechpartnerType | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => subscribeToDataChanges(() => setTick((t) => t + 1)), []);
 
@@ -101,13 +100,13 @@ export function Ansprechpartner({ user }: AnsprechpartnerProps) {
                         {p.position} · {p.abteilung}
                       </p>
                       <div className="flex flex-wrap gap-3 mt-2 text-xs">
-                        <a
+                        
                           href={`tel:${p.phone}`}
                           className="flex items-center gap-1 text-blue-700 hover:underline"
                         >
                           <Phone size={12} /> {p.phone}
                         </a>
-                        <a
+                        
                           href={`mailto:${p.email}`}
                           className="flex items-center gap-1 text-blue-700 hover:underline"
                         >
@@ -134,27 +133,6 @@ export function Ansprechpartner({ user }: AnsprechpartnerProps) {
                       </div>
                     )}
                   </div>
-
-                  {p.responsibilities.length > 0 && (
-                    <button
-                      onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
-                      className="flex items-center gap-1 text-xs text-gray-400 mt-3 hover:text-gray-600"
-                    >
-                      Zuständigkeiten
-                      {expandedId === p.id ? (
-                        <ChevronUp size={12} />
-                      ) : (
-                        <ChevronDown size={12} />
-                      )}
-                    </button>
-                  )}
-                  {expandedId === p.id && (
-                    <ul className="mt-2 text-xs text-gray-600 list-disc list-inside space-y-0.5">
-                      {p.responsibilities.map((r, idx) => (
-                        <li key={idx}>{r}</li>
-                      ))}
-                    </ul>
-                  )}
                 </div>
               ))}
             </div>
@@ -187,9 +165,6 @@ function AnsprechpartnerFormModal({
   const [abteilung, setAbteilung] = useState(person?.abteilung ?? "");
   const [phone, setPhone] = useState(person?.phone ?? "");
   const [email, setEmail] = useState(person?.email ?? "");
-  const [responsibilitiesText, setResponsibilitiesText] = useState(
-    person?.responsibilities.join("\n") ?? "",
-  );
 
   useEffect(() => {
     setName(person?.name ?? "");
@@ -197,7 +172,6 @@ function AnsprechpartnerFormModal({
     setAbteilung(person?.abteilung ?? "");
     setPhone(person?.phone ?? "");
     setEmail(person?.email ?? "");
-    setResponsibilitiesText(person?.responsibilities.join("\n") ?? "");
   }, [person, isOpen]);
 
   function handleSubmit(e: React.FormEvent) {
@@ -206,10 +180,6 @@ function AnsprechpartnerFormModal({
       toast.error("Bitte Name und Position ausfüllen.");
       return;
     }
-    const responsibilities = responsibilitiesText
-      .split("\n")
-      .map((r) => r.trim())
-      .filter(Boolean);
 
     if (person) {
       DataStore.updateAnsprechpartner(person.id, {
@@ -218,7 +188,6 @@ function AnsprechpartnerFormModal({
         abteilung,
         phone,
         email,
-        responsibilities,
       });
       toast.success("Ansprechpartner aktualisiert");
     } else {
@@ -229,7 +198,7 @@ function AnsprechpartnerFormModal({
         abteilung,
         phone,
         email,
-        responsibilities,
+        responsibilities: [],
       });
       toast.success("Ansprechpartner hinzugefügt");
     }
@@ -280,16 +249,6 @@ function AnsprechpartnerFormModal({
               className="input"
             />
           </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Zuständigkeiten (eine Zeile pro Punkt)
-          </label>
-          <textarea
-            value={responsibilitiesText}
-            onChange={(e) => setResponsibilitiesText(e.target.value)}
-            className="input min-h-[80px]"
-          />
         </div>
         <div className="flex gap-2 pt-2">
           <Button type="submit" className="flex-1">

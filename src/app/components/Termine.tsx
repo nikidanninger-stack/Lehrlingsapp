@@ -16,6 +16,7 @@ import { GlassCard } from "./ui/GlassCard";
 import { SectionHeader } from "./ui/SectionHeader";
 import { Button } from "./ui/Button";
 import { Modal } from "./ui/Modal";
+import { LehrlingTermineUebersicht } from "./LehrlingTermineUebersicht";
 import { formatDateLong, parseDate } from "../utils/dateUtils";
 
 interface TermineProps {
@@ -45,10 +46,16 @@ export function Termine({ user }: TermineProps) {
   useEffect(() => subscribeToDataChanges(() => setTick((t) => t + 1)), []);
 
   const isAdmin = user.role === "admin";
+
+  // Lehrlinge sehen eine automatische, aus dem Ausbildungsplan generierte
+  // Übersicht ihrer bevorstehenden Abschnitte statt der administrativ
+  // angelegten Termine (Prüfungen/Ausflüge bleiben separat im Admin-Bereich).
+  if (!isAdmin) {
+    return <LehrlingTermineUebersicht user={user} />;
+  }
+
   const alle = DataStore.getTermine();
-  const relevante = isAdmin
-    ? alle
-    : alle.filter((t) => t.lehrjahre.includes(user.lehrjahr));
+  const relevante = alle;
 
   const today = new Date();
   const kommende = relevante

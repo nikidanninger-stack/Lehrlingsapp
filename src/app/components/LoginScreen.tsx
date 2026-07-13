@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Snowflake, User as UserIcon, ShieldCheck } from "lucide-react";
+import { User as UserIcon, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import type { User } from "../types";
 import { DataStore } from "../data/store";
+import { HAUSER_LOGO_DATA_URL } from "../assets/hauserLogo";
 import { Button } from "./ui/Button";
 
 interface LoginScreenProps {
@@ -70,7 +71,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     onLogin(user);
     toast.success(`Willkommen, ${user.name}!`);
 
-    // Donnerstags-Erinnerung an die Berufsschule
     if (new Date().getDay() === 4) {
       setTimeout(() => {
         toast.info(
@@ -90,16 +90,16 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white/70 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8">
-          {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center shadow-lg shadow-blue-500/30 mb-4">
-              <Snowflake className="text-white" size={32} />
-            </div>
+            <img
+              src={HAUSER_LOGO_DATA_URL}
+              alt="Hauser Kältetechnik"
+              className="h-14 w-auto mb-4"
+            />
             <h1 className="text-2xl font-bold text-gray-800">LehrlingsApp</h1>
             <p className="text-gray-500 text-sm mt-1">Hauser Kältetechnik</p>
           </div>
 
-          {/* Tabs */}
           <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
             <button
               type="button"

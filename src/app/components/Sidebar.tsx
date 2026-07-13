@@ -1,6 +1,7 @@
-import { Snowflake, X } from "lucide-react";
+import { X } from "lucide-react";
 import type { Screen, UserRole } from "../types";
 import { getNavItems } from "./navConfig";
+import { HAUSER_LOGO_DATA_URL } from "../assets/hauserLogo";
 
 interface SidebarProps {
   role: UserRole;
@@ -52,9 +53,7 @@ export function Sidebar({
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:flex-col fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-30">
         <div className="h-16 flex items-center gap-2 px-5 border-b border-gray-100">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
-            <Snowflake className="text-white" size={18} />
-          </div>
+          <img src={HAUSER_LOGO_DATA_URL} alt="Hauser" className="h-6 w-auto" />
           <span className="font-bold text-gray-800">LehrlingsApp</span>
         </div>
         {navList}
@@ -75,9 +74,7 @@ export function Sidebar({
       >
         <div className="h-16 flex items-center justify-between px-4 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
-              <Snowflake size={18} />
-            </div>
+            <img src={HAUSER_LOGO_DATA_URL} alt="Hauser" className="h-6 w-auto bg-white rounded px-1 py-0.5" />
             <span className="font-bold">LehrlingsApp</span>
           </div>
           <button

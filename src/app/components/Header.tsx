@@ -1,5 +1,6 @@
 import { Menu, User as UserIcon } from "lucide-react";
 import type { User } from "../types";
+import { HAUSER_LOGO_DATA_URL } from "../assets/hauserLogo";
 
 interface HeaderProps {
   user: User;
@@ -18,13 +19,20 @@ export function Header({ user, onOpenMobileMenu }: HeaderProps) {
           <Menu size={22} />
         </button>
 
-        <div className="flex-1 text-center lg:text-left lg:pl-0">
-          <h1 className="text-white font-bold text-lg leading-tight">
-            LehrlingsApp
-          </h1>
-          <p className="text-blue-200 text-xs leading-tight hidden sm:block">
-            Deine digitale Ausbildungsplattform
-          </p>
+        <div className="flex-1 flex items-center justify-center lg:justify-start gap-3">
+          <img
+            src={HAUSER_LOGO_DATA_URL}
+            alt="Hauser"
+            className="h-7 w-auto bg-white rounded-md px-1.5 py-1 hidden sm:block"
+          />
+          <div className="text-center lg:text-left">
+            <h1 className="text-white font-bold text-lg leading-tight">
+              LehrlingsApp
+            </h1>
+            <p className="text-blue-200 text-xs leading-tight hidden sm:block">
+              Deine digitale Ausbildungsplattform
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 bg-white/15 rounded-full pl-3 pr-1 py-1">

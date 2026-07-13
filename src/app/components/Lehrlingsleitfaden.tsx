@@ -5,7 +5,6 @@ import {
   Plus,
   Pencil,
   Trash2,
-  Star,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
@@ -75,7 +74,7 @@ export function Lehrlingsleitfaden({ user }: LehrlingsleitfadenProps) {
             ) : undefined
           }
         />
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-8">
           <div className="relative max-w-sm">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -93,7 +92,9 @@ export function Lehrlingsleitfaden({ user }: LehrlingsleitfadenProps) {
           ) : (
             kategorien.map((kategorie) => (
               <div key={kategorie}>
-                <h3 className="text-sm font-semibold text-gray-500 mb-2">{kategorie}</h3>
+                <div className="mb-3 pb-2 border-b-2 border-blue-600">
+                  <h3 className="text-lg font-bold text-blue-800">{kategorie}</h3>
+                </div>
                 <div className="space-y-2">
                   {relevante
                     .filter((e) => e.kategorie === kategorie)
@@ -102,20 +103,13 @@ export function Lehrlingsleitfaden({ user }: LehrlingsleitfadenProps) {
                       return (
                         <div
                           key={eintrag.id}
-                          className={`rounded-xl border overflow-hidden ${
-                            eintrag.wichtig
-                              ? "border-amber-300 bg-amber-50/50"
-                              : "border-gray-200 bg-white/60"
-                          }`}
+                          className="rounded-xl border border-gray-200 bg-white/60 overflow-hidden"
                         >
                           <button
                             onClick={() => setExpandedId(expanded ? null : eintrag.id)}
                             className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left"
                           >
-                            <span className="flex items-center gap-2 font-medium text-gray-800 text-sm">
-                              {eintrag.wichtig && (
-                                <Star size={14} className="text-amber-500 shrink-0" fill="currentColor" />
-                              )}
+                            <span className="font-medium text-gray-800 text-sm">
                               {eintrag.titel}
                             </span>
                             <div className="flex items-center gap-1 shrink-0">
@@ -194,7 +188,6 @@ function LeitfadenFormModal({
   const [kategorie, setKategorie] = useState(eintrag?.kategorie ?? "");
   const [inhalt, setInhalt] = useState(eintrag?.inhalt ?? "");
   const [lehrjahre, setLehrjahre] = useState<number[]>(eintrag?.lehrjahre ?? [1, 2, 3, 4]);
-  const [wichtig, setWichtig] = useState(eintrag?.wichtig ?? false);
   const [sortierung, setSortierung] = useState(eintrag?.sortierung ?? 0);
 
   useEffect(() => {
@@ -202,7 +195,6 @@ function LeitfadenFormModal({
     setKategorie(eintrag?.kategorie ?? "");
     setInhalt(eintrag?.inhalt ?? "");
     setLehrjahre(eintrag?.lehrjahre ?? [1, 2, 3, 4]);
-    setWichtig(eintrag?.wichtig ?? false);
     setSortierung(eintrag?.sortierung ?? 0);
   }, [eintrag, isOpen]);
 
@@ -225,7 +217,6 @@ function LeitfadenFormModal({
         kategorie,
         inhalt,
         lehrjahre,
-        wichtig,
         sortierung,
       });
       toast.success("Eintrag aktualisiert");
@@ -236,7 +227,7 @@ function LeitfadenFormModal({
         kategorie,
         inhalt,
         lehrjahre,
-        wichtig,
+        wichtig: false,
         sortierung,
       });
       toast.success("Eintrag hinzugefügt");
@@ -259,12 +250,12 @@ function LeitfadenFormModal({
             <input value={titel} onChange={(e) => setTitel(e.target.value)} className="input" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Kategorie</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Kategorie (Hauptkapitel)</label>
             <input
               value={kategorie}
               onChange={(e) => setKategorie(e.target.value)}
               className="input"
-              placeholder="z.B. Verhaltensregeln"
+              placeholder="z.B. Regelung Arbeitszeiten Lehrlinge"
             />
           </div>
         </div>
@@ -315,15 +306,6 @@ function LeitfadenFormModal({
             />
           </div>
         </div>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={wichtig}
-            onChange={(e) => setWichtig(e.target.checked)}
-            className="w-4 h-4 accent-blue-600"
-          />
-          <span className="text-sm text-gray-700">Als wichtig hervorheben</span>
-        </label>
 
         <div className="flex gap-2 pt-2">
           <Button type="submit" className="flex-1">

@@ -1,19 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  Stethoscope,
-  Send,
-  Stamp,
-  FileCheck2,
-  FileX2,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { toast } from "sonner";
-import type { Krankmeldung as KrankmeldungType, User } from "../types";
+import { Stethoscope, Mail, Phone, AlertTriangle, Stamp, FileCheck2, FileX2 } from "lucide-react";
+import type { User } from "../types";
 import { DataStore, subscribeToDataChanges } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
 import { SectionHeader } from "./ui/SectionHeader";
-import { Button } from "./ui/Button";
 import { formatDateLong } from "../utils/dateUtils";
 
 interface KrankmeldungProps {
@@ -27,143 +17,90 @@ export function Krankmeldung({ user }: KrankmeldungProps) {
   if (user.role === "admin") {
     return <AdminKrankmeldungenView />;
   }
-  return <LehrlingKrankmeldungView user={user} />;
+  return <LehrlingKrankmeldungInfo />;
 }
 
-// ============================================================================
-// Lehrling-Ansicht: Formular + eigene Historie
-// ============================================================================
-
-function LehrlingKrankmeldungView({ user }: { user: User }) {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [hasDoctor, setHasDoctor] = useState(false);
-  const [hasCertificate, setHasCertificate] = useState(false);
-  const [certificateDate, setCertificateDate] = useState("");
-  const [notes, setNotes] = useState("");
-
-  const historie = DataStore.getKrankmeldungenForLehrling(user.personalnummer);
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!startDate.trim() || !endDate.trim()) {
-      toast.error("Bitte Start- und Enddatum angeben.");
-      return;
-    }
-
-    const meldung: KrankmeldungType = {
-      id: crypto.randomUUID(),
-      personalnummer: user.personalnummer,
-      lehrlingName: user.name,
-      startDate,
-      endDate,
-      hasDoctor,
-      hasCertificate,
-      certificateDate: hasCertificate ? certificateDate : undefined,
-      notes: notes.trim() || undefined,
-      datum: new Date().toISOString(),
-    };
-
-    DataStore.addKrankmeldung(meldung);
-    toast.success("Krankmeldung erfolgreich übermittelt.");
-
-    setStartDate("");
-    setEndDate("");
-    setHasDoctor(false);
-    setHasCertificate(false);
-    setCertificateDate("");
-    setNotes("");
-  }
-
+function LehrlingKrankmeldungInfo() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <GlassCard>
         <SectionHeader
           icon={<Stethoscope size={22} />}
           title="Krankmeldung"
-          subtitle="Melde deinen Krankenstand digital"
+          subtitle="So meldest du dich im Krankheitsfall richtig ab"
         />
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Von">
-              <input
-                type="text"
-                placeholder="DD.MM.YYYY"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="input"
-              />
-            </Field>
-            <Field label="Bis">
-              <input
-                type="text"
-                placeholder="DD.MM.YYYY"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="input"
-              />
-            </Field>
+        <div className="p-6 space-y-5">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex gap-3">
+            <AlertTriangle size={20} className="text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-900">
+              Melde deine Abwesenheit <strong>sofort</strong>, spätestens jedoch bis
+              8:00 Uhr am ersten Krankheitstag.
+            </p>
           </div>
 
-          <ToggleRow
-            label="Warst du beim Arzt?"
-            value={hasDoctor}
-            onChange={setHasDoctor}
-          />
-          <ToggleRow
-            label="Liegt eine Krankschreibung vor?"
-            value={hasCertificate}
-            onChange={setHasCertificate}
-          />
-
-          {hasCertificate && (
-            <Field label="Datum der Krankschreibung">
-              <input
-                type="text"
-                placeholder="DD.MM.YYYY"
-                value={certificateDate}
-                onChange={(e) => setCertificateDate(e.target.value)}
-                className="input"
-              />
-            </Field>
-          )}
-
-          <Field label="Anmerkungen (optional)">
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="input min-h-[80px]"
-              placeholder="Zusätzliche Informationen für deinen Ausbildner..."
+          <div className="space-y-4">
+            <Step
+              nr={1}
+              icon={<Mail size={18} />}
+              title="Sofort eine E-Mail senden"
+              description={
+                <>
+                  Schicke umgehend eine E-Mail an{" "}
+                  
+                    href="mailto:Montage.at@hauser.com"
+                    className="font-semibold text-blue-700 hover:underline"
+                  >
+                    Montage.at@hauser.com
+                  </a>{" "}
+                  mit deinem Namen und dem voraussichtlichen Krankheitszeitraum.
+                </>
+              }
             />
-          </Field>
-
-          <Button type="submit" icon={<Send size={16} />} className="w-full">
-            Krankmeldung absenden
-          </Button>
-        </form>
-      </GlassCard>
-
-      <GlassCard className="p-6">
-        <h3 className="font-bold text-gray-800 mb-4">Deine Krankmeldungen</h3>
-        {historie.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-6">
-            Du hast bisher keine Krankmeldungen abgegeben.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {historie.map((m) => (
-              <KrankmeldungCard key={m.id} meldung={m} />
-            ))}
+            <Step
+              nr={2}
+              icon={<Phone size={18} />}
+              title="Deinen Monteur bzw. Servicetechniker informieren"
+              description="Gib zusätzlich direkt deinem zuständigen Monteur oder Servicetechniker Bescheid, damit die Tagesplanung entsprechend angepasst werden kann."
+            />
+            <Step
+              nr={3}
+              icon={<FileCheck2 size={18} />}
+              title="Krankmeldung so bald wie möglich nachreichen"
+              description="Reiche die ärztliche Krankmeldung (Bestätigung) so bald wie möglich nach – idealerweise noch am selben Tag oder sobald du beim Arzt warst."
+            />
           </div>
-        )}
+        </div>
       </GlassCard>
     </div>
   );
 }
 
-// ============================================================================
-// Admin-Ansicht: Alle Krankmeldungen, Filter nach Lehrjahr
-// ============================================================================
+function Step({
+  nr,
+  icon,
+  title,
+  description,
+}: {
+  nr: number;
+  icon: React.ReactNode;
+  title: string;
+  description: React.ReactNode;
+}) {
+  return (
+    <div className="flex gap-4">
+      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-md shadow-blue-500/30">
+        {nr}
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-blue-600">{icon}</span>
+          <h4 className="font-semibold text-gray-800 text-sm">{title}</h4>
+        </div>
+        <p className="text-sm text-gray-600">{description}</p>
+      </div>
+    </div>
+  );
+}
 
 function AdminKrankmeldungenView() {
   const [lehrjahrFilter, setLehrjahrFilter] = useState<number | "alle">("alle");
@@ -177,153 +114,78 @@ function AdminKrankmeldungenView() {
   });
 
   return (
-    <GlassCard>
-      <SectionHeader
-        icon={<Stethoscope size={22} />}
-        title="Krankmeldungen"
-        subtitle="Übersicht aller gemeldeten Krankenstände"
-      />
-      <div className="p-6 space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {(["alle", 1, 2, 3, 4] as const).map((jahr) => (
-            <button
-              key={jahr}
-              onClick={() => setLehrjahrFilter(jahr)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                lehrjahrFilter === jahr
-                  ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {jahr === "alle" ? "Alle Lehrjahre" : `Lehrjahr ${jahr}`}
-            </button>
-          ))}
-        </div>
+    <div className="space-y-4">
+      <GlassCard className="p-6 flex items-start gap-3">
+        <Mail size={20} className="text-blue-600 shrink-0 mt-0.5" />
+        <p className="text-sm text-gray-600">
+          Lehrlinge melden sich im Krankheitsfall direkt per E-Mail an{" "}
+          <span className="font-semibold text-gray-800">Montage.at@hauser.com</span>{" "}
+          und informieren zusätzlich ihren Monteur/Servicetechniker. Unten siehst du
+          eventuell noch vorhandene, früher über das Formular eingegangene Meldungen.
+        </p>
+      </GlassCard>
 
-        {gefiltert.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">
-            Keine Krankmeldungen für diese Auswahl vorhanden.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {gefiltert.map((m) => (
-              <KrankmeldungCard key={m.id} meldung={m} showName />
+      <GlassCard>
+        <SectionHeader
+          icon={<Stethoscope size={22} />}
+          title="Krankmeldungen (Archiv)"
+          subtitle="Historische Meldungen aus dem früheren Formular"
+        />
+        <div className="p-6 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {(["alle", 1, 2, 3, 4] as const).map((jahr) => (
+              <button
+                key={jahr}
+                onClick={() => setLehrjahrFilter(jahr)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  lehrjahrFilter === jahr
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {jahr === "alle" ? "Alle Lehrjahre" : `Lehrjahr ${jahr}`}
+              </button>
             ))}
           </div>
-        )}
-      </div>
-    </GlassCard>
+
+          {gefiltert.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">
+              Keine Krankmeldungen für diese Auswahl vorhanden.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {gefiltert.map((m) => (
+                <KrankmeldungCard key={m.id} meldung={m} />
+              ))}
+            </div>
+          )}
+        </div>
+      </GlassCard>
+    </div>
   );
 }
-
-// ============================================================================
-// Gemeinsame Karten-Komponente
-// ============================================================================
 
 function KrankmeldungCard({
   meldung,
-  showName = false,
 }: {
-  meldung: KrankmeldungType;
-  showName?: boolean;
+  meldung: ReturnType<typeof DataStore.getKrankmeldungen>[number];
 }) {
-  const [expanded, setExpanded] = useState(false);
-
   return (
     <div className="rounded-xl border border-gray-200 bg-white/60 p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          {showName && (
-            <p className="font-semibold text-gray-800 text-sm mb-0.5">
-              {meldung.lehrlingName}
-            </p>
-          )}
-          <p className="text-sm text-gray-600">
-            {formatDateLong(meldung.startDate)} – {formatDateLong(meldung.endDate)}
-          </p>
-          <div className="flex gap-2 flex-wrap mt-2">
-            {meldung.hasDoctor && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
-                <Stamp size={12} /> Arzt besucht
-              </span>
-            )}
-            {meldung.hasCertificate ? (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-800 border border-green-200">
-                <FileCheck2 size={12} /> Mit Krankschreibung
-              </span>
-            ) : (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600 border border-gray-200">
-                <FileX2 size={12} /> Ohne Krankschreibung
-              </span>
-            )}
-          </div>
-        </div>
-        {(meldung.notes || meldung.certificateDate) && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            aria-label={expanded ? "Details einklappen" : "Details anzeigen"}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 shrink-0"
-          >
-            {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-          </button>
+      <p className="font-semibold text-gray-800 text-sm mb-0.5">{meldung.lehrlingName}</p>
+      <p className="text-sm text-gray-600">
+        {formatDateLong(meldung.startDate)} – {formatDateLong(meldung.endDate)}
+      </p>
+      <div className="flex gap-2 flex-wrap mt-2">
+        {meldung.hasDoctor && (
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-800 border border-blue-200">
+            <Stamp size={12} /> Arzt besucht
+          </span>
         )}
-      </div>
-      {expanded && (
-        <div className="mt-3 pt-3 border-t border-gray-100 space-y-1 text-sm text-gray-600">
-          {meldung.certificateDate && (
-            <p>
-              <span className="text-gray-400">Krankschreibung vom:</span>{" "}
-              {meldung.certificateDate}
-            </p>
-          )}
-          {meldung.notes && <p>{meldung.notes}</p>}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
-      {children}
-    </div>
-  );
-}
-
-function ToggleRow({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between py-1">
-      <span className="text-sm font-medium text-gray-700">{label}</span>
-      <div className="flex bg-gray-100 rounded-lg p-1">
-        <button
-          type="button"
-          onClick={() => onChange(true)}
-          className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
-            value ? "bg-white shadow text-blue-700" : "text-gray-500"
-          }`}
-        >
-          Ja
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange(false)}
-          className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
-            !value ? "bg-white shadow text-blue-700" : "text-gray-500"
-          }`}
-        >
-          Nein
-        </button>
-      </div>
-    </div>
-  );
-}
+        {meldung.hasCertificate ? (
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-800 border border-green-200">
+            <FileCheck2 size={12} /> Mit Krankschreibung
+          </span>
+        ) : (
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600 border border-gray-200">
+            <FileX2 size={12} /> Ohne
