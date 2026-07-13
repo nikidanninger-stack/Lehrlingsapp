@@ -71,6 +71,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     onLogin(user);
     toast.success(`Willkommen, ${user.name}!`);
 
+    // Donnerstags-Erinnerung an die Berufsschule
     if (new Date().getDay() === 4) {
       setTimeout(() => {
         toast.info(
@@ -90,6 +91,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-white/70 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8">
+          {/* Logo */}
           <div className="flex flex-col items-center mb-8">
             <img
               src={HAUSER_LOGO_DATA_URL}
@@ -100,6 +102,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             <p className="text-gray-500 text-sm mt-1">Hauser Kältetechnik</p>
           </div>
 
+          {/* Tabs */}
           <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
             <button
               type="button"

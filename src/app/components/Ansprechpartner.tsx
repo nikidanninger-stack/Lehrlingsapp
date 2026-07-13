@@ -100,13 +100,13 @@ export function Ansprechpartner({ user }: AnsprechpartnerProps) {
                         {p.position} · {p.abteilung}
                       </p>
                       <div className="flex flex-wrap gap-3 mt-2 text-xs">
-                        
+                        <a
                           href={`tel:${p.phone}`}
                           className="flex items-center gap-1 text-blue-700 hover:underline"
                         >
                           <Phone size={12} /> {p.phone}
                         </a>
-                        
+                        <a
                           href={`mailto:${p.email}`}
                           className="flex items-center gap-1 text-blue-700 hover:underline"
                         >

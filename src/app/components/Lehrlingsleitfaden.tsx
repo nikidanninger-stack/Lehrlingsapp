@@ -92,6 +92,7 @@ export function Lehrlingsleitfaden({ user }: LehrlingsleitfadenProps) {
           ) : (
             kategorien.map((kategorie) => (
               <div key={kategorie}>
+                {/* Hauptkapitel-Überschrift: deutlich hervorgehoben */}
                 <div className="mb-3 pb-2 border-b-2 border-blue-600">
                   <h3 className="text-lg font-bold text-blue-800">{kategorie}</h3>
                 </div>

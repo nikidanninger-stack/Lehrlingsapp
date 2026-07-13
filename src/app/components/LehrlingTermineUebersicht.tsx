@@ -7,6 +7,14 @@ import { SectionHeader } from "./ui/SectionHeader";
 import { TypeBadge } from "./ui/TypeBadge";
 import { formatDateLong, parseDate } from "../utils/dateUtils";
 
+// ----------------------------------------------------------------------------
+// LehrlingTermineUebersicht
+//
+// Zeigt automatisch, chronologisch geordnet, ALLE bevorstehenden Abschnitte
+// aus dem persönlichen Ausbildungsplan des Lehrlings (nicht nur den nächsten).
+// z.B. "Berufsschule 03.03.–03.05." -> "Betriebsurlaub" -> "Werkzeugprüfung" -> ...
+// ----------------------------------------------------------------------------
+
 interface LehrlingTermineUebersichtProps {
   user: User;
 }
@@ -18,6 +26,7 @@ export function LehrlingTermineUebersicht({ user }: LehrlingTermineUebersichtPro
 
     const eigene = DataStore.getPlanDataForLehrling(user.personalnummer);
 
+    // Bevorstehende oder aktuell laufende Segmente, chronologisch nach Start
     const relevante = eigene
       .map((entry) => ({ entry, start: parseDate(entry.startDate), end: parseDate(entry.endDate) }))
       .filter((x): x is { entry: PlanEntry; start: Date; end: Date } => {
