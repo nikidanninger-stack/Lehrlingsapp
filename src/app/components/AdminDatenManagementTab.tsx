@@ -10,6 +10,7 @@ export function AdminDatenManagementTab() {
   const [busy, setBusy] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const [seedingContent, setSeedingContent] = useState(false);
+  const [diagnose, setDiagnose] = useState<string[] | null>(null);
   const lastUpload = DataStore.getLastUpload();
 
   async function handleReload() {
@@ -93,6 +94,36 @@ export function AdminDatenManagementTab() {
     toast.success("Backup erstellt.");
   }
 
+  function handleDiagnose() {
+    const raw = localStorage.getItem("lehrlingsapp_plan_data");
+    if (!raw) {
+      setDiagnose(["Kein 'lehrlingsapp_plan_data' im LocalStorage gefunden."]);
+      return;
+    }
+    const parsed = JSON.parse(raw) as Array<{
+      personalnummer: string;
+      startDate: string;
+      endDate: string;
+      type: string;
+      details: string;
+    }>;
+    const relevant = parsed
+      .filter(
+        (e) =>
+          e.personalnummer === "0016" &&
+          (e.startDate.includes(".06.2027") ||
+            e.startDate.includes(".07.2027") ||
+            e.endDate.includes(".06.2027") ||
+            e.endDate.includes(".07.2027")),
+      )
+      .sort((a, b) => (a.startDate < b.startDate ? -1 : 1));
+    setDiagnose(
+      relevant.length > 0
+        ? relevant.map((e) => `${e.startDate} – ${e.endDate} | ${e.type} | ${e.details}`)
+        : ["Keine Einträge für 0016 im Juni/Juli 2027 gefunden."],
+    );
+  }
+
   return (
     <div className="space-y-4">
       <GlassCard className="p-6 border-2 border-blue-300">
@@ -169,6 +200,25 @@ export function AdminDatenManagementTab() {
           </p>
         ) : (
           <p className="text-sm text-gray-400">Noch kein Ausbildungsplan hochgeladen.</p>
+        )}
+      </GlassCard>
+
+      <GlassCard className="p-6">
+        <h3 className="font-bold text-gray-800 mb-1">
+          Diagnose: Jan de Kruijff (0016) Juni/Juli 2027
+        </h3>
+        <p className="text-sm text-gray-500 mb-3">
+          Zeigt exakt, was im Browser-Speicher für diesen Zeitraum hinterlegt ist.
+        </p>
+        <Button size="sm" variant="ghost" onClick={handleDiagnose}>
+          Prüfen
+        </Button>
+        {diagnose && (
+          <div className="mt-3 text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1 max-h-64 overflow-y-auto">
+            {diagnose.map((line, idx) => (
+              <p key={idx}>{line}</p>
+            ))}
+          </div>
         )}
       </GlassCard>
 
