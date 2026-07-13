@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Lehrling, PlanEntry, PlanEntryType } from "../types";
-import { planTypeLabels } from "./ui/TypeBadge";
+import type { Lehrling, PlanEntry } from "../types";
+import { planTypeLabels, planTypeHexColors } from "./ui/TypeBadge";
 import { parseDate } from "../utils/dateUtils";
 import { getHolidayName } from "../data/holidays";
 
@@ -8,22 +8,9 @@ const DAY_WIDTH = 10;
 const ROW_HEIGHT = 32;
 const LABEL_WIDTH = 220;
 
-export const planTypeBarColors: Record<PlanEntryType, string> = {
-  grundlagen: "#4CAF50",
-  berufsschule: "#3d6d8f",
-  "berufsschule-kaelte": "#3d6d8f",
-  "berufsschule-elektro": "#00B0F0",
-  service: "#FF6600",
-  "montage-kt-et-linz": "#66FFFF",
-  "montage-kt-et-wien": "#0099FF",
-  schulung: "#FF6699",
-  "berufsschule-vorbereitung": "#B3E5FC",
-  werkzeugpruefung: "#C00000",
-  testlabor: "#FFFF99",
-  betriebsurlaub: "#9E9E9E",
-  lehrlingsausflug: "#CE93D8",
-  "werkstatt-st-martin": "#F8CBAD",
-};
+// Re-Export fuer Rueckwaertskompatibilitaet; einzige Quelle der Wahrheit ist
+// jetzt planTypeHexColors in ui/TypeBadge.tsx (deckt alle Kategorien ab).
+export const planTypeBarColors = planTypeHexColors;
 
 interface TooltipState {
   x: number;

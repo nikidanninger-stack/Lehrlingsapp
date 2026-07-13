@@ -10,8 +10,12 @@ export interface Lehrling {
   standort?: "Wien" | "Linz" | "St. Martin";
 }
 
-// Alle bekannten Planungs-Eintragstypen
+// Alle bekannten Planungs-Eintragstypen.
+// Enthält sowohl die ursprünglichen App-Kategorien als auch alle Kategorien
+// aus dem Original-Planungstool (Lehrlingsplan_2026_2027.html), damit jede
+// dort vorkommende Bezeichnung 1:1 mit eigener Farbe übernommen werden kann.
 export type PlanEntryType =
+  // Ursprüngliche App-Kategorien (bleiben für manuell angelegte Einträge nutzbar)
   | "grundlagen"
   | "berufsschule"
   | "berufsschule-kaelte"
@@ -25,7 +29,32 @@ export type PlanEntryType =
   | "testlabor"
   | "betriebsurlaub"
   | "lehrlingsausflug"
-  | "werkstatt-st-martin";
+  | "werkstatt-st-martin"
+  // Original-Kategorien aus dem Planungstool
+  | "konstrukteur-st-martin"
+  | "elektriker-st-martin"
+  | "verbundbau-kt"
+  | "lehre-deutschland"
+  | "lager-magazin-linz"
+  | "testlabor-3lj"
+  | "testlabor-4lj"
+  | "lap-vorbereitung-kt"
+  | "lap-vorbereitung-et"
+  | "wifi-elektrotechnik"
+  | "bs-vorbereitung"
+  | "projektwoche"
+  | "kennenlerntage"
+  | "mathe-vorbereitung"
+  | "mat-disposition"
+  | "service-invoicing"
+  | "accounting"
+  | "finalization"
+  | "einkauf"
+  | "onboarding-sekretariat"
+  | "service-billing"
+  | "berufschule-bueromann"
+  | "marketing"
+  | "technische-zeichnerin";
 
 // Planungseintrag (Ausbildungsplan-Eintrag)
 export interface PlanEntry {

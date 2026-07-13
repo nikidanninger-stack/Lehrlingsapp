@@ -1,13 +1,12 @@
 import type { Lehrling, PlanEntry } from "../types";
 
 // ----------------------------------------------------------------------------
-// Seed-Daten: Lehrlinge & Ausbildungsplan 2026/2027 (Version 2 - aktualisiert)
+// Seed-Daten: Lehrlinge & Ausbildungsplan 2026/2027 (Version 3)
 //
 // Automatisch aus der aktualisierten "Lehrlingsplan_2026_2027.html" erzeugt.
-// Änderungen gegenüber Version 1: "Baygün Ahmed Can" entfernt,
-// "Alshomali Abdullah" -> "Alshomali Ali" korrigiert (neue Personalnummer 0024),
-// alle Zeiten/Zuteilungen aktualisiert. Bestehende Personalnummern wurden
-// wo möglich beibehalten, damit sich Lehrlinge nicht neu merken müssen.
+// Alle Original-Kategorien (z.B. "Lager / Magazin Linz", "Konstrukteur
+// St. Martin", "Accounting") werden jetzt 1:1 mit eigenem Typ und eigener
+// Original-Farbe übernommen, statt in grobe App-Kategorien gepresst zu werden.
 // ----------------------------------------------------------------------------
 
 export const SEED_LEHRLINGE: Lehrling[] = [
@@ -361,7 +360,7 @@ export const SEED_LEHRLINGE: Lehrling[] = [
   }
 ] as Lehrling[];
 
-export const SEED_PLAN_DATA: PlanEntry[] = [
+const rawPlanData = [
   {
     "id": 1,
     "personalnummer": "4048",
@@ -370,7 +369,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -381,7 +380,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "08.09.2026",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -392,7 +391,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -689,7 +688,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -788,7 +787,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -799,7 +798,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -1041,7 +1040,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -1173,7 +1172,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -1184,7 +1183,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -1338,7 +1337,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -1547,7 +1546,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -1558,7 +1557,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -1569,7 +1568,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -1690,7 +1689,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -1844,7 +1843,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -1855,7 +1854,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -1866,7 +1865,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -1987,7 +1986,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -2086,7 +2085,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -2097,7 +2096,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -2339,7 +2338,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -2570,7 +2569,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -2581,7 +2580,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -2636,7 +2635,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -2757,7 +2756,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -2768,7 +2767,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -2779,7 +2778,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -2988,7 +2987,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -3241,7 +3240,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -3252,7 +3251,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -3285,7 +3284,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -3472,7 +3471,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -3483,7 +3482,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -3637,7 +3636,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -3912,7 +3911,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -3923,7 +3922,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -3934,7 +3933,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -4154,7 +4153,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -4165,7 +4164,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -4286,7 +4285,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -4583,7 +4582,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -4594,7 +4593,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -4605,7 +4604,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -4825,7 +4824,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -4836,7 +4835,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -4935,7 +4934,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -5232,7 +5231,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -5265,7 +5264,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -5276,7 +5275,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -5496,7 +5495,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -5507,7 +5506,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -5584,7 +5583,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -5881,7 +5880,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -5936,7 +5935,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -5947,7 +5946,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -6167,7 +6166,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -6178,7 +6177,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -6233,7 +6232,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.09.2026",
     "endDate": "11.09.2026",
     "location": "St. Pölten",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -6530,7 +6529,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "St. Pölten",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -6607,7 +6606,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "St. Pölten",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -6618,7 +6617,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "St. Pölten",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -6838,7 +6837,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "St. Pölten",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -6849,7 +6848,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "St. Pölten",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -6992,7 +6991,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -7003,7 +7002,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -7014,7 +7013,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -7025,7 +7024,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -7124,7 +7123,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -7135,7 +7134,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -7608,7 +7607,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -7619,7 +7618,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -7630,7 +7629,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -7762,7 +7761,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -7773,7 +7772,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -8224,7 +8223,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -8235,7 +8234,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -8246,7 +8245,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -8400,7 +8399,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -8411,7 +8410,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -8840,7 +8839,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -8851,7 +8850,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Linz",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -8862,7 +8861,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -9038,7 +9037,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -9049,7 +9048,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -9456,7 +9455,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -9467,7 +9466,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -9478,7 +9477,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Wien",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -9676,7 +9675,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -9687,7 +9686,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -10050,7 +10049,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -10061,7 +10060,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Wien",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -10072,7 +10071,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Wien",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -10314,7 +10313,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -10325,7 +10324,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -10688,7 +10687,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -10809,7 +10808,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -11194,7 +11193,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -11205,7 +11204,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -11348,7 +11347,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -11458,7 +11457,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -11645,7 +11644,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -11656,7 +11655,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -11667,7 +11666,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -11678,7 +11677,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -11854,7 +11853,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -11865,7 +11864,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -12019,7 +12018,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -12118,7 +12117,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -12305,7 +12304,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -12316,7 +12315,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -12327,7 +12326,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -12338,7 +12337,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -12514,7 +12513,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -12525,7 +12524,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -12690,7 +12689,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -12778,7 +12777,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -12965,7 +12964,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -12976,7 +12975,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -12987,7 +12986,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -12998,7 +12997,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -13174,7 +13173,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -13185,7 +13184,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -13361,7 +13360,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -13614,7 +13613,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -13625,7 +13624,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -13636,7 +13635,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -13647,7 +13646,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -13823,7 +13822,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -13834,7 +13833,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -14021,7 +14020,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -14087,7 +14086,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -14274,7 +14273,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -14285,7 +14284,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -14296,7 +14295,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -14307,7 +14306,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -14483,7 +14482,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -14494,7 +14493,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -14692,7 +14691,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -14747,7 +14746,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -14934,7 +14933,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -14945,7 +14944,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -14956,7 +14955,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -14967,7 +14966,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -15143,7 +15142,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -15154,7 +15153,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -15363,7 +15362,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Linz",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -15407,7 +15406,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -15594,7 +15593,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -15605,7 +15604,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -15616,7 +15615,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -15627,7 +15626,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -15803,7 +15802,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -15814,7 +15813,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -16045,7 +16044,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Wien",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -16067,7 +16066,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -16254,7 +16253,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -16265,7 +16264,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -16276,7 +16275,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -16287,7 +16286,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -16463,7 +16462,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -16474,7 +16473,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -16716,7 +16715,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Wien",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -16727,7 +16726,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -16914,7 +16913,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -16925,7 +16924,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -16936,7 +16935,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -16947,7 +16946,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -17123,7 +17122,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -17134,7 +17133,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -17387,7 +17386,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -17574,7 +17573,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -17585,7 +17584,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -17596,7 +17595,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -17607,7 +17606,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -17618,7 +17617,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Wien",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -17783,7 +17782,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -17794,7 +17793,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -18047,7 +18046,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "18.11.2026",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -18234,7 +18233,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -18245,7 +18244,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -18256,7 +18255,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -18267,7 +18266,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "wifi-elektrotechnik",
     "details": "WIFI Elektrotechnik"
   },
   {
@@ -18289,7 +18288,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Wien",
-    "type": "testlabor",
+    "type": "testlabor-4lj",
     "details": "Testlabor 4. LJ"
   },
   {
@@ -18443,7 +18442,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -18454,7 +18453,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "lap-vorbereitung-kt",
     "details": "LAP-Vorbereitung KT"
   },
   {
@@ -18586,7 +18585,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -18597,7 +18596,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -18927,7 +18926,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -18938,7 +18937,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -18949,7 +18948,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "08.04.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -18960,7 +18959,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -18982,7 +18981,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -19004,7 +19003,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -19026,7 +19025,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -19037,7 +19036,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -19268,7 +19267,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -19279,7 +19278,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -19587,7 +19586,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -19598,7 +19597,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -19642,7 +19641,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -19664,7 +19663,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -19686,7 +19685,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -19708,7 +19707,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -19719,7 +19718,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -19950,7 +19949,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -19961,7 +19960,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -20247,7 +20246,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -20258,7 +20257,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -20324,7 +20323,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -20346,7 +20345,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -20368,7 +20367,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -20390,7 +20389,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -20401,7 +20400,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -20632,7 +20631,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -20643,7 +20642,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -20907,7 +20906,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -20918,7 +20917,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -21006,7 +21005,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21028,7 +21027,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21050,7 +21049,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21072,7 +21071,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -21083,7 +21082,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21314,7 +21313,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -21325,7 +21324,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -21688,7 +21687,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21710,7 +21709,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21732,7 +21731,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21754,7 +21753,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -21765,7 +21764,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -21996,7 +21995,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -22007,7 +22006,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -22249,7 +22248,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -22260,7 +22259,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -22370,7 +22369,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -22392,7 +22391,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -22414,7 +22413,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -22436,7 +22435,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -22447,7 +22446,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -22678,7 +22677,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -22689,7 +22688,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -22898,7 +22897,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -22909,7 +22908,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -22920,7 +22919,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -23052,7 +23051,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -23074,7 +23073,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -23096,7 +23095,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -23118,7 +23117,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -23129,7 +23128,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -23360,7 +23359,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -23371,7 +23370,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -23734,7 +23733,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -23745,7 +23744,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "15.04.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -23756,7 +23755,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -23767,7 +23766,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "22.04.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -23778,7 +23777,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -23789,7 +23788,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "27.04.2027",
     "location": "Linz",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -23800,7 +23799,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Linz",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -23811,7 +23810,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -24042,7 +24041,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Wien",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -24053,7 +24052,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Wien",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -24196,7 +24195,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -24207,7 +24206,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -24218,7 +24217,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -24416,7 +24415,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -24438,7 +24437,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -24460,7 +24459,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -24482,7 +24481,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -24493,7 +24492,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -24724,7 +24723,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Wien",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -24735,7 +24734,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Wien",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -24856,7 +24855,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -24867,7 +24866,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -25098,7 +25097,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -25120,7 +25119,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -25142,7 +25141,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -25164,7 +25163,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -25175,7 +25174,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -25406,7 +25405,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Wien",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -25417,7 +25416,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Wien",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -25516,7 +25515,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -25527,7 +25526,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Wien",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -25780,7 +25779,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -25802,7 +25801,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -25824,7 +25823,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -25846,7 +25845,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "Wien",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -25857,7 +25856,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "Wien",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -26088,7 +26087,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "St. Pölten",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -26099,7 +26098,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "St. Pölten",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -26176,7 +26175,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "St. Pölten",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -26187,7 +26186,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "St. Pölten",
-    "type": "grundlagen",
+    "type": "lager-magazin-linz",
     "details": "Lager / Magazin Linz"
   },
   {
@@ -26462,7 +26461,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "St. Pölten",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -26484,7 +26483,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "St. Pölten",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -26506,7 +26505,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "St. Pölten",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -26528,7 +26527,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "St. Pölten",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -26539,7 +26538,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "St. Pölten",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -26770,7 +26769,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -26781,7 +26780,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -26792,7 +26791,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26803,7 +26802,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26814,7 +26813,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26825,7 +26824,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26836,7 +26835,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26847,7 +26846,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26858,7 +26857,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26869,7 +26868,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26880,7 +26879,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26891,7 +26890,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26902,7 +26901,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26913,7 +26912,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26924,7 +26923,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26935,7 +26934,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26946,7 +26945,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -26990,7 +26989,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27001,7 +27000,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27012,7 +27011,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27023,7 +27022,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27034,7 +27033,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27045,7 +27044,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27056,7 +27055,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27067,7 +27066,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27078,7 +27077,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27089,7 +27088,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27100,7 +27099,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27111,7 +27110,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27122,7 +27121,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27133,7 +27132,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "08.04.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27144,7 +27143,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.04.2027",
     "endDate": "09.04.2027",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -27155,7 +27154,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "15.04.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27166,7 +27165,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.04.2027",
     "endDate": "16.04.2027",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -27177,7 +27176,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "22.04.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27188,7 +27187,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.04.2027",
     "endDate": "23.04.2027",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -27199,7 +27198,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "27.04.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27210,7 +27209,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.04.2027",
     "endDate": "29.04.2027",
     "location": "St. Martin",
-    "type": "berufsschule-vorbereitung",
+    "type": "bs-vorbereitung",
     "details": "BS-Vorbereitung"
   },
   {
@@ -27221,7 +27220,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.04.2027",
     "endDate": "30.04.2027",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "mathe-vorbereitung",
     "details": "Mathe Vorbereitung"
   },
   {
@@ -27397,7 +27396,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27408,7 +27407,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27419,7 +27418,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27430,7 +27429,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27441,7 +27440,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "St. Martin",
-    "type": "grundlagen",
+    "type": "verbundbau-kt",
     "details": "Verbundbau KT"
   },
   {
@@ -27452,7 +27451,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -27463,7 +27462,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -27474,7 +27473,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -27485,7 +27484,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -27496,7 +27495,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -27507,7 +27506,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -27518,7 +27517,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -27529,7 +27528,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27540,7 +27539,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27551,7 +27550,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27562,7 +27561,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27573,7 +27572,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27584,7 +27583,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27595,7 +27594,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27606,7 +27605,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27617,7 +27616,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27628,7 +27627,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27672,7 +27671,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27683,7 +27682,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27694,7 +27693,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27705,7 +27704,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27716,7 +27715,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27727,7 +27726,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -27738,7 +27737,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27749,7 +27748,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27760,7 +27759,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27771,7 +27770,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27782,7 +27781,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27793,7 +27792,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27804,7 +27803,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27815,7 +27814,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27826,7 +27825,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27837,7 +27836,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27848,7 +27847,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27859,7 +27858,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -27870,7 +27869,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27881,7 +27880,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27892,7 +27891,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27903,7 +27902,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27914,7 +27913,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27925,7 +27924,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27936,7 +27935,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27947,7 +27946,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27958,7 +27957,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27969,7 +27968,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -27980,7 +27979,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -27991,7 +27990,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28002,7 +28001,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28013,7 +28012,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28024,7 +28023,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28035,7 +28034,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28046,7 +28045,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28057,7 +28056,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28068,7 +28067,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28079,7 +28078,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28090,7 +28089,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -28101,7 +28100,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "kennenlerntage",
     "details": "Kennenlerntage"
   },
   {
@@ -28112,7 +28111,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -28123,7 +28122,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -28134,7 +28133,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -28145,7 +28144,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -28156,7 +28155,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "onboarding-sekretariat",
     "details": "Onboarding (Sekretariat)"
   },
   {
@@ -28167,7 +28166,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28178,7 +28177,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28189,7 +28188,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28200,7 +28199,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28211,7 +28210,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28222,7 +28221,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28233,7 +28232,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28244,7 +28243,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28255,7 +28254,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28266,7 +28265,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28310,7 +28309,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28321,7 +28320,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28332,7 +28331,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28343,7 +28342,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28354,7 +28353,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28365,7 +28364,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "09.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -28376,7 +28375,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28387,7 +28386,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28398,7 +28397,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28409,7 +28408,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28420,7 +28419,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28431,7 +28430,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28442,7 +28441,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28453,7 +28452,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28464,7 +28463,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28475,7 +28474,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28486,7 +28485,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28497,7 +28496,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -28508,7 +28507,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28519,7 +28518,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28530,7 +28529,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28541,7 +28540,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28552,7 +28551,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28563,7 +28562,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28574,7 +28573,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28585,7 +28584,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28596,7 +28595,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28607,7 +28606,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28618,7 +28617,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28629,7 +28628,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -28640,7 +28639,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28651,7 +28650,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28662,7 +28661,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28673,7 +28672,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28684,7 +28683,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28695,7 +28694,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28706,7 +28705,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28717,7 +28716,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -28728,7 +28727,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28739,7 +28738,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28750,7 +28749,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28761,7 +28760,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28772,7 +28771,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28783,7 +28782,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28794,7 +28793,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28805,7 +28804,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28816,7 +28815,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28827,7 +28826,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28838,7 +28837,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28849,7 +28848,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28860,7 +28859,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28871,7 +28870,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28882,7 +28881,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28893,7 +28892,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28904,7 +28903,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28948,7 +28947,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28959,7 +28958,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28970,7 +28969,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28981,7 +28980,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -28992,7 +28991,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29003,7 +29002,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29014,7 +29013,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29025,7 +29024,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -29036,7 +29035,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29047,7 +29046,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29058,7 +29057,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29069,7 +29068,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29080,7 +29079,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29091,7 +29090,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29102,7 +29101,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29113,7 +29112,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29124,7 +29123,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29135,7 +29134,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29146,7 +29145,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29157,7 +29156,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29168,7 +29167,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29179,7 +29178,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29190,7 +29189,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29201,7 +29200,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29212,7 +29211,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29223,7 +29222,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29234,7 +29233,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29245,7 +29244,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29300,7 +29299,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29311,7 +29310,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29322,7 +29321,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29333,7 +29332,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29344,7 +29343,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -29355,7 +29354,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29366,7 +29365,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29377,7 +29376,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29388,7 +29387,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29399,7 +29398,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29410,7 +29409,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29421,7 +29420,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29432,7 +29431,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29443,7 +29442,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29454,7 +29453,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29465,7 +29464,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29476,7 +29475,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29487,7 +29486,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29498,7 +29497,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29509,7 +29508,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29520,7 +29519,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29531,7 +29530,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29575,7 +29574,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29586,7 +29585,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29597,7 +29596,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29608,7 +29607,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29619,7 +29618,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29630,7 +29629,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29641,7 +29640,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29652,7 +29651,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29663,7 +29662,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29674,7 +29673,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29685,7 +29684,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29696,7 +29695,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29707,7 +29706,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29718,7 +29717,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29729,7 +29728,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29740,7 +29739,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29751,7 +29750,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29762,7 +29761,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29773,7 +29772,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29784,7 +29783,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29795,7 +29794,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29806,7 +29805,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29817,7 +29816,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29828,7 +29827,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29839,7 +29838,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29850,7 +29849,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29861,7 +29860,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29872,7 +29871,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29927,7 +29926,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29938,7 +29937,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29949,7 +29948,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29960,7 +29959,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29971,7 +29970,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29982,7 +29981,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -29993,7 +29992,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30004,7 +30003,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30015,7 +30014,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30026,7 +30025,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30037,7 +30036,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30048,7 +30047,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30059,7 +30058,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30070,7 +30069,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30081,7 +30080,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30092,7 +30091,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30103,7 +30102,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30114,7 +30113,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30125,7 +30124,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30136,7 +30135,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30147,7 +30146,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30158,7 +30157,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30202,7 +30201,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30213,7 +30212,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30224,7 +30223,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30235,7 +30234,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30246,7 +30245,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30257,7 +30256,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30268,7 +30267,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30279,7 +30278,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30290,7 +30289,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30301,7 +30300,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30312,7 +30311,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30323,7 +30322,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30334,7 +30333,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30345,7 +30344,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30356,7 +30355,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30367,7 +30366,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30378,7 +30377,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30389,7 +30388,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30400,7 +30399,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30411,7 +30410,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30422,7 +30421,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30433,7 +30432,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30444,7 +30443,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30455,7 +30454,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30466,7 +30465,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30477,7 +30476,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30488,7 +30487,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30499,7 +30498,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30554,7 +30553,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30565,7 +30564,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30576,7 +30575,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30587,7 +30586,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30598,7 +30597,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "konstrukteur-st-martin",
     "details": "Konstrukteur St. Martin"
   },
   {
@@ -30609,7 +30608,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30620,7 +30619,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30631,7 +30630,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30642,7 +30641,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30653,7 +30652,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30664,7 +30663,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30675,7 +30674,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30686,7 +30685,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30697,7 +30696,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "service-billing",
     "details": "Service Billing"
   },
   {
@@ -30708,7 +30707,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30719,7 +30718,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30730,7 +30729,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30741,7 +30740,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30752,7 +30751,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30763,7 +30762,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30774,7 +30773,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30785,7 +30784,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30829,7 +30828,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30840,7 +30839,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30851,7 +30850,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30862,7 +30861,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30873,7 +30872,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30884,7 +30883,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -30895,7 +30894,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30906,7 +30905,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30917,7 +30916,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30928,7 +30927,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30939,7 +30938,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30950,7 +30949,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30961,7 +30960,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30972,7 +30971,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30983,7 +30982,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -30994,7 +30993,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31005,7 +31004,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31016,7 +31015,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31027,7 +31026,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31038,7 +31037,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31049,7 +31048,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31060,7 +31059,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31071,7 +31070,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31082,7 +31081,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31093,7 +31092,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31104,7 +31103,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31115,7 +31114,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31126,7 +31125,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31137,7 +31136,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31148,7 +31147,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31159,7 +31158,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31170,7 +31169,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31181,7 +31180,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31192,7 +31191,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31203,7 +31202,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31214,7 +31213,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31225,7 +31224,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31236,7 +31235,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -31247,7 +31246,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -31258,7 +31257,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -31269,7 +31268,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "mat-disposition",
     "details": "Mat.Disposition"
   },
   {
@@ -31280,7 +31279,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -31291,7 +31290,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -31302,7 +31301,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -31313,7 +31312,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -31324,7 +31323,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "einkauf",
     "details": "Einkauf"
   },
   {
@@ -31335,7 +31334,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31346,7 +31345,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31357,7 +31356,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31368,7 +31367,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31379,7 +31378,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31390,7 +31389,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31401,7 +31400,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31412,7 +31411,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31456,7 +31455,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31467,7 +31466,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31478,7 +31477,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31489,7 +31488,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31500,7 +31499,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31511,7 +31510,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "marketing",
     "details": "Marketing"
   },
   {
@@ -31522,7 +31521,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31533,7 +31532,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31544,7 +31543,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31555,7 +31554,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31566,7 +31565,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31577,7 +31576,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31588,7 +31587,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31599,7 +31598,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31610,7 +31609,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31621,7 +31620,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31632,7 +31631,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "accounting",
     "details": "Accounting"
   },
   {
@@ -31643,7 +31642,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31654,7 +31653,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31665,7 +31664,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31676,7 +31675,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31687,7 +31686,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31698,7 +31697,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31709,7 +31708,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31720,7 +31719,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31731,7 +31730,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31742,7 +31741,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31753,7 +31752,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31764,7 +31763,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -31775,7 +31774,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31786,7 +31785,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31797,7 +31796,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31808,7 +31807,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31819,7 +31818,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31830,7 +31829,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31841,7 +31840,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31852,7 +31851,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "finalization",
     "details": "Finalization"
   },
   {
@@ -31863,7 +31862,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31874,7 +31873,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31885,7 +31884,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31896,7 +31895,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31907,7 +31906,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31918,7 +31917,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31929,7 +31928,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31940,7 +31939,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31951,7 +31950,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31962,7 +31961,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31973,7 +31972,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31984,7 +31983,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -31995,7 +31994,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32006,7 +32005,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32017,7 +32016,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32028,7 +32027,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32039,7 +32038,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32083,7 +32082,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32094,7 +32093,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32105,7 +32104,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32116,7 +32115,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32127,7 +32126,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32138,7 +32137,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32149,7 +32148,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32160,7 +32159,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32171,7 +32170,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32182,7 +32181,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32193,7 +32192,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32204,7 +32203,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32215,7 +32214,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32226,7 +32225,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32237,7 +32236,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32248,7 +32247,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32259,7 +32258,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32270,7 +32269,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32281,7 +32280,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32292,7 +32291,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32303,7 +32302,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32314,7 +32313,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32325,7 +32324,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32336,7 +32335,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32347,7 +32346,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32358,7 +32357,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32369,7 +32368,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32380,7 +32379,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32391,7 +32390,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32402,7 +32401,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32413,7 +32412,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32424,7 +32423,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32435,7 +32434,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32446,7 +32445,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32457,7 +32456,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32468,7 +32467,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32479,7 +32478,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32490,7 +32489,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32501,7 +32500,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32512,7 +32511,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32523,7 +32522,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32534,7 +32533,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32545,7 +32544,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32556,7 +32555,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32567,7 +32566,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32578,7 +32577,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32589,7 +32588,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32600,7 +32599,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32611,7 +32610,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32622,7 +32621,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32633,7 +32632,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32644,7 +32643,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32655,7 +32654,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32666,7 +32665,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32710,7 +32709,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32721,7 +32720,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32732,7 +32731,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32743,7 +32742,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32754,7 +32753,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32765,7 +32764,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32776,7 +32775,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32787,7 +32786,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32798,7 +32797,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32809,7 +32808,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32820,7 +32819,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32831,7 +32830,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32842,7 +32841,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32853,7 +32852,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32864,7 +32863,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32875,7 +32874,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32886,7 +32885,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32897,7 +32896,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32908,7 +32907,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32919,7 +32918,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32930,7 +32929,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32941,7 +32940,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32952,7 +32951,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32963,7 +32962,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32974,7 +32973,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32985,7 +32984,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -32996,7 +32995,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33007,7 +33006,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33018,7 +33017,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33029,7 +33028,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33040,7 +33039,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33051,7 +33050,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33062,7 +33061,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33073,7 +33072,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33084,7 +33083,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33095,7 +33094,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33106,7 +33105,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33117,7 +33116,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33128,7 +33127,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33139,7 +33138,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33150,7 +33149,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33161,7 +33160,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33172,7 +33171,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33183,7 +33182,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33194,7 +33193,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33205,7 +33204,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33216,7 +33215,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33227,7 +33226,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33238,7 +33237,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33249,7 +33248,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33260,7 +33259,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33271,7 +33270,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33282,7 +33281,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33293,7 +33292,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33337,7 +33336,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33348,7 +33347,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33359,7 +33358,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33370,7 +33369,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33381,7 +33380,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33392,7 +33391,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33403,7 +33402,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33414,7 +33413,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33425,7 +33424,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33436,7 +33435,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33447,7 +33446,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33458,7 +33457,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33469,7 +33468,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33480,7 +33479,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33491,7 +33490,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33502,7 +33501,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33513,7 +33512,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33524,7 +33523,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33535,7 +33534,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33546,7 +33545,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33557,7 +33556,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33568,7 +33567,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33579,7 +33578,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33590,7 +33589,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33601,7 +33600,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33612,7 +33611,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33623,7 +33622,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33634,7 +33633,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33645,7 +33644,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33656,7 +33655,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33667,7 +33666,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33678,7 +33677,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33689,7 +33688,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33700,7 +33699,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33711,7 +33710,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33722,7 +33721,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33733,7 +33732,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33744,7 +33743,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33755,7 +33754,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33766,7 +33765,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33777,7 +33776,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33788,7 +33787,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33799,7 +33798,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33810,7 +33809,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33821,7 +33820,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33832,7 +33831,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33843,7 +33842,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33854,7 +33853,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33865,7 +33864,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33876,7 +33875,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33887,7 +33886,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33898,7 +33897,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33909,7 +33908,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33920,7 +33919,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33964,7 +33963,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33975,7 +33974,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33986,7 +33985,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -33997,7 +33996,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34008,7 +34007,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34019,7 +34018,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34030,7 +34029,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34041,7 +34040,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34052,7 +34051,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34063,7 +34062,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34074,7 +34073,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34085,7 +34084,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34096,7 +34095,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34107,7 +34106,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34118,7 +34117,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34129,7 +34128,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34140,7 +34139,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34151,7 +34150,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34162,7 +34161,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34173,7 +34172,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34184,7 +34183,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34195,7 +34194,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34206,7 +34205,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34217,7 +34216,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34228,7 +34227,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34239,7 +34238,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34250,7 +34249,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34261,7 +34260,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34272,7 +34271,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34283,7 +34282,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34294,7 +34293,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34305,7 +34304,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34316,7 +34315,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34327,7 +34326,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34338,7 +34337,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34349,7 +34348,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34360,7 +34359,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34371,7 +34370,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34382,7 +34381,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34393,7 +34392,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34404,7 +34403,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34415,7 +34414,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34426,7 +34425,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34437,7 +34436,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34448,7 +34447,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34459,7 +34458,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34470,7 +34469,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34481,7 +34480,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34492,7 +34491,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34503,7 +34502,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34514,7 +34513,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34525,7 +34524,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34536,7 +34535,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34547,7 +34546,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34591,7 +34590,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34602,7 +34601,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34613,7 +34612,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34624,7 +34623,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34635,7 +34634,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34646,7 +34645,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34657,7 +34656,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34668,7 +34667,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34679,7 +34678,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34690,7 +34689,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34701,7 +34700,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34712,7 +34711,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34723,7 +34722,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34734,7 +34733,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34745,7 +34744,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34756,7 +34755,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34767,7 +34766,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34778,7 +34777,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34789,7 +34788,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34800,7 +34799,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34811,7 +34810,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34822,7 +34821,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34833,7 +34832,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34844,7 +34843,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34855,7 +34854,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34866,7 +34865,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34877,7 +34876,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34888,7 +34887,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34899,7 +34898,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34910,7 +34909,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34921,7 +34920,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34932,7 +34931,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34943,7 +34942,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34954,7 +34953,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34965,7 +34964,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34976,7 +34975,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34987,7 +34986,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -34998,7 +34997,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35009,7 +35008,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35020,7 +35019,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35031,7 +35030,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35042,7 +35041,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35053,7 +35052,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35064,7 +35063,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35075,7 +35074,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35086,7 +35085,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35097,7 +35096,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35108,7 +35107,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35119,7 +35118,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35130,7 +35129,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35141,7 +35140,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35152,7 +35151,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35163,7 +35162,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35174,7 +35173,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35218,7 +35217,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35229,7 +35228,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35240,7 +35239,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35251,7 +35250,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35262,7 +35261,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35273,7 +35272,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35284,7 +35283,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35295,7 +35294,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35306,7 +35305,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35317,7 +35316,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35328,7 +35327,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35339,7 +35338,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35350,7 +35349,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35361,7 +35360,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35372,7 +35371,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35383,7 +35382,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35394,7 +35393,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35405,7 +35404,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35416,7 +35415,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35427,7 +35426,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35438,7 +35437,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35449,7 +35448,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35460,7 +35459,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35471,7 +35470,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35482,7 +35481,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35493,7 +35492,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35504,7 +35503,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35515,7 +35514,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35526,7 +35525,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35537,7 +35536,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35548,7 +35547,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35559,7 +35558,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35570,7 +35569,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35581,7 +35580,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35592,7 +35591,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35603,7 +35602,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35614,7 +35613,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35625,7 +35624,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35636,7 +35635,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35647,7 +35646,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35658,7 +35657,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35669,7 +35668,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35680,7 +35679,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35691,7 +35690,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35702,7 +35701,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35713,7 +35712,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35724,7 +35723,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35735,7 +35734,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35746,7 +35745,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35757,7 +35756,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35768,7 +35767,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35779,7 +35778,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35790,7 +35789,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35801,7 +35800,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35845,7 +35844,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35856,7 +35855,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35867,7 +35866,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35878,7 +35877,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35889,7 +35888,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35900,7 +35899,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35911,7 +35910,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35922,7 +35921,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35933,7 +35932,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35944,7 +35943,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35955,7 +35954,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35966,7 +35965,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35977,7 +35976,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35988,7 +35987,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -35999,7 +35998,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36010,7 +36009,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36021,7 +36020,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36032,7 +36031,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36043,7 +36042,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36054,7 +36053,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36065,7 +36064,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36076,7 +36075,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36087,7 +36086,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36098,7 +36097,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36109,7 +36108,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36120,7 +36119,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36131,7 +36130,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36142,7 +36141,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36153,7 +36152,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36164,7 +36163,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36175,7 +36174,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36186,7 +36185,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36197,7 +36196,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36208,7 +36207,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36219,7 +36218,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36230,7 +36229,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36241,7 +36240,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -36252,7 +36251,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36263,7 +36262,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "St. Martin",
-    "type": "testlabor",
+    "type": "testlabor-3lj",
     "details": "Testlabor 3. LJ"
   },
   {
@@ -36274,7 +36273,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36285,7 +36284,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36296,7 +36295,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36307,7 +36306,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36318,7 +36317,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36329,7 +36328,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36340,7 +36339,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36351,7 +36350,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36362,7 +36361,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36373,7 +36372,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36384,7 +36383,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36395,7 +36394,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36406,7 +36405,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36417,7 +36416,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36428,7 +36427,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36472,7 +36471,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36483,7 +36482,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36494,7 +36493,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36505,7 +36504,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36516,7 +36515,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "St. Martin",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -36527,7 +36526,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36538,7 +36537,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36549,7 +36548,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36560,7 +36559,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36571,7 +36570,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36582,7 +36581,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36593,7 +36592,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36604,7 +36603,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36615,7 +36614,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36626,7 +36625,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36637,7 +36636,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36648,7 +36647,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36791,7 +36790,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36802,7 +36801,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36813,7 +36812,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36824,7 +36823,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36835,7 +36834,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36846,7 +36845,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36857,7 +36856,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36868,7 +36867,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "St. Martin",
-    "type": "werkstatt-st-martin",
+    "type": "elektriker-st-martin",
     "details": "Elektriker St. Martin"
   },
   {
@@ -36879,7 +36878,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36890,7 +36889,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36901,7 +36900,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36912,7 +36911,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36923,7 +36922,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36934,7 +36933,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36945,7 +36944,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36956,7 +36955,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36967,7 +36966,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36978,7 +36977,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -36989,7 +36988,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37000,7 +36999,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37011,7 +37010,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37022,7 +37021,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37033,7 +37032,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37044,7 +37043,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37055,7 +37054,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37099,7 +37098,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37110,7 +37109,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37121,7 +37120,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37132,7 +37131,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37143,7 +37142,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "projektwoche",
     "details": "Projektwoche"
   },
   {
@@ -37154,7 +37153,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37165,7 +37164,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37176,7 +37175,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37187,7 +37186,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37198,7 +37197,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37209,7 +37208,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37220,7 +37219,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37231,7 +37230,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37242,7 +37241,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37253,7 +37252,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37264,7 +37263,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37275,7 +37274,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "technische-zeichnerin",
     "details": "Technische Zeichnerin"
   },
   {
@@ -37286,7 +37285,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37297,7 +37296,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37308,7 +37307,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37319,7 +37318,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37330,7 +37329,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37341,7 +37340,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37352,7 +37351,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37363,7 +37362,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37374,7 +37373,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37385,7 +37384,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37396,7 +37395,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37407,7 +37406,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37418,7 +37417,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37429,7 +37428,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37440,7 +37439,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37451,7 +37450,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37462,7 +37461,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37473,7 +37472,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37484,7 +37483,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37495,7 +37494,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Linz",
-    "type": "schulung",
+    "type": "berufschule-bueromann",
     "details": "Berufschule Bürokauffrau"
   },
   {
@@ -37506,7 +37505,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.09.2026",
     "endDate": "04.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37517,7 +37516,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.09.2026",
     "endDate": "11.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37528,7 +37527,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.09.2026",
     "endDate": "18.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37539,7 +37538,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.09.2026",
     "endDate": "25.09.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37550,7 +37549,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.09.2026",
     "endDate": "02.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37561,7 +37560,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.10.2026",
     "endDate": "09.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37572,7 +37571,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.10.2026",
     "endDate": "16.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37583,7 +37582,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.10.2026",
     "endDate": "23.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37594,7 +37593,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "27.10.2026",
     "endDate": "30.10.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37605,7 +37604,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.11.2026",
     "endDate": "06.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37616,7 +37615,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.11.2026",
     "endDate": "13.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37627,7 +37626,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.11.2026",
     "endDate": "20.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37638,7 +37637,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.11.2026",
     "endDate": "27.11.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37649,7 +37648,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.11.2026",
     "endDate": "04.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37660,7 +37659,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.12.2026",
     "endDate": "07.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37671,7 +37670,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.12.2026",
     "endDate": "11.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37682,7 +37681,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.12.2026",
     "endDate": "18.12.2026",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37726,7 +37725,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.01.2027",
     "endDate": "08.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37737,7 +37736,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "11.01.2027",
     "endDate": "15.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37748,7 +37747,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "18.01.2027",
     "endDate": "22.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37759,7 +37758,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.01.2027",
     "endDate": "29.01.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37770,7 +37769,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.02.2027",
     "endDate": "05.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37781,7 +37780,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.02.2027",
     "endDate": "12.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37792,7 +37791,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.02.2027",
     "endDate": "19.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37803,7 +37802,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.02.2027",
     "endDate": "26.02.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37814,7 +37813,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "01.03.2027",
     "endDate": "05.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37825,7 +37824,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "08.03.2027",
     "endDate": "12.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37836,7 +37835,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "15.03.2027",
     "endDate": "19.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37847,7 +37846,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "22.03.2027",
     "endDate": "26.03.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37858,7 +37857,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "29.03.2027",
     "endDate": "02.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37869,7 +37868,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "06.04.2027",
     "endDate": "09.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37880,7 +37879,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.04.2027",
     "endDate": "16.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37891,7 +37890,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.04.2027",
     "endDate": "23.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37902,7 +37901,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.04.2027",
     "endDate": "30.04.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37913,7 +37912,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "03.05.2027",
     "endDate": "07.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37924,7 +37923,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "10.05.2027",
     "endDate": "12.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37935,7 +37934,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.05.2027",
     "endDate": "14.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37946,7 +37945,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "17.05.2027",
     "endDate": "21.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37957,7 +37956,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "25.05.2027",
     "endDate": "28.05.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37968,7 +37967,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "31.05.2027",
     "endDate": "02.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37979,7 +37978,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "04.06.2027",
     "endDate": "04.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -37990,7 +37989,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "07.06.2027",
     "endDate": "11.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38001,7 +38000,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "14.06.2027",
     "endDate": "18.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38012,7 +38011,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "21.06.2027",
     "endDate": "25.06.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38023,7 +38022,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "28.06.2027",
     "endDate": "02.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38034,7 +38033,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "05.07.2027",
     "endDate": "09.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38045,7 +38044,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "12.07.2027",
     "endDate": "16.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38056,7 +38055,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "19.07.2027",
     "endDate": "23.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38067,7 +38066,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "26.07.2027",
     "endDate": "30.07.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38078,7 +38077,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "02.08.2027",
     "endDate": "06.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38089,7 +38088,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "09.08.2027",
     "endDate": "13.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38100,7 +38099,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "16.08.2027",
     "endDate": "20.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38111,7 +38110,7 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "23.08.2027",
     "endDate": "27.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   },
   {
@@ -38122,7 +38121,9 @@ export const SEED_PLAN_DATA: PlanEntry[] = [
     "startDate": "30.08.2027",
     "endDate": "31.08.2027",
     "location": "Deutschland",
-    "type": "grundlagen",
+    "type": "lehre-deutschland",
     "details": "Lehre Deutschland"
   }
-] as PlanEntry[];
+];
+
+export const SEED_PLAN_DATA: PlanEntry[] = rawPlanData as PlanEntry[];

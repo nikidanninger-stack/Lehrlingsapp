@@ -1,6 +1,13 @@
 import type { PlanEntryType } from "../../types";
 
+// ----------------------------------------------------------------------------
+// Labels und Farben für alle PlanEntryType-Werte. Die Original-Kategorien aus
+// dem Planungstool nutzen deren Original-Hex-Farben (1:1 übernommen), die
+// ursprünglichen App-Kategorien behalten ihre bisherigen Pastellfarben.
+// ----------------------------------------------------------------------------
+
 export const planTypeLabels: Record<PlanEntryType, string> = {
+  // Ursprüngliche App-Kategorien
   grundlagen: "Grundlagen",
   berufsschule: "Berufsschule",
   "berufsschule-kaelte": "BS Kälte",
@@ -14,25 +21,84 @@ export const planTypeLabels: Record<PlanEntryType, string> = {
   testlabor: "Testlabor",
   betriebsurlaub: "Betriebsurlaub",
   lehrlingsausflug: "Ausflug",
-  "werkstatt-st-martin": "Werkstatt St. Martin",
+  "werkstatt-st-martin": "KT St. Martin",
+  // Original-Kategorien aus dem Planungstool
+  "konstrukteur-st-martin": "Konstrukteur St. Martin",
+  "elektriker-st-martin": "Elektriker St. Martin",
+  "verbundbau-kt": "Verbundbau KT",
+  "lehre-deutschland": "Lehre Deutschland",
+  "lager-magazin-linz": "Lager / Magazin Linz",
+  "testlabor-3lj": "Testlabor 3. LJ",
+  "testlabor-4lj": "Testlabor 4. LJ",
+  "lap-vorbereitung-kt": "LAP-Vorbereitung KT",
+  "lap-vorbereitung-et": "LAP-Vorbereitung ET",
+  "wifi-elektrotechnik": "WIFI Elektrotechnik",
+  "bs-vorbereitung": "BS-Vorbereitung",
+  projektwoche: "Projektwoche",
+  kennenlerntage: "Kennenlerntage",
+  "mathe-vorbereitung": "Mathe Vorbereitung",
+  "mat-disposition": "Mat.Disposition",
+  "service-invoicing": "Service Invoicing",
+  accounting: "Accounting",
+  finalization: "Finalization",
+  einkauf: "Einkauf",
+  "onboarding-sekretariat": "Onboarding (Sekretariat)",
+  "service-billing": "Service Billing",
+  "berufschule-bueromann": "Berufsschule Bürokauffrau",
+  marketing: "Marketing",
+  "technische-zeichnerin": "Technische Zeichnerin",
 };
 
-export const planTypeColors: Record<PlanEntryType, string> = {
-  grundlagen: "bg-green-100 text-green-800 border-green-200",
-  berufsschule: "bg-blue-100 text-blue-800 border-blue-200",
-  "berufsschule-kaelte": "bg-blue-100 text-blue-800 border-blue-200",
-  "berufsschule-elektro": "bg-indigo-100 text-indigo-800 border-indigo-200",
-  service: "bg-orange-100 text-orange-800 border-orange-200",
-  "montage-kt-et-linz": "bg-red-100 text-red-800 border-red-200",
-  "montage-kt-et-wien": "bg-red-100 text-red-800 border-red-200",
-  schulung: "bg-purple-100 text-purple-800 border-purple-200",
-  "berufsschule-vorbereitung": "bg-yellow-100 text-yellow-800 border-yellow-200",
-  werkzeugpruefung: "bg-gray-100 text-gray-800 border-gray-200",
-  testlabor: "bg-cyan-100 text-cyan-800 border-cyan-200",
-  betriebsurlaub: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  lehrlingsausflug: "bg-pink-100 text-pink-800 border-pink-200",
-  "werkstatt-st-martin": "bg-amber-100 text-amber-900 border-amber-200",
+// Original-Hex-Farben aus dem Planungstool (wo vorhanden), sonst sinnvolle Pastelltöne
+export const planTypeHexColors: Record<PlanEntryType, string> = {
+  grundlagen: "#4CAF50",
+  berufsschule: "#3d6d8f",
+  "berufsschule-kaelte": "#3d6d8f",
+  "berufsschule-elektro": "#00B0F0",
+  service: "#FF6600",
+  "montage-kt-et-linz": "#66FFFF",
+  "montage-kt-et-wien": "#0099FF",
+  schulung: "#FF6699",
+  "berufsschule-vorbereitung": "#B3E5FC",
+  werkzeugpruefung: "#C00000",
+  testlabor: "#FFFF99",
+  betriebsurlaub: "#9E9E9E",
+  lehrlingsausflug: "#CE93D8",
+  "werkstatt-st-martin": "#F8CBAD",
+  "konstrukteur-st-martin": "#00B050",
+  "elektriker-st-martin": "#AEAAAA",
+  "verbundbau-kt": "#FFBF3F",
+  "lehre-deutschland": "#FF7043",
+  "lager-magazin-linz": "#FFCCCC",
+  "testlabor-3lj": "#FFFFCC",
+  "testlabor-4lj": "#FFFF99",
+  "lap-vorbereitung-kt": "#FFFF00",
+  "lap-vorbereitung-et": "#FF9900",
+  "wifi-elektrotechnik": "#CCFF99",
+  "bs-vorbereitung": "#B3E5FC",
+  projektwoche: "#CE93D8",
+  kennenlerntage: "#ff69b4",
+  "mathe-vorbereitung": "#0b1bf4",
+  "mat-disposition": "#761c82",
+  "service-invoicing": "#6b75ff",
+  accounting: "#6bffee",
+  finalization: "#6bff7c",
+  einkauf: "#ee7c7c",
+  "onboarding-sekretariat": "#fdff6b",
+  "service-billing": "#a3d34a",
+  "berufschule-bueromann": "#e00673",
+  marketing: "#b1ddd5",
+  "technische-zeichnerin": "#ab590d",
 };
+
+// Für Fließtext-Kontrast: helle Hintergrundfarben brauchen dunklen Text, dunkle Farben hellen Text
+function getContrastTextColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? "#1f2937" : "#ffffff";
+}
 
 interface TypeBadgeProps {
   type: PlanEntryType;
@@ -40,11 +106,14 @@ interface TypeBadgeProps {
 }
 
 export function TypeBadge({ type, className = "" }: TypeBadgeProps) {
+  const hex = planTypeHexColors[type] ?? "#9CA3AF";
+  const textColor = getContrastTextColor(hex);
   return (
     <span
-      className={`px-2 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${planTypeColors[type]} ${className}`}
+      className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap border border-black/5 ${className}`}
+      style={{ backgroundColor: hex, color: textColor }}
     >
-      {planTypeLabels[type]}
+      {planTypeLabels[type] ?? type}
     </span>
   );
 }
