@@ -21,6 +21,9 @@ export function Krankmeldung({ user }: KrankmeldungProps) {
 }
 
 function LehrlingKrankmeldungInfo() {
+  const step1Html =
+    'Schicke umgehend eine E-Mail an <a href="mailto:Montage.at@hauser.com" class="font-semibold text-blue-700 hover:underline">Montage.at@hauser.com</a> mit deinem Namen und dem voraussichtlichen Krankheitszeitraum.';
+
   return (
     <div className="space-y-4">
       <GlassCard>
@@ -43,30 +46,19 @@ function LehrlingKrankmeldungInfo() {
               nr={1}
               icon={<Mail size={18} />}
               title="Sofort eine E-Mail senden"
-              description={
-                <>
-                  Schicke umgehend eine E-Mail an{" "}
-                  
-                    href="mailto:Montage.at@hauser.com"
-                    className="font-semibold text-blue-700 hover:underline"
-                  >
-                    Montage.at@hauser.com
-                  </a>{" "}
-                  mit deinem Namen und dem voraussichtlichen Krankheitszeitraum.
-                </>
-              }
+              descriptionHtml={step1Html}
             />
             <Step
               nr={2}
               icon={<Phone size={18} />}
               title="Deinen Monteur bzw. Servicetechniker informieren"
-              description="Gib zusätzlich direkt deinem zuständigen Monteur oder Servicetechniker Bescheid, damit die Tagesplanung entsprechend angepasst werden kann."
+              descriptionHtml="Gib zusätzlich direkt deinem zuständigen Monteur oder Servicetechniker Bescheid, damit die Tagesplanung entsprechend angepasst werden kann."
             />
             <Step
               nr={3}
               icon={<FileCheck2 size={18} />}
               title="Krankmeldung so bald wie möglich nachreichen"
-              description="Reiche die ärztliche Krankmeldung (Bestätigung) so bald wie möglich nach – idealerweise noch am selben Tag oder sobald du beim Arzt warst."
+              descriptionHtml="Reiche die ärztliche Krankmeldung (Bestätigung) so bald wie möglich nach – idealerweise noch am selben Tag oder sobald du beim Arzt warst."
             />
           </div>
         </div>
@@ -79,12 +71,12 @@ function Step({
   nr,
   icon,
   title,
-  description,
+  descriptionHtml,
 }: {
   nr: number;
   icon: React.ReactNode;
   title: string;
-  description: React.ReactNode;
+  descriptionHtml: string;
 }) {
   return (
     <div className="flex gap-4">
@@ -96,7 +88,10 @@ function Step({
           <span className="text-blue-600">{icon}</span>
           <h4 className="font-semibold text-gray-800 text-sm">{title}</h4>
         </div>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p
+          className="text-sm text-gray-600"
+          dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+        />
       </div>
     </div>
   );
@@ -188,4 +183,10 @@ function KrankmeldungCard({
           </span>
         ) : (
           <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600 border border-gray-200">
-            <FileX2 size={12} /> Ohne
+            <FileX2 size={12} /> Ohne Krankschreibung
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
