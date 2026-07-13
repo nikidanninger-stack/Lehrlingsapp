@@ -12,11 +12,62 @@ import { formatDateLong, parseDate } from "../utils/dateUtils";
 //
 // Zeigt automatisch, chronologisch geordnet, ALLE bevorstehenden Abschnitte
 // aus dem persönlichen Ausbildungsplan des Lehrlings (nicht nur den nächsten).
-// z.B. "Berufsschule 03.03.–03.05." -> "Betriebsurlaub" -> "Werkzeugprüfung" -> ...
+// Aufeinanderfolgende Wochenblöcke mit demselben Typ (z.B. drei Wochen "KT St.
+// Martin" hintereinander) werden zu EINEM zusammenhängenden Eintrag verschmolzen,
+// z.B. "KT St. Martin 14.09.–02.10." statt drei einzelner Wochenzeilen.
 // ----------------------------------------------------------------------------
 
 interface LehrlingTermineUebersichtProps {
   user: User;
+}
+
+interface MergedSegment {
+  type: PlanEntry["type"];
+  details: string;
+  location: string;
+  start: Date;
+  end: Date;
+  startDate: string;
+  endDate: string;
+}
+
+// Zusammenhängende Segmente gleichen Typs verschmelzen, sofern die Lücke
+// zwischen zwei Segmenten höchstens ein paar Tage beträgt (deckt Wochenenden
+// und kurze Feiertagslücken ab, ohne inhaltlich unterschiedliche spätere
+// Abschnitte fälschlich zusammenzuziehen).
+const MAX_GAP_DAYS = 4;
+
+function mergeAdjacentSegments(
+  sorted: { entry: PlanEntry; start: Date; end: Date }[],
+): MergedSegment[] {
+  const merged: MergedSegment[] = [];
+
+  for (const { entry, start, end } of sorted) {
+    const last = merged[merged.length - 1];
+    const gapDays = last
+      ? Math.round((start.getTime() - last.end.getTime()) / (1000 * 60 * 60 * 24))
+      : Infinity;
+
+    if (last && last.type === entry.type && gapDays <= MAX_GAP_DAYS) {
+      // An bestehendes Segment anhängen, falls es tatsächlich später endet
+      if (end > last.end) {
+        last.end = end;
+        last.endDate = entry.endDate;
+      }
+    } else {
+      merged.push({
+        type: entry.type,
+        details: entry.details,
+        location: entry.location,
+        start,
+        end,
+        startDate: entry.startDate,
+        endDate: entry.endDate,
+      });
+    }
+  }
+
+  return merged;
 }
 
 export function LehrlingTermineUebersicht({ user }: LehrlingTermineUebersichtProps) {
@@ -26,7 +77,6 @@ export function LehrlingTermineUebersicht({ user }: LehrlingTermineUebersichtPro
 
     const eigene = DataStore.getPlanDataForLehrling(user.personalnummer);
 
-    // Bevorstehende oder aktuell laufende Segmente, chronologisch nach Start
     const relevante = eigene
       .map((entry) => ({ entry, start: parseDate(entry.startDate), end: parseDate(entry.endDate) }))
       .filter((x): x is { entry: PlanEntry; start: Date; end: Date } => {
@@ -35,7 +85,7 @@ export function LehrlingTermineUebersicht({ user }: LehrlingTermineUebersichtPro
       })
       .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-    return relevante;
+    return mergeAdjacentSegments(relevante);
   }, [user.personalnummer]);
 
   const today = new Date();
@@ -55,12 +105,12 @@ export function LehrlingTermineUebersicht({ user }: LehrlingTermineUebersichtPro
           </p>
         ) : (
           <div className="space-y-3">
-            {bevorstehend.map(({ entry, start, end }, idx) => {
-              const isCurrent = start <= today && today <= end;
-              const sameDay = entry.startDate === entry.endDate;
+            {bevorstehend.map((segment, idx) => {
+              const isCurrent = segment.start <= today && today <= segment.end;
+              const sameDay = segment.startDate === segment.endDate;
               return (
                 <div
-                  key={`${entry.id}-${idx}`}
+                  key={`${segment.startDate}-${idx}`}
                   className={`rounded-xl border p-4 flex items-start gap-4 ${
                     isCurrent
                       ? "border-blue-300 bg-blue-50/60"
@@ -72,22 +122,22 @@ export function LehrlingTermineUebersicht({ user }: LehrlingTermineUebersichtPro
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <TypeBadge type={entry.type} />
+                      <TypeBadge type={segment.type} />
                       {isCurrent && (
                         <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
                           Aktuell
                         </span>
                       )}
                     </div>
-                    <p className="font-semibold text-gray-800 text-sm">{entry.details}</p>
+                    <p className="font-semibold text-gray-800 text-sm">{segment.details}</p>
                     <p className="text-sm text-gray-500 mt-0.5">
                       {sameDay
-                        ? formatDateLong(entry.startDate)
-                        : `${formatDateLong(entry.startDate)} – ${formatDateLong(entry.endDate)}`}
+                        ? formatDateLong(segment.startDate)
+                        : `${formatDateLong(segment.startDate)} – ${formatDateLong(segment.endDate)}`}
                     </p>
-                    {entry.location && (
+                    {segment.location && (
                       <p className="flex items-center gap-1 text-xs text-gray-400 mt-1">
-                        <MapPin size={12} /> {entry.location}
+                        <MapPin size={12} /> {segment.location}
                       </p>
                     )}
                   </div>
