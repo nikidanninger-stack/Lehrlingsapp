@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, ExternalLink } from "lucide-react";
 import type { Screen, UserRole } from "../types";
 import { getNavItems } from "./navConfig";
 import { HAUSER_LOGO_DATA_URL } from "../assets/hauserLogo";
@@ -29,11 +29,29 @@ export function Sidebar({
     <nav className="flex-1 overflow-y-auto scroll-thin py-4 px-3 space-y-1">
       {navItems.map((item) => {
         const Icon = item.icon;
+
+        // Externe Links (z.B. Stundenzettel) öffnen in neuem Tab statt intern zu navigieren
+        if (item.externalUrl) {
+          return (
+            <a
+              key={item.screen}
+              href={item.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-gray-600 hover:bg-blue-50 hover:text-blue-700"
+            >
+              <Icon size={18} />
+              {item.label}
+              <ExternalLink size={13} className="ml-auto text-gray-400" />
+            </a>
+          );
+        }
+
         const isActive = activeScreen === item.screen;
         return (
           <button
             key={item.screen}
-            onClick={() => handleNavigate(item.screen)}
+            onClick={() => handleNavigate(item.screen as Screen)}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
               isActive
                 ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30"
