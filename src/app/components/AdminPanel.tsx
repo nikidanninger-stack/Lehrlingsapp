@@ -4,7 +4,6 @@ import {
   Users,
   FileSpreadsheet,
   CalendarClock,
-  CalendarDays,
   Contact,
   Wrench,
   BookOpen,
@@ -22,7 +21,6 @@ import { Ansprechpartner } from "./Ansprechpartner";
 import { Werkzeugkatalog } from "./Werkzeugkatalog";
 import { Lehrlingsleitfaden } from "./Lehrlingsleitfaden";
 import { AdminLernverwaltung } from "./AdminLernverwaltung";
-import { AdminLehrlingsplanBearbeiten } from "./AdminLehrlingsplanBearbeiten";
 
 interface AdminPanelProps {
   user: User;
@@ -30,7 +28,6 @@ interface AdminPanelProps {
 
 type Tab =
   | "lehrlinge"
-  | "lehrlingsplan-bearbeiten"
   | "upload"
   | "termine"
   | "ansprechpartner"
@@ -41,7 +38,6 @@ type Tab =
 
 const tabs: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: "lehrlinge", label: "Lehrlinge", icon: Users },
-  { id: "lehrlingsplan-bearbeiten", label: "Lehrling bearbeiten", icon: CalendarDays },
   { id: "upload", label: "Excel/CSV-Import", icon: FileSpreadsheet },
   { id: "termine", label: "Termine", icon: CalendarClock },
   { id: "ansprechpartner", label: "Ansprechpartner", icon: Contact },
@@ -50,8 +46,6 @@ const tabs: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: "lernverwaltung", label: "Lernverwaltung", icon: GraduationCap },
   { id: "daten", label: "Daten-Management", icon: Database },
 ];
-
-
 
 export function AdminPanel({ user }: AdminPanelProps) {
   const [tab, setTab] = useState<Tab>("lehrlinge");
@@ -86,7 +80,6 @@ export function AdminPanel({ user }: AdminPanelProps) {
         </div>
         <div className="p-6">
           {tab === "lehrlinge" && <AdminLehrlingeTab />}
-          {tab === "lehrlingsplan-bearbeiten" && <AdminLehrlingsplanBearbeiten />}
           {tab === "upload" && <AdminStundenzettelUpload />}
           {tab === "termine" && <Termine user={user} />}
           {tab === "ansprechpartner" && <Ansprechpartner user={user} />}

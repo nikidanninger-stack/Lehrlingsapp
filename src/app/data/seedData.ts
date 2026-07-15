@@ -1,11 +1,10 @@
 import type { Lehrling, PlanEntry } from "../types";
 
 // ----------------------------------------------------------------------------
-// Seed-Daten: Lehrlinge & Ausbildungsplan 2026/2027 (Version 4 - aktualisiert)
+// Seed-Daten: Lehrlinge & Ausbildungsplan 2026/2027 (Version 5)
 //
-// Automatisch aus der erneut aktualisierten "Lehrlingsplan_2026_2027.html"
-// erzeugt. Gleiche 58 Lehrlinge/Personalnummern wie zuvor, nur Zeiten und
-// Zuteilungen wurden aktualisiert.
+// Enthält jetzt zusätzlich das "beruf"-Feld pro Lehrling (z.B. "KT + ET",
+// "Bürokauffrau"), übernommen 1:1 aus dem Original-Planungstool.
 // ----------------------------------------------------------------------------
 
 export const SEED_LEHRLINGE: Lehrling[] = [
@@ -13,349 +12,407 @@ export const SEED_LEHRLINGE: Lehrling[] = [
     "personalnummer": "0016",
     "name": "Jan de Kruijff",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0017",
     "name": "Maximilian Freudenthaler",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0018",
     "name": "Benjamin Hofer",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0019",
     "name": "Gabi Leach",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0020",
     "name": "Timo Neundlinger",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0021",
     "name": "Leon Öhlinger",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0022",
     "name": "Anid Selimi",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0023",
     "name": "Raoul Wimberger",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0024",
     "name": "Ali Alshomali",
     "lehrjahr": 1,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0025",
     "name": "Sebastian Lesniewski",
     "lehrjahr": 1,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0026",
     "name": "Mowsar Terekbayev",
     "lehrjahr": 1,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0027",
     "name": "Abdullah Khatab",
     "lehrjahr": 1,
-    "standort": null
+    "standort": null,
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0028",
     "name": "Adrian Leibetseder",
     "lehrjahr": 1,
-    "standort": "St. Martin"
+    "standort": "St. Martin",
+    "beruf": "Verbundbau"
   },
   {
     "personalnummer": "0029",
     "name": "Lena Gusenbauer",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "Bürokauffrau"
   },
   {
     "personalnummer": "0030",
     "name": "Nicole Pirker",
     "lehrjahr": 1,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "Bürokauffrau"
   },
   {
     "personalnummer": "0031",
     "name": "Benjamin Jell",
     "lehrjahr": 2,
-    "standort": "St. Martin"
+    "standort": "St. Martin",
+    "beruf": "ET"
   },
   {
     "personalnummer": "0032",
     "name": "Marcel Leeb-Neumüller",
     "lehrjahr": 2,
-    "standort": "St. Martin"
+    "standort": "St. Martin",
+    "beruf": "Konstrukteur"
   },
   {
     "personalnummer": "0033",
     "name": "David Lang",
     "lehrjahr": 2,
-    "standort": "St. Martin"
+    "standort": "St. Martin",
+    "beruf": "Konstrukteur"
   },
   {
     "personalnummer": "0034",
     "name": "Katrin Kern",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "Bürokauffrau"
   },
   {
     "personalnummer": "0035",
     "name": "Emilia Niederwimmer",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "Bürokauffrau"
   },
   {
     "personalnummer": "0036",
     "name": "Özlap Yassin",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "0037",
     "name": "Ryan Patrick Weiss",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "0038",
     "name": "Marc Winkler",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "0039",
     "name": "Imad Ennaji",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "0040",
     "name": "Maris Schulte",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "0041",
     "name": "Tobias Heinemann",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "0042",
     "name": "Tamoor Malik",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "4048",
     "name": "Besian Behrami",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "4049",
     "name": "Philip Franz Svoboda",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "4050",
     "name": "Chirko Mohamad",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "4051",
     "name": "Jeremy Falkner",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "4052",
     "name": "Lukas Hennerbichler",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "4053",
     "name": "Kristian Reindl",
     "lehrjahr": 2,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7205",
     "name": "Mohamed Yasin Caliskan",
     "lehrjahr": 2,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7206",
     "name": "David Ondrak",
     "lehrjahr": 2,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7207",
     "name": "Houssien Khatab",
     "lehrjahr": 2,
-    "standort": null
+    "standort": null,
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7212",
     "name": "Lukas Krämer",
     "lehrjahr": 2,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "0043",
     "name": "Daniel Roth",
     "lehrjahr": 3,
-    "standort": "St. Martin"
+    "standort": "St. Martin",
+    "beruf": "ET"
   },
   {
     "personalnummer": "0044",
     "name": "Elisa Sophie Lindner",
     "lehrjahr": 3,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "Tech. Zeichnerin"
   },
   {
     "personalnummer": "0045",
     "name": "Tim Felsen",
     "lehrjahr": 3,
-    "standort": null
+    "standort": null,
+    "beruf": "Mechatroniker KT"
   },
   {
     "personalnummer": "1963",
     "name": "Arian Behrami",
     "lehrjahr": 3,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1964",
     "name": "Lukas Gusenbauer",
     "lehrjahr": 3,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1966",
     "name": "Edis Music",
     "lehrjahr": 3,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1967",
     "name": "Elias Schweiger",
     "lehrjahr": 3,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7187",
     "name": "Ahmet Caliskan",
     "lehrjahr": 3,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7211",
     "name": "Kevin Görisch",
     "lehrjahr": 3,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1884",
     "name": "Leon BRANDSTÄTTER",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1885",
     "name": "Josef HANDLBAUER",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1886",
     "name": "Moritz KESZLER",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1887",
     "name": "Phillip LANDERL",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET        ?"
   },
   {
     "personalnummer": "1888",
     "name": "Clemens PIRKER",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1889",
     "name": "David SCHWARZ",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "1918",
     "name": "Jonas Schweiger",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT"
   },
   {
     "personalnummer": "4003",
     "name": "Anna Autengruber",
     "lehrjahr": 4,
-    "standort": "Linz"
+    "standort": "Linz",
+    "beruf": "KT    LAP ca. Februar"
   },
   {
     "personalnummer": "7178",
     "name": "Ivan KOCIC",
     "lehrjahr": 4,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7179",
     "name": "Idaver Jusuf MURATOV",
     "lehrjahr": 4,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7180",
     "name": "Jeremy SCHAFFER",
     "lehrjahr": 4,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   },
   {
     "personalnummer": "7195",
     "name": "Lucas Csokay",
     "lehrjahr": 4,
-    "standort": "Wien"
+    "standort": "Wien",
+    "beruf": "KT + ET"
   }
 ] as Lehrling[];
 

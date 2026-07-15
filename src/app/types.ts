@@ -8,6 +8,7 @@ export interface Lehrling {
   name: string; // "Max Mustermann"
   lehrjahr: number; // 1, 2, 3 oder 4
   standort?: "Wien" | "Linz" | "St. Martin";
+  beruf?: string; // z.B. "KT + ET", "Bürokauffrau", "Konstrukteur"
 }
 
 // Alle bekannten Planungs-Eintragstypen.

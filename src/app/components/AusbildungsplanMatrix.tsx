@@ -1,15 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Lehrling, PlanEntry } from "../types";
+import type { Lehrling, PlanEntry, PlanEntryType } from "../types";
 import { planTypeLabels, planTypeHexColors } from "./ui/TypeBadge";
 import { parseDate } from "../utils/dateUtils";
 import { getHolidayName } from "../data/holidays";
 
-const DAY_WIDTH = 10;
-const ROW_HEIGHT = 32;
-const LABEL_WIDTH = 220;
+// ----------------------------------------------------------------------------
+// AusbildungsplanMatrix
+//
+// 1:1 an das Original-Excel-artige Planungstool angelehnte, sehr kompakte
+// Gantt-Matrix: dunkelblaue Header (#1A237E), feste Spalten Name/Beruf/Ort,
+// schmale Tagesspalten mit farbigen Zellen statt langer Balken.
+// ----------------------------------------------------------------------------
 
-// Re-Export fuer Rueckwaertskompatibilitaet; einzige Quelle der Wahrheit ist
-// jetzt planTypeHexColors in ui/TypeBadge.tsx (deckt alle Kategorien ab).
+const DARK_BLUE = "#1A237E";
+const DAY_WIDTH = 11; // px pro Tag, wie im Original
+const ROW_HEIGHT = 18; // px pro Lehrling-Zeile, wie im Original
+const NAME_WIDTH = 140;
+const BERUF_WIDTH = 90;
+const ORT_WIDTH = 65;
+const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH;
+
 export const planTypeBarColors = planTypeHexColors;
 
 interface TooltipState {
@@ -48,11 +58,13 @@ function fmt(date: Date): string {
   return `${dd}.${mm}.${date.getFullYear()}`;
 }
 
-function dayInfo(date: Date): { isWeekend: boolean; holidayName: string | null } {
+function dayInfo(date: Date): { isSaturday: boolean; isSunday: boolean; holidayName: string | null } {
   const day = date.getDay();
-  const isWeekend = day === 0 || day === 6;
-  const holidayName = getHolidayName(fmt(date));
-  return { isWeekend, holidayName };
+  return {
+    isSaturday: day === 6,
+    isSunday: day === 0,
+    holidayName: getHolidayName(fmt(date)),
+  };
 }
 
 export function AusbildungsplanMatrix({
@@ -124,12 +136,7 @@ export function AusbildungsplanMatrix({
   }
 
   function showDayTooltip(e: React.MouseEvent, date: Date, holidayName: string) {
-    setTooltip({
-      x: e.clientX,
-      y: e.clientY,
-      title: holidayName,
-      subtitle: fmt(date),
-    });
+    setTooltip({ x: e.clientX, y: e.clientY, title: holidayName, subtitle: fmt(date) });
   }
 
   return (
@@ -146,14 +153,17 @@ export function AusbildungsplanMatrix({
         </button>
       </div>
 
-      <div className="border border-gray-200 rounded-xl overflow-hidden bg-white relative">
+      <div
+        className="border border-gray-300 rounded-lg overflow-hidden bg-white relative"
+        style={{ fontFamily: "Arial, sans-serif" }}
+      >
         {tooltip && (
           <div
-            className="fixed z-50 pointer-events-none bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl max-w-xs"
-            style={{ left: tooltip.x + 12, top: tooltip.y + 12 }}
+            className="fixed z-50 pointer-events-none text-white text-[10px] rounded px-2 py-1.5 shadow-xl max-w-xs leading-snug"
+            style={{ left: tooltip.x + 12, top: tooltip.y + 12, backgroundColor: DARK_BLUE }}
           >
             <p className="font-semibold">{tooltip.title}</p>
-            <p className="text-gray-300">{tooltip.subtitle}</p>
+            <p className="opacity-80">{tooltip.subtitle}</p>
           </div>
         )}
         <div
@@ -162,20 +172,21 @@ export function AusbildungsplanMatrix({
           className="overflow-x-auto overflow-y-auto max-h-[70vh] scroll-thin"
         >
           <div style={{ width: LABEL_WIDTH + totalWidth, minWidth: "100%" }}>
+            {/* Monats-Kopfzeile */}
             <div
-              className="sticky top-0 z-20 flex bg-gray-50 border-b border-gray-200"
-              style={{ height: 28 }}
+              className="sticky top-0 z-20 flex"
+              style={{ height: 14, backgroundColor: DARK_BLUE }}
             >
               <div
-                className="sticky left-0 z-30 bg-gray-50 border-r border-gray-200 shrink-0"
-                style={{ width: LABEL_WIDTH }}
+                className="sticky left-0 z-30 shrink-0"
+                style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }}
               />
               <div className="relative" style={{ width: totalWidth }}>
                 {monthMarkers.map((m) => (
                   <div
                     key={m.index}
-                    className="absolute top-0 h-full flex items-center text-[10px] font-semibold text-gray-500 border-l border-gray-300 pl-1"
-                    style={{ left: m.index * DAY_WIDTH }}
+                    className="absolute top-0 h-full flex items-center text-[8px] font-semibold text-white pl-1"
+                    style={{ left: m.index * DAY_WIDTH, borderLeft: "2px solid rgba(255,255,255,.3)" }}
                   >
                     {m.label}
                   </div>
@@ -183,33 +194,43 @@ export function AusbildungsplanMatrix({
               </div>
             </div>
 
+            {/* Tages-Kopfzeile inkl. Wochenend-/Feiertagsmarkierung */}
             <div
-              className="sticky z-20 flex bg-gray-50 border-b border-gray-200 text-[8px] text-gray-400"
-              style={{ top: 28, height: 16 }}
+              className="sticky z-20 flex text-white"
+              style={{ top: 14, height: 14, backgroundColor: DARK_BLUE, fontSize: 8 }}
             >
               <div
-                className="sticky left-0 z-30 bg-gray-50 border-r border-gray-200 shrink-0"
-                style={{ width: LABEL_WIDTH }}
+                className="sticky left-0 z-30 shrink-0"
+                style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }}
               />
               {days.map((d, idx) => {
                 const isToday = fmt(d) === fmt(new Date());
-                const { isWeekend, holidayName } = dayInfos[idx];
+                const { isSaturday, isSunday, holidayName } = dayInfos[idx];
+                let bg: string | undefined;
+                let color = "#fff";
+                if (holidayName) {
+                  bg = "#EF9A9A";
+                  color = "#555";
+                } else if (isSaturday) {
+                  bg = "#FFE0B2";
+                  color = "#555";
+                } else if (isSunday) {
+                  bg = "#BBDEFB";
+                  color = "#555";
+                }
                 return (
                   <div
                     key={idx}
                     onMouseEnter={
                       holidayName ? (e) => showDayTooltip(e, d, holidayName) : undefined
                     }
-                    className={`flex items-center justify-center shrink-0 ${
-                      isToday
-                        ? "bg-blue-100 font-bold text-blue-700"
-                        : holidayName
-                          ? "bg-red-100"
-                          : isWeekend
-                            ? "bg-gray-200"
-                            : ""
-                    }`}
-                    style={{ width: DAY_WIDTH }}
+                    className="flex items-center justify-center shrink-0"
+                    style={{
+                      width: DAY_WIDTH,
+                      backgroundColor: isToday ? "#5C6BC0" : bg,
+                      color: isToday ? "#fff" : color,
+                      fontWeight: isToday ? 700 : 400,
+                    }}
                   >
                     {d.getDate()}
                   </div>
@@ -217,14 +238,45 @@ export function AusbildungsplanMatrix({
               })}
             </div>
 
+            {/* Namens-Header-Zeile (Name / Beruf / Ort) */}
+            <div
+              className="sticky z-20 flex text-white text-[9px] font-bold"
+              style={{ top: 28, height: 16, backgroundColor: DARK_BLUE }}
+            >
+              <div
+                className="sticky left-0 z-30 flex items-center pl-1 shrink-0"
+                style={{ width: NAME_WIDTH, backgroundColor: DARK_BLUE }}
+              >
+                Name
+              </div>
+              <div
+                className="sticky z-30 flex items-center pl-1 shrink-0"
+                style={{ left: NAME_WIDTH, width: BERUF_WIDTH, backgroundColor: DARK_BLUE }}
+              >
+                Beruf
+              </div>
+              <div
+                className="sticky z-30 flex items-center pl-1 shrink-0"
+                style={{
+                  left: NAME_WIDTH + BERUF_WIDTH,
+                  width: ORT_WIDTH,
+                  backgroundColor: DARK_BLUE,
+                }}
+              >
+                Ort
+              </div>
+              <div style={{ width: totalWidth }} />
+            </div>
+
+            {/* Lehrjahr-Gruppen + Lehrlings-Zeilen */}
             {[1, 2, 3, 4].map((lj) => {
               const gruppe = lehrjahrGruppen[lj] ?? [];
               if (gruppe.length === 0) return null;
               return (
                 <div key={lj}>
                   <div
-                    className="sticky left-0 z-10 bg-blue-50 border-b border-blue-100 px-3 flex items-center text-xs font-bold text-blue-800"
-                    style={{ height: 24, width: LABEL_WIDTH + totalWidth }}
+                    className="sticky left-0 z-10 px-2 flex items-center text-[11px] font-bold text-white"
+                    style={{ height: 16, width: LABEL_WIDTH + totalWidth, backgroundColor: DARK_BLUE }}
                   >
                     {lj}. Lehrjahr ({gruppe.length})
                   </div>
@@ -234,33 +286,56 @@ export function AusbildungsplanMatrix({
                     return (
                       <div
                         key={lehrling.personalnummer}
-                        className={`flex border-b border-gray-100 ${
-                          isHighlighted ? "bg-blue-50" : ""
-                        }`}
-                        style={{ height: ROW_HEIGHT }}
+                        className="flex border-b"
+                        style={{
+                          height: ROW_HEIGHT,
+                          borderColor: "#eee",
+                          backgroundColor: isHighlighted ? "#E3F2FD" : undefined,
+                        }}
                       >
                         <div
-                          className={`sticky left-0 z-10 flex items-center gap-2 px-3 border-r border-gray-200 shrink-0 ${
-                            isHighlighted ? "bg-blue-50" : "bg-white"
-                          }`}
-                          style={{ width: LABEL_WIDTH }}
+                          className="sticky left-0 z-10 flex items-center pl-1 shrink-0 text-[11px] truncate"
+                          style={{
+                            width: NAME_WIDTH,
+                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                            borderRight: "1px solid #ddd",
+                          }}
+                          title={lehrling.name}
                         >
-                          <span className="text-[10px] text-gray-400 font-mono w-10 shrink-0">
-                            {lehrling.personalnummer}
-                          </span>
-                          <span
-                            className={`text-xs truncate ${
-                              isHighlighted ? "font-bold text-blue-800" : "text-gray-700"
-                            }`}
-                            title={lehrling.name}
-                          >
-                            {lehrling.name}
-                          </span>
+                          {lehrling.name}
+                        </div>
+                        <div
+                          className="sticky z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate"
+                          style={{
+                            left: NAME_WIDTH,
+                            width: BERUF_WIDTH,
+                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                            borderRight: "1px solid #ddd",
+                          }}
+                          title={lehrling.beruf ?? ""}
+                        >
+                          {lehrling.beruf ?? ""}
+                        </div>
+                        <div
+                          className="sticky z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate"
+                          style={{
+                            left: NAME_WIDTH + BERUF_WIDTH,
+                            width: ORT_WIDTH,
+                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                            borderRight: "2px solid #aaa",
+                          }}
+                          title={lehrling.standort ?? ""}
+                        >
+                          {lehrling.standort ?? ""}
                         </div>
                         <div className="relative" style={{ width: totalWidth }}>
                           {days.map((d, idx) => {
-                            const { isWeekend, holidayName } = dayInfos[idx];
-                            if (!isWeekend && !holidayName) return null;
+                            const { isSaturday, isSunday, holidayName } = dayInfos[idx];
+                            let bg: string | undefined;
+                            if (holidayName) bg = "#FFEBEE";
+                            else if (isSaturday) bg = "#FFF3E0";
+                            else if (isSunday) bg = "#E3F2FD";
+                            if (!bg) return null;
                             return (
                               <div
                                 key={idx}
@@ -269,10 +344,12 @@ export function AusbildungsplanMatrix({
                                     ? (e) => showDayTooltip(e, d, holidayName)
                                     : undefined
                                 }
-                                className={`absolute top-0 h-full ${
-                                  holidayName ? "bg-red-50" : "bg-gray-50"
-                                }`}
-                                style={{ left: idx * DAY_WIDTH, width: DAY_WIDTH }}
+                                className="absolute top-0 h-full"
+                                style={{
+                                  left: idx * DAY_WIDTH,
+                                  width: DAY_WIDTH,
+                                  backgroundColor: bg,
+                                }}
                               />
                             );
                           })}
@@ -289,13 +366,13 @@ export function AusbildungsplanMatrix({
                               <div
                                 key={entry.id}
                                 onMouseEnter={(e) => showEntryTooltip(e, entry)}
-                                className="absolute top-1 rounded-sm opacity-90 hover:opacity-100 hover:ring-2 hover:ring-blue-400 transition-all cursor-default"
+                                className="absolute top-0 h-full hover:ring-1 hover:ring-blue-500 cursor-default"
                                 style={{
                                   left,
-                                  width: Math.max(width - 1, 2),
-                                  height: ROW_HEIGHT - 8,
+                                  width,
                                   backgroundColor: planTypeBarColors[entry.type],
                                   zIndex: 1,
+                                  borderRight: "0.5px solid rgba(0,0,0,.08)",
                                 }}
                               />
                             );
@@ -311,6 +388,7 @@ export function AusbildungsplanMatrix({
         </div>
       </div>
 
+      {/* Legende */}
       <div className="flex flex-wrap gap-3 pt-1">
         {(Object.keys(planTypeLabels) as PlanEntryType[]).map((type) => (
           <span key={type} className="flex items-center gap-1.5 text-xs text-gray-500">
@@ -322,11 +400,15 @@ export function AusbildungsplanMatrix({
           </span>
         ))}
         <span className="flex items-center gap-1.5 text-xs text-gray-500">
-          <span className="w-2.5 h-2.5 rounded-sm bg-gray-200" />
-          Wochenende
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: "#FFF3E0" }} />
+          Samstag
         </span>
         <span className="flex items-center gap-1.5 text-xs text-gray-500">
-          <span className="w-2.5 h-2.5 rounded-sm bg-red-100" />
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: "#E3F2FD" }} />
+          Sonntag
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-gray-500">
+          <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: "#FFEBEE" }} />
           Feiertag
         </span>
       </div>
