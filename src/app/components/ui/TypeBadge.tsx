@@ -7,22 +7,22 @@ import type { PlanEntryType } from "../../types";
 // ----------------------------------------------------------------------------
 
 export const planTypeLabels: Record<PlanEntryType, string> = {
-  // Ursprüngliche App-Kategorien
+  // Ursprüngliche App-Kategorien (für manuell angelegte Termine/Einträge)
   grundlagen: "Grundlagen",
   berufsschule: "Berufsschule",
-  "berufsschule-kaelte": "BS Kälte",
-  "berufsschule-elektro": "BS Elektro",
+  "berufsschule-kaelte": "Berufsschule KT",
+  "berufsschule-elektro": "Berufsschule ET",
   service: "Service",
   "montage-kt-et-linz": "Montage Linz",
-  "montage-kt-et-wien": "Montage Wien",
-  schulung: "Schulung",
-  "berufsschule-vorbereitung": "BS Vorbereitung",
+  "montage-kt-et-wien": "Montage Wien / St. Pölten",
+  schulung: "Schulungen",
+  "berufsschule-vorbereitung": "BS-Vorbereitung",
   werkzeugpruefung: "Werkzeugprüfung",
   testlabor: "Testlabor",
   betriebsurlaub: "Betriebsurlaub",
   lehrlingsausflug: "Ausflug",
   "werkstatt-st-martin": "KT St. Martin",
-  // Original-Kategorien aus dem Planungstool
+  // Original-Kategorien aus dem Planungstool (Bezeichnungen 1:1 übernommen)
   "konstrukteur-st-martin": "Konstrukteur St. Martin",
   "elektriker-st-martin": "Elektriker St. Martin",
   "verbundbau-kt": "Verbundbau KT",
@@ -44,7 +44,7 @@ export const planTypeLabels: Record<PlanEntryType, string> = {
   einkauf: "Einkauf",
   "onboarding-sekretariat": "Onboarding (Sekretariat)",
   "service-billing": "Service Billing",
-  "berufschule-bueromann": "Berufsschule Bürokauffrau",
+  "berufschule-bueromann": "Berufschule Bürokauffrau",
   marketing: "Marketing",
   "technische-zeichnerin": "Technische Zeichnerin",
 };

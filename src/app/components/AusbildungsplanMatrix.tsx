@@ -79,6 +79,9 @@ export function AusbildungsplanMatrix({
   const days = useMemo(() => daysBetweenInclusive(start, end), [start, end]);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [activeType, setActiveType] = useState<PlanEntryType | null>(null);
+  const [, forceRepaint] = useState(0);
+  const isPaintingRef = useRef(false);
+  const paintedCellsRef = useRef<Set<string>>(new Set());
 
   const lehrjahrGruppen = useMemo(() => {
     const groups: Record<number, Lehrling[]> = { 1: [], 2: [], 3: [], 4: [] };
@@ -146,39 +149,75 @@ export function AusbildungsplanMatrix({
     setTooltip({ x: e.clientX, y: e.clientY, title: holidayName, subtitle: fmt(date) });
   }
 
-  function handleCellClick(lehrling: Lehrling, date: Date) {
+  const pendingChangesRef = useRef<Map<string, PlanEntry>>(new Map());
+
+  function paintCell(lehrling: Lehrling, date: Date) {
     if (!editable || !activeType) return;
     const dateStr = fmt(date);
-    const alle = DataStore.getPlanData();
-    const existingIdx = alle.findIndex(
-      (e) => e.personalnummer === lehrling.personalnummer && e.startDate === dateStr,
-    );
+    const cellKey = `${lehrling.personalnummer}|${dateStr}`;
+    if (paintedCellsRef.current.has(cellKey)) return; // schon in diesem Zug bemalt
+    paintedCellsRef.current.add(cellKey);
 
-    if (existingIdx >= 0) {
-      const updated = [...alle];
-      updated[existingIdx] = {
-        ...updated[existingIdx],
-        type: activeType,
-        details: planTypeLabels[activeType],
-        endDate: dateStr,
-      };
-      DataStore.setPlanData(updated);
-    } else {
-      const neuerEintrag: PlanEntry = {
-        id: `zelle-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        personalnummer: lehrling.personalnummer,
-        lehrlingName: lehrling.name,
-        lehrjahr: lehrling.lehrjahr,
-        startDate: dateStr,
-        endDate: dateStr,
-        location: lehrling.standort ?? "",
-        type: activeType,
-        details: planTypeLabels[activeType],
-      };
-      DataStore.setPlanData([...alle, neuerEintrag]);
-    }
+    const existing =
+      pendingChangesRef.current.get(cellKey) ??
+      entryByPersonAndDate.get(lehrling.personalnummer)?.get(dateStr);
+
+    const updatedEntry: PlanEntry = existing
+      ? { ...existing, type: activeType, details: planTypeLabels[activeType], startDate: dateStr, endDate: dateStr }
+      : {
+          id: `zelle-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          personalnummer: lehrling.personalnummer,
+          lehrlingName: lehrling.name,
+          lehrjahr: lehrling.lehrjahr,
+          startDate: dateStr,
+          endDate: dateStr,
+          location: lehrling.standort ?? "",
+          type: activeType,
+          details: planTypeLabels[activeType],
+        };
+
+    pendingChangesRef.current.set(cellKey, updatedEntry);
+    // Sofortiges visuelles Feedback ohne teuren State-Rerender pro Zelle:
+    // wir committen erst am Ende des Zugs (onMouseUp) in den DataStore.
+    forceRepaint((n) => n + 1);
+  }
+
+  function commitPendingChanges() {
+    if (pendingChangesRef.current.size === 0) return;
+    const alle = DataStore.getPlanData();
+    const byKey = new Map(alle.map((e) => [`${e.personalnummer}|${e.startDate}`, e]));
+    pendingChangesRef.current.forEach((entry, key) => {
+      byKey.set(key, entry);
+    });
+    DataStore.setPlanData(Array.from(byKey.values()));
+    pendingChangesRef.current.clear();
+    paintedCellsRef.current.clear();
     onDataChanged?.();
   }
+
+  function handleMouseDown(lehrling: Lehrling, date: Date) {
+    if (!editable || !activeType) return;
+    isPaintingRef.current = true;
+    paintCell(lehrling, date);
+  }
+
+  function handleMouseEnterCell(lehrling: Lehrling, date: Date) {
+    if (isPaintingRef.current) {
+      paintCell(lehrling, date);
+    }
+  }
+
+  useEffect(() => {
+    function handleGlobalMouseUp() {
+      if (isPaintingRef.current) {
+        isPaintingRef.current = false;
+        commitPendingChanges();
+      }
+    }
+    window.addEventListener("mouseup", handleGlobalMouseUp);
+    return () => window.removeEventListener("mouseup", handleGlobalMouseUp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeType]);
 
   return (
     <div className="space-y-3">
@@ -199,8 +238,8 @@ export function AusbildungsplanMatrix({
         <div className="rounded-xl border border-gray-200 bg-white/70 p-3">
           <p className="text-xs font-semibold text-gray-500 mb-2">
             {activeType
-              ? `Aktiv: "${planTypeLabels[activeType]}" – klicke auf Tages-Zellen, um sie zu setzen`
-              : "Typ auswählen, dann auf Zellen klicken um sie zu setzen"}
+              ? `Aktiv: "${planTypeLabels[activeType]}" – klicke und ziehe über Zellen, um mehrere auf einmal zu setzen`
+              : "Typ auswählen, dann klicken und ziehen um Zellen zu setzen"}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {PALETTE_TYPES.map((t) => (
@@ -238,7 +277,8 @@ export function AusbildungsplanMatrix({
         <div
           ref={scrollRef}
           onMouseLeave={() => setTooltip(null)}
-          className="overflow-x-auto overflow-y-auto max-h-[70vh] scroll-thin"
+          onDragStart={(e) => e.preventDefault()}
+          className={`overflow-x-auto overflow-y-auto max-h-[70vh] scroll-thin ${editable ? "select-none" : ""}`}
         >
           <div style={{ width: LABEL_WIDTH + totalWidth, minWidth: "100%" }}>
             {/* Monats-Kopfzeile */}
@@ -381,7 +421,9 @@ export function AusbildungsplanMatrix({
                         <div className="relative flex" style={{ width: totalWidth }}>
                           {days.map((d, idx) => {
                             const dateStr = fmt(d);
-                            const entry = personEntries?.get(dateStr);
+                            const cellKey = `${lehrling.personalnummer}|${dateStr}`;
+                            const pendingEntry = pendingChangesRef.current.get(cellKey);
+                            const entry = pendingEntry ?? personEntries?.get(dateStr);
                             const { isSaturday, isSunday, holidayName } = dayInfos[idx];
                             let bg = "#fff";
                             if (entry) bg = planTypeBarColors[entry.type];
@@ -392,12 +434,13 @@ export function AusbildungsplanMatrix({
                             return (
                               <div
                                 key={idx}
-                                onClick={() => handleCellClick(lehrling, d)}
+                                onMouseDown={() => handleMouseDown(lehrling, d)}
                                 onMouseEnter={(e) => {
+                                  handleMouseEnterCell(lehrling, d);
                                   if (entry) showEntryTooltip(e, entry);
                                   else if (holidayName) showDayTooltip(e, d, holidayName);
                                 }}
-                                className={editable ? "hover:ring-1 hover:ring-blue-500 cursor-pointer" : ""}
+                                className={editable ? "hover:ring-1 hover:ring-blue-500 cursor-pointer select-none" : ""}
                                 style={{
                                   width: DAY_WIDTH,
                                   height: "100%",
