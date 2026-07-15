@@ -6,6 +6,7 @@ import { GlassCard } from "./ui/GlassCard";
 import { SectionHeader } from "./ui/SectionHeader";
 import { AusbildungsplanMatrix } from "./AusbildungsplanMatrix";
 import { LehrlingMonatskalender } from "./LehrlingMonatskalender";
+import { AdminMassenaenderung } from "./AdminMassenaenderung";
 
 interface LehrlingsplanProps {
   user: User;
@@ -51,7 +52,7 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
     );
   }
 
-  // ---- Admin-Ansicht: Personalnummer-Suche mit editierbarem Kalender + breite Matrix ----
+  // ---- Admin-Ansicht ----
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setSuchePersonalnummer(personalnummerInput.trim());
@@ -69,14 +70,14 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
 
   return (
     <div className="space-y-4">
-      {/* Personalnummer-Suche mit editierbarem Monatskalender */}
+      {/* Personalnummer-Suche (kompakt) */}
       <GlassCard>
         <SectionHeader
           icon={<Search size={22} />}
           title="Einzelnen Lehrling bearbeiten"
           subtitle="Personalnummer eingeben, um den Plan im Kalender zu bearbeiten"
         />
-        <div className="p-6 space-y-4">
+        <div className="p-6">
           <form onSubmit={handleSearch} className="flex gap-2">
             <input
               value={personalnummerInput}
@@ -97,42 +98,38 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
               Kein Lehrling mit Personalnummer "{suchePersonalnummer}" gefunden.
             </p>
           )}
-
-          {gefundenerLehrling && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 pb-2 border-b border-gray-100">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                  {gefundenerLehrling.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .slice(0, 2)
-                    .join("")}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-800 text-sm">{gefundenerLehrling.name}</p>
-                  <p className="text-xs text-gray-500">
-                    Personalnummer {gefundenerLehrling.personalnummer} · Lehrjahr{" "}
-                    {gefundenerLehrling.lehrjahr}
-                    {gefundenerLehrling.standort ? ` · ${gefundenerLehrling.standort}` : ""}
-                  </p>
-                </div>
-              </div>
-              <LehrlingMonatskalender
-                key={gefundenerLehrling.personalnummer}
-                planData={allePlanEntries.filter(
-                  (e) => e.personalnummer === gefundenerLehrling.personalnummer,
-                )}
-                editable
-                personalnummer={gefundenerLehrling.personalnummer}
-                lehrlingName={gefundenerLehrling.name}
-                lehrjahr={gefundenerLehrling.lehrjahr}
-                standort={gefundenerLehrling.standort ?? ""}
-                onDataChanged={() => setTick((t) => t + 1)}
-              />
-            </div>
-          )}
         </div>
       </GlassCard>
+
+      {/* Gefundener Lehrling: eigene, vollflächige Kalenderkarte – wie beim Lehrling selbst */}
+      {gefundenerLehrling && (
+        <GlassCard>
+          <SectionHeader
+            icon={<CalendarDays size={22} />}
+            title={gefundenerLehrling.name}
+            subtitle={`Personalnummer ${gefundenerLehrling.personalnummer} · Lehrjahr ${gefundenerLehrling.lehrjahr}${
+              gefundenerLehrling.standort ? ` · ${gefundenerLehrling.standort}` : ""
+            }`}
+          />
+          <div className="p-6">
+            <LehrlingMonatskalender
+              key={gefundenerLehrling.personalnummer}
+              planData={allePlanEntries.filter(
+                (e) => e.personalnummer === gefundenerLehrling.personalnummer,
+              )}
+              editable
+              personalnummer={gefundenerLehrling.personalnummer}
+              lehrlingName={gefundenerLehrling.name}
+              lehrjahr={gefundenerLehrling.lehrjahr}
+              standort={gefundenerLehrling.standort ?? ""}
+              onDataChanged={() => setTick((t) => t + 1)}
+            />
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Massenänderung für ganze Gruppen */}
+      <AdminMassenaenderung />
 
       {/* Breite Matrix-Übersicht aller Lehrlinge */}
       <GlassCard>
