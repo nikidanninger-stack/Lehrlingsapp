@@ -163,6 +163,8 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
             <AusbildungsplanMatrix
               lehrlinge={gefilterteLehrlinge}
               planData={gefiltertePlanEntries}
+              editable
+              onDataChanged={() => setTick((t) => t + 1)}
             />
           )}
         </div>
