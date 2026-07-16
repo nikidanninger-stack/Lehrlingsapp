@@ -21,6 +21,7 @@ import { LernApp } from "./components/LernApp";
 import { Profil } from "./components/Profil";
 import { ChatbotAssistant } from "./components/ChatbotAssistant";
 import { Jahresplanung } from "./components/Jahresplanung";
+import { StundenzettelScreen } from "./components/StundenzettelScreen";
 
 // Placeholder für noch nicht gebaute Screens (werden in kommenden Runden ergänzt)
 function ComingSoon({ title }: { title: string }) {
@@ -108,6 +109,19 @@ export default function App() {
   function handleLogout() {
     setUser(null);
     setScreen("dashboard");
+  }
+
+  // Stundenzettel wird als eigener Vollbild-Screen mit Zurück-Button
+  // gerendert (eingebettetes iframe), nicht innerhalb des normalen Layouts.
+  // So bleibt die LehrlingsApp jederzeit sichtbar erreichbar - wichtig auf
+  // iOS-PWAs, wo ein externer Link (target="_blank") die App sonst ersetzt.
+  if (screen === "stundenzettel") {
+    return (
+      <>
+        <StundenzettelScreen onBack={() => setScreen("dashboard")} />
+        <Toaster position="top-center" richColors />
+      </>
+    );
   }
 
   function renderScreen() {

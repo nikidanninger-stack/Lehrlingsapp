@@ -201,6 +201,8 @@ export interface ChatMessage {
 }
 
 // Screen-Routing (State-basiert, keine URLs)
+// "stundenzettel" ist jetzt ein interner Screen (eingebettetes iframe mit
+// Zurück-Button), nicht mehr nur ein externer Link. Siehe navConfig.ts.
 export type Screen =
   | "dashboard"
   | "lehrlingsplan"
@@ -213,7 +215,8 @@ export type Screen =
   | "admin"
   | "chatbot"
   | "jahresplanung"
-  | "lernapp";
+  | "lernapp"
+  | "stundenzettel";
 
 // Letzter Excel/CSV Upload
 export interface LastUploadInfo {

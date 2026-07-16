@@ -17,13 +17,14 @@ import {
 import type { Screen, UserRole } from "../types";
 
 export interface NavItem {
-  screen: Screen | "stundenzettel"; // "stundenzettel" ist ein reiner externer Link, kein interner Screen
+  screen: Screen;
   label: string;
   icon: ComponentType<{ size?: number; className?: string }>;
-  externalUrl?: string; // Falls gesetzt, öffnet dieser Eintrag einen externen Link in neuem Tab statt zu navigieren
+  // Nicht mehr aktiv genutzt (Stundenzettel ist jetzt ein interner Screen,
+  // siehe StundenzettelScreen.tsx). Feld bleibt bestehen, falls man später
+  // wieder zu einem rein externen Link (neuer Tab) zurückwechseln möchte.
+  externalUrl?: string;
 }
-
-const STUNDENZETTEL_URL = "https://reduce-mint-67086786.figma.site";
 
 const lehrlingNav: NavItem[] = [
   { screen: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -31,7 +32,7 @@ const lehrlingNav: NavItem[] = [
   { screen: "lehrlingsplan", label: "Lehrlingsplan", icon: CalendarDays },
   { screen: "termine", label: "Termine", icon: CalendarClock },
   { screen: "krankmeldung", label: "Krankmeldung", icon: Stethoscope },
-  { screen: "stundenzettel", label: "Stundenzettel", icon: Clock, externalUrl: STUNDENZETTEL_URL },
+  { screen: "stundenzettel", label: "Stundenzettel", icon: Clock },
   { screen: "ansprechpartner", label: "Ansprechpartner", icon: Users },
   { screen: "leitfaden", label: "Leitfaden", icon: BookOpen },
   { screen: "werkzeug", label: "Werkzeuge", icon: Wrench },
@@ -46,7 +47,7 @@ const adminNav: NavItem[] = [
   { screen: "admin", label: "Admin", icon: ShieldCheck },
   { screen: "lehrlingsplan", label: "Lehrlingsplan", icon: CalendarDays },
   { screen: "termine", label: "Termine", icon: CalendarClock },
-  { screen: "stundenzettel", label: "Stundenzettel", icon: Clock, externalUrl: STUNDENZETTEL_URL },
+  { screen: "stundenzettel", label: "Stundenzettel", icon: Clock },
   { screen: "ansprechpartner", label: "Ansprechpartner", icon: Users },
   { screen: "leitfaden", label: "Leitfaden", icon: BookOpen },
   { screen: "werkzeug", label: "Werkzeuge", icon: Wrench },
