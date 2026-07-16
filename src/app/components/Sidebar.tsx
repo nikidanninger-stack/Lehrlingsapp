@@ -11,6 +11,20 @@ interface SidebarProps {
   onCloseMobile: () => void;
 }
 
+// Öffnet einen externen Link garantiert in einem separaten Fenster/Tab, statt
+// die aktuelle LehrlingsApp-Ansicht zu ersetzen. window.open() mit "_blank"
+// funktioniert zuverlässiger als ein <a target="_blank"> insbesondere in als
+// PWA installierten Apps auf iOS, wo <a target="_blank"> manchmal die
+// aktuelle Ansicht ersetzt statt ein neues Fenster zu öffnen.
+function openExternalInNewWindow(url: string) {
+  const win = window.open(url, "_blank", "noopener,noreferrer");
+  // Falls das Popup blockiert wurde, als Fallback im aktuellen Tab öffnen,
+  // damit der Link trotzdem funktioniert (besser als gar nichts).
+  if (!win) {
+    window.location.href = url;
+  }
+}
+
 export function Sidebar({
   role,
   activeScreen,
@@ -30,20 +44,22 @@ export function Sidebar({
       {navItems.map((item) => {
         const Icon = item.icon;
 
-        // Externe Links (z.B. Stundenzettel) öffnen in neuem Tab statt intern zu navigieren
+        // Externe Links (z.B. Stundenzettel) öffnen garantiert in einem
+        // separaten Fenster/Tab, damit die LehrlingsApp im Hintergrund
+        // bestehen bleibt und man jederzeit zurückkommen kann.
         if (item.externalUrl) {
+          const url = item.externalUrl;
           return (
-            <a
+            <button
               key={item.screen}
-              href={item.externalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              type="button"
+              onClick={() => openExternalInNewWindow(url)}
               className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-gray-600 hover:bg-blue-50 hover:text-blue-700"
             >
               <Icon size={18} />
               {item.label}
               <ExternalLink size={13} className="ml-auto text-gray-400" />
-            </a>
+            </button>
           );
         }
 
