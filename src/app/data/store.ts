@@ -18,6 +18,12 @@ import {
   fetchPlanDataDirect,
   syncLehrlingeDirect,
   syncPlanDataDirect,
+  fetchAnsprechpartnerDirect,
+  syncAnsprechpartnerDirect,
+  fetchWerkzeugeDirect,
+  syncWerkzeugeDirect,
+  fetchLeitfadenDirect,
+  syncLeitfadenDirect,
   fetchLernabschnitteFromServer,
   saveLernabschnitteToServer,
   loadChatbotApiKey as apiLoadChatbotApiKey,
@@ -258,9 +264,12 @@ export const DataStore = {
     return readJSON<Ansprechpartner[]>(KEYS.ansprechpartner, []);
   },
 
-  setAnsprechpartner(list: Ansprechpartner[]): void {
+  setAnsprechpartner(list: Ansprechpartner[], syncToServer = true): void {
     writeJSON(KEYS.ansprechpartner, list);
     notifyDataChange();
+    if (syncToServer) {
+      void syncAnsprechpartnerDirect(list);
+    }
   },
 
   addAnsprechpartner(person: Ansprechpartner): void {
@@ -287,9 +296,12 @@ export const DataStore = {
     return readJSON<Werkzeug[]>(KEYS.werkzeuge, []);
   },
 
-  setWerkzeuge(list: Werkzeug[]): void {
+  setWerkzeuge(list: Werkzeug[], syncToServer = true): void {
     writeJSON(KEYS.werkzeuge, list);
     notifyDataChange();
+    if (syncToServer) {
+      void syncWerkzeugeDirect(list);
+    }
   },
 
   addWerkzeug(werkzeug: Werkzeug): void {
@@ -316,9 +328,12 @@ export const DataStore = {
     );
   },
 
-  setLeitfadenEintraege(list: LeitfadenEintrag[]): void {
+  setLeitfadenEintraege(list: LeitfadenEintrag[], syncToServer = true): void {
     writeJSON(KEYS.leitfadenEintraege, list);
     notifyDataChange();
+    if (syncToServer) {
+      void syncLeitfadenDirect(list);
+    }
   },
 
   addLeitfadenEintrag(eintrag: LeitfadenEintrag): void {
@@ -560,9 +575,18 @@ export const DataStore = {
     lehrlinge: Lehrling[];
     planData: PlanEntry[];
   }> {
-    const [remoteLehrlinge, remotePlan] = await Promise.all([
+    const [
+      remoteLehrlinge,
+      remotePlan,
+      remoteAnsprechpartner,
+      remoteWerkzeuge,
+      remoteLeitfaden,
+    ] = await Promise.all([
       fetchLehrlingeDirect(),
       fetchPlanDataDirect(),
+      fetchAnsprechpartnerDirect(),
+      fetchWerkzeugeDirect(),
+      fetchLeitfadenDirect(),
     ]);
 
     if (remoteLehrlinge && remoteLehrlinge.length > 0) {
@@ -570,6 +594,15 @@ export const DataStore = {
     }
     if (remotePlan && remotePlan.length > 0) {
       DataStore.setPlanData(remotePlan, false);
+    }
+    if (remoteAnsprechpartner && remoteAnsprechpartner.length > 0) {
+      DataStore.setAnsprechpartner(remoteAnsprechpartner, false);
+    }
+    if (remoteWerkzeuge && remoteWerkzeuge.length > 0) {
+      DataStore.setWerkzeuge(remoteWerkzeuge, false);
+    }
+    if (remoteLeitfaden && remoteLeitfaden.length > 0) {
+      DataStore.setLeitfadenEintraege(remoteLeitfaden, false);
     }
 
     return {
