@@ -9,6 +9,7 @@ import {
   BookOpen,
   GraduationCap,
   Database,
+  KeyRound,
 } from "lucide-react";
 import type { User } from "../types";
 import { GlassCard } from "./ui/GlassCard";
@@ -21,6 +22,7 @@ import { Ansprechpartner } from "./Ansprechpartner";
 import { Werkzeugkatalog } from "./Werkzeugkatalog";
 import { Lehrlingsleitfaden } from "./Lehrlingsleitfaden";
 import { AdminLernverwaltung } from "./AdminLernverwaltung";
+import { AdminZugangsdaten } from "./AdminZugangsdaten";
 
 interface AdminPanelProps {
   user: User;
@@ -34,7 +36,8 @@ type Tab =
   | "werkzeuge"
   | "leitfaden"
   | "lernverwaltung"
-  | "daten";
+  | "daten"
+  | "zugangsdaten";
 
 const tabs: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: "lehrlinge", label: "Lehrlinge", icon: Users },
@@ -45,6 +48,7 @@ const tabs: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: "leitfaden", label: "Leitfaden", icon: BookOpen },
   { id: "lernverwaltung", label: "Lernverwaltung", icon: GraduationCap },
   { id: "daten", label: "Daten-Management", icon: Database },
+  { id: "zugangsdaten", label: "Zugangsdaten", icon: KeyRound },
 ];
 
 export function AdminPanel({ user }: AdminPanelProps) {
@@ -87,6 +91,7 @@ export function AdminPanel({ user }: AdminPanelProps) {
           {tab === "leitfaden" && <Lehrlingsleitfaden user={user} />}
           {tab === "lernverwaltung" && <AdminLernverwaltung />}
           {tab === "daten" && <AdminDatenManagementTab />}
+          {tab === "zugangsdaten" && <AdminZugangsdaten />}
         </div>
       </GlassCard>
     </div>
