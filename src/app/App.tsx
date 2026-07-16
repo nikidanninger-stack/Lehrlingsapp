@@ -35,6 +35,36 @@ function ComingSoon({ title }: { title: string }) {
   );
 }
 
+// Wandelt eine vom Service Worker mitgeschickte Ziel-URL (z.B. "/?screen=stundenzettel")
+// in einen internen Screen-Namen um. Fällt bei Unbekanntem auf "dashboard" zurück.
+function screenFromUrl(url: string): Screen {
+  try {
+    const parsed = new URL(url, window.location.origin);
+    const screenParam = parsed.searchParams.get("screen");
+    const validScreens: Screen[] = [
+      "dashboard",
+      "lehrlingsplan",
+      "termine",
+      "krankmeldung",
+      "ansprechpartner",
+      "leitfaden",
+      "werkzeug",
+      "profil",
+      "admin",
+      "chatbot",
+      "jahresplanung",
+      "lernapp",
+      "stundenzettel",
+    ];
+    if (screenParam && (validScreens as string[]).includes(screenParam)) {
+      return screenParam as Screen;
+    }
+  } catch {
+    // Ungültige URL -> Standard verwenden
+  }
+  return "dashboard";
+}
+
 export default function App() {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -84,9 +114,30 @@ export default function App() {
         console.error("Wochenende-Bereinigung fehlgeschlagen:", err);
       }
 
+      // 8. Falls die App über einen Push-Benachrichtigungs-Klick geöffnet
+      // wurde (Ziel-URL z.B. "/?screen=stundenzettel"), direkt dorthin springen.
+      const initialScreen = screenFromUrl(window.location.href);
+      if (initialScreen !== "dashboard") {
+        setScreen(initialScreen);
+      }
+
       setReady(true);
     }
     void boot();
+  }, []);
+
+  // Falls die App bereits offen ist und der Nutzer auf eine Push-
+  // Benachrichtigung klickt, schickt der Service Worker eine Nachricht statt
+  // die Seite neu zu laden - hier reagieren wir darauf mit einem Screen-Wechsel.
+  useEffect(() => {
+    function handleServiceWorkerMessage(event: MessageEvent) {
+      if (event.data?.type === "NAVIGATE" && typeof event.data.url === "string") {
+        setScreen(screenFromUrl(event.data.url));
+      }
+    }
+    navigator.serviceWorker?.addEventListener("message", handleServiceWorkerMessage);
+    return () =>
+      navigator.serviceWorker?.removeEventListener("message", handleServiceWorkerMessage);
   }, []);
 
   if (!ready) {
