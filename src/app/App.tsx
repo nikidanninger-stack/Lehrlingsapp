@@ -4,6 +4,7 @@ import type { Screen, User } from "./types";
 import { DataStore } from "./data/store";
 import { autoMigrate, fixLautDokumentZuLautVideo } from "./data/migrateData";
 import { initializeLernabschnitte } from "./data/initialLernabschnitte";
+import { seedInitialData } from "./data/seedInitialData";
 import { createVerdichterKapitel } from "./utils/createVerdichterKapitel";
 import { LoginScreen } from "./components/LoginScreen";
 import { Header } from "./components/Header";
@@ -44,6 +45,15 @@ export default function App() {
       // 1. LocalStorage initialisieren (nur beim allerersten Start)
       DataStore.initialize();
 
+      // 1b. Lehrlinge + Ausbildungsplan 2026/2027 importieren (nur falls leer).
+      // WICHTIG: dieser Aufruf sorgt dafür, dass jedes neue Gerät die Daten
+      // automatisch beim ersten Öffnen bekommt, ganz ohne Admin-Klick.
+      try {
+        await seedInitialData();
+      } catch (err) {
+        console.error("Automatischer Erstimport fehlgeschlagen:", err);
+      }
+
       // 2. Daten migrieren
       autoMigrate();
 
@@ -57,13 +67,21 @@ export default function App() {
       fixLautDokumentZuLautVideo();
 
       // 6. Supabase-Daten laden (asynchron, App funktioniert auch offline)
-      await DataStore.loadFromSupabase();
-      await DataStore.loadLernAbschnitteFromSupabase();
-      await DataStore.loadChatbotApiKeyFromSupabase();
-      await DataStore.loadChatbotHistoryFromSupabase();
+      try {
+        await DataStore.loadFromSupabase();
+        await DataStore.loadLernAbschnitteFromSupabase();
+        await DataStore.loadChatbotApiKeyFromSupabase();
+        await DataStore.loadChatbotHistoryFromSupabase();
+      } catch (err) {
+        console.error("Supabase-Laden fehlgeschlagen (App läuft offline weiter):", err);
+      }
 
       // 7. Wochenende-Einträge bereinigen
-      await DataStore.cleanupWochenende();
+      try {
+        await DataStore.cleanupWochenende();
+      } catch (err) {
+        console.error("Wochenende-Bereinigung fehlgeschlagen:", err);
+      }
 
       setReady(true);
     }
