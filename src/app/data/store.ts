@@ -16,9 +16,10 @@ import { isWeekend } from "./holidays";
 import {
   fetchLehrlingeDirect,
   fetchPlanDataDirect,
+  syncLehrlingeDirect,
+  syncPlanDataDirect,
   fetchLernabschnitteFromServer,
   saveLernabschnitteToServer,
-  syncLehrjahrToServer,
   loadChatbotApiKey as apiLoadChatbotApiKey,
   saveChatbotApiKey as apiSaveChatbotApiKey,
   loadChatbotHistory as apiLoadChatbotHistory,
@@ -134,9 +135,15 @@ export const DataStore = {
     return readJSON<Lehrling[]>(KEYS.lehrlinge, []);
   },
 
-  setLehrlinge(lehrlinge: Lehrling[]): void {
+  // syncToServer: bei true (Standard) wird zusätzlich fire-and-forget nach
+  // Supabase geschrieben. Beim reinen Laden vom Server (loadFromSupabase)
+  // wird false übergeben, damit kein unnötiger Rückschreib-Zyklus entsteht.
+  setLehrlinge(lehrlinge: Lehrling[], syncToServer = true): void {
     writeJSON(KEYS.lehrlinge, lehrlinge);
     notifyDataChange();
+    if (syncToServer) {
+      void syncLehrlingeDirect(lehrlinge);
+    }
   },
 
   addLehrling(lehrling: Lehrling): void {
@@ -175,9 +182,13 @@ export const DataStore = {
     return filterWeekendEntries(readJSON<PlanEntry[]>(KEYS.planData, []));
   },
 
-  setPlanData(entries: PlanEntry[]): void {
-    writeJSON(KEYS.planData, filterWeekendEntries(entries));
+  setPlanData(entries: PlanEntry[], syncToServer = true): void {
+    const clean = filterWeekendEntries(entries);
+    writeJSON(KEYS.planData, clean);
     notifyDataChange();
+    if (syncToServer) {
+      void syncPlanDataDirect(clean);
+    }
   },
 
   updatePlanDataForLehrjahr(lehrjahr: number, entries: PlanEntry[]): void {
@@ -185,13 +196,6 @@ export const DataStore = {
     const withoutLehrjahr = existing.filter((e) => e.lehrjahr !== lehrjahr);
     const clean = filterWeekendEntries(entries);
     DataStore.setPlanData([...withoutLehrjahr, ...clean]);
-
-    // Fire-and-forget Supabase-Sync
-    void syncLehrjahrToServer(
-      lehrjahr,
-      DataStore.getLehrlinge().filter((l) => l.lehrjahr === lehrjahr),
-      clean,
-    );
   },
 
   getPlanDataForLehrling(personalnummer: string): PlanEntry[] {
@@ -501,8 +505,6 @@ export const DataStore = {
 
   async cleanupWochenende(): Promise<void> {
     DataStore.cleanupWochenendeLocal();
-    // Supabase-seitige Bereinigung würde hier über eine Edge Function laufen;
-    // da wir Fire-and-Forget arbeiten, wird ein Fehlschlag hier nur geloggt.
   },
 
   // ---- Chatbot -------------------------------------------------------
@@ -550,6 +552,9 @@ export const DataStore = {
   },
 
   // ---- Supabase-Sync (Laden) -------------------------------------------------------
+  // WICHTIG: Hier IMMER syncToServer=false übergeben, damit ein reines Laden
+  // vom Server nicht sofort wieder dieselben Daten zurückschreibt (unnötiger
+  // Netzwerk-Traffic, aber auch kein Bug - nur Effizienz).
 
   async loadFromSupabase(): Promise<{
     lehrlinge: Lehrling[];
@@ -561,10 +566,10 @@ export const DataStore = {
     ]);
 
     if (remoteLehrlinge && remoteLehrlinge.length > 0) {
-      DataStore.setLehrlinge(remoteLehrlinge);
+      DataStore.setLehrlinge(remoteLehrlinge, false);
     }
     if (remotePlan && remotePlan.length > 0) {
-      DataStore.setPlanData(remotePlan);
+      DataStore.setPlanData(remotePlan, false);
     }
 
     return {
