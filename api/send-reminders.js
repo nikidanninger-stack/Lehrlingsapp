@@ -10,10 +10,13 @@
 // VAPID_PRIVATE_KEY müssen in den Vercel-Projekteinstellungen eingetragen
 // sein (Settings -> Environment Variables), OHNE das VITE_-Präfix, damit sie
 // nicht ins Frontend-Bundle gelangen, sondern nur serverseitig sichtbar sind.
+//
+// Als ES-Modul geschrieben (import/export), da das Projekt "type": "module"
+// in package.json gesetzt hat.
 // ----------------------------------------------------------------------------
 
-const webpush = require("web-push");
-const { createClient } = require("@supabase/supabase-js");
+import webpush from "web-push";
+import { createClient } from "@supabase/supabase-js";
 
 function isLastDayOfMonth(date) {
   const tomorrow = new Date(date);
@@ -21,7 +24,7 @@ function isLastDayOfMonth(date) {
   return tomorrow.getDate() === 1;
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Optionaler Schutz: nur echte Vercel-Cron-Aufrufe akzeptieren, falls
   // CRON_SECRET gesetzt ist (empfohlen, siehe Vercel-Doku zu Cron Jobs).
   const cronSecret = process.env.CRON_SECRET;
@@ -89,7 +92,6 @@ module.exports = async function handler(req, res) {
       sent++;
     } catch (err) {
       failed++;
-      // Abgelaufene/ungültige Abonnements merken, um sie später zu löschen
       if (err.statusCode === 404 || err.statusCode === 410) {
         staleEndpoints.push(sub.endpoint);
       }
@@ -106,4 +108,4 @@ module.exports = async function handler(req, res) {
     removedStale: staleEndpoints.length,
     total: subs.length,
   });
-};
+}
