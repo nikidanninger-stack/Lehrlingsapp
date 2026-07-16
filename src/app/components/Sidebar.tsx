@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { X, ExternalLink } from "lucide-react";
 import type { Screen, UserRole } from "../types";
 import { getNavItems } from "./navConfig";
 import { HAUSER_LOGO_DATA_URL } from "../assets/hauserLogo";
+import { subscribeToDataChanges } from "../data/store";
 
 interface SidebarProps {
   role: UserRole;
@@ -9,6 +11,20 @@ interface SidebarProps {
   onNavigate: (screen: Screen) => void;
   mobileOpen: boolean;
   onCloseMobile: () => void;
+}
+
+// LocalStorage-Schlüssel, über den der Admin den Chatbot für Lehrlinge
+// freischaltet (siehe AdminZugangsdaten.tsx / künftiger Chatbot-Einstellungs-
+// Bereich). Solange "true" nicht gesetzt ist, sehen Lehrlinge "Chatbot" gar
+// nicht in ihrem Menü.
+const CHATBOT_ENABLED_KEY = "lehrlingsapp_chatbot_enabled_for_lehrlinge";
+
+export function isChatbotEnabledForLehrlinge(): boolean {
+  return localStorage.getItem(CHATBOT_ENABLED_KEY) === "true";
+}
+
+export function setChatbotEnabledForLehrlinge(enabled: boolean): void {
+  localStorage.setItem(CHATBOT_ENABLED_KEY, String(enabled));
 }
 
 // Öffnet einen externen Link garantiert in einem separaten Fenster/Tab, statt
@@ -32,7 +48,19 @@ export function Sidebar({
   mobileOpen,
   onCloseMobile,
 }: SidebarProps) {
-  const navItems = getNavItems(role);
+  const [chatbotEnabled, setChatbotEnabled] = useState(() =>
+    isChatbotEnabledForLehrlinge(),
+  );
+
+  // Reagiert live, falls der Admin den Schalter in einer anderen Ansicht
+  // umlegt, während die Sidebar bereits offen ist.
+  useEffect(() => {
+    return subscribeToDataChanges(() => {
+      setChatbotEnabled(isChatbotEnabledForLehrlinge());
+    });
+  }, []);
+
+  const navItems = getNavItems(role, chatbotEnabled);
 
   function handleNavigate(screen: Screen) {
     onNavigate(screen);

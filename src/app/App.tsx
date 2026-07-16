@@ -8,7 +8,7 @@ import { seedInitialData } from "./data/seedInitialData";
 import { createVerdichterKapitel } from "./utils/createVerdichterKapitel";
 import { LoginScreen } from "./components/LoginScreen";
 import { Header } from "./components/Header";
-import { Sidebar } from "./components/Sidebar";
+import { Sidebar, isChatbotEnabledForLehrlinge } from "./components/Sidebar";
 import { Dashboard } from "./components/Dashboard";
 import { Lehrlingsplan } from "./components/Lehrlingsplan";
 import { Termine } from "./components/Termine";
@@ -77,8 +77,6 @@ export default function App() {
       DataStore.initialize();
 
       // 1b. Lehrlinge + Ausbildungsplan 2026/2027 importieren (nur falls leer).
-      // WICHTIG: dieser Aufruf sorgt dafür, dass jedes neue Gerät die Daten
-      // automatisch beim ersten Öffnen bekommt, ganz ohne Admin-Klick.
       try {
         await seedInitialData();
       } catch (err) {
@@ -164,8 +162,6 @@ export default function App() {
 
   // Stundenzettel wird als eigener Vollbild-Screen mit Zurück-Button
   // gerendert (eingebettetes iframe), nicht innerhalb des normalen Layouts.
-  // So bleibt die LehrlingsApp jederzeit sichtbar erreichbar - wichtig auf
-  // iOS-PWAs, wo ein externer Link (target="_blank") die App sonst ersetzt.
   if (screen === "stundenzettel") {
     return (
       <>
@@ -201,7 +197,15 @@ export default function App() {
           <ComingSoon title="Kein Zugriff" />
         );
       case "chatbot":
-        return <ChatbotAssistant user={user} />;
+        // Sicherheitsnetz: Falls ein Lehrling z.B. über einen alten Link
+        // versucht, direkt auf den Chatbot-Screen zuzugreifen, während der
+        // Admin ihn noch nicht freigegeben hat, wird trotzdem "Kein Zugriff"
+        // angezeigt statt des echten Chatbots.
+        return user.role === "admin" || isChatbotEnabledForLehrlinge() ? (
+          <ChatbotAssistant user={user} />
+        ) : (
+          <ComingSoon title="Chatbot noch nicht verfügbar" />
+        );
       case "jahresplanung":
         return user.role === "admin" ? (
           <Jahresplanung />

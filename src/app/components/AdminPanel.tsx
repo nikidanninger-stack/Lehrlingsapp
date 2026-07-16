@@ -3,7 +3,6 @@ import {
   ShieldCheck,
   Users,
   FileSpreadsheet,
-  CalendarClock,
   Contact,
   Wrench,
   BookOpen,
@@ -17,7 +16,6 @@ import { SectionHeader } from "./ui/SectionHeader";
 import { AdminLehrlingeTab } from "./AdminLehrlingeTab";
 import { AdminStundenzettelUpload } from "./AdminStundenzettelUpload";
 import { AdminDatenManagementTab } from "./AdminDatenManagementTab";
-import { Termine } from "./Termine";
 import { Ansprechpartner } from "./Ansprechpartner";
 import { Werkzeugkatalog } from "./Werkzeugkatalog";
 import { Lehrlingsleitfaden } from "./Lehrlingsleitfaden";
@@ -31,7 +29,6 @@ interface AdminPanelProps {
 type Tab =
   | "lehrlinge"
   | "upload"
-  | "termine"
   | "ansprechpartner"
   | "werkzeuge"
   | "leitfaden"
@@ -42,7 +39,6 @@ type Tab =
 const tabs: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: "lehrlinge", label: "Lehrlinge", icon: Users },
   { id: "upload", label: "Excel/CSV-Import", icon: FileSpreadsheet },
-  { id: "termine", label: "Termine", icon: CalendarClock },
   { id: "ansprechpartner", label: "Ansprechpartner", icon: Contact },
   { id: "werkzeuge", label: "Werkzeuge", icon: Wrench },
   { id: "leitfaden", label: "Leitfaden", icon: BookOpen },
@@ -85,7 +81,6 @@ export function AdminPanel({ user }: AdminPanelProps) {
         <div className="p-6">
           {tab === "lehrlinge" && <AdminLehrlingeTab />}
           {tab === "upload" && <AdminStundenzettelUpload />}
-          {tab === "termine" && <Termine user={user} />}
           {tab === "ansprechpartner" && <Ansprechpartner user={user} />}
           {tab === "werkzeuge" && <Werkzeugkatalog user={user} />}
           {tab === "leitfaden" && <Lehrlingsleitfaden user={user} />}
