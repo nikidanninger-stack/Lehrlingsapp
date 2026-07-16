@@ -5,6 +5,7 @@ import { GlassCard } from "./ui/GlassCard";
 import { ProgressBar } from "./ui/ProgressBar";
 import { Button } from "./ui/Button";
 import { PWAInstallPrompt, PWAStatusBadge } from "./PWAInstallPrompt";
+import { PushBenachrichtigungen } from "./PushBenachrichtigungen";
 
 interface ProfilProps {
   user: User;
@@ -101,6 +102,11 @@ export function Profil({ user, onLogout }: ProfilProps) {
             </div>
           </div>
         </GlassCard>
+      )}
+
+      {/* Push-Benachrichtigungen (nur Lehrling - Erinnerung Stundenzettel etc.) */}
+      {!isAdmin && (
+        <PushBenachrichtigungen personalnummer={user.personalnummer} />
       )}
 
       {/* PWA-Installation */}
