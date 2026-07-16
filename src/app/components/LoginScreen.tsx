@@ -10,13 +10,15 @@ interface LoginScreenProps {
   onLogin: (user: User) => void;
 }
 
-const ADMIN_PASSWORD = "hauser2024";
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "test123";
 
 type Mode = "lehrling" | "admin";
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [mode, setMode] = useState<Mode>("lehrling");
   const [personalnummer, setPersonalnummer] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -49,12 +51,12 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
 
   function handleAdminLogin() {
     setError(null);
-    if (!password) {
-      setError("Bitte gib das Admin-Passwort ein.");
+    if (!username || !password) {
+      setError("Bitte Benutzername und Passwort eingeben.");
       return;
     }
-    if (password !== ADMIN_PASSWORD) {
-      setError("Falsches Passwort.");
+    if (username.trim() !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+      setError("Benutzername oder Passwort falsch.");
       return;
     }
     const user: User = {
@@ -157,23 +159,42 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 />
               </div>
             ) : (
-              <div>
-                <label
-                  htmlFor="admin-password"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
-                >
-                  Admin-Passwort
-                </label>
-                <input
-                  id="admin-password"
-                  type="password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Passwort eingeben"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/80 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
-                />
-              </div>
+              <>
+                <div>
+                  <label
+                    htmlFor="admin-username"
+                    className="block text-sm font-medium text-gray-700 mb-1.5"
+                  >
+                    Benutzername
+                  </label>
+                  <input
+                    id="admin-username"
+                    type="text"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Benutzername eingeben"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/80 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="admin-password"
+                    className="block text-sm font-medium text-gray-700 mb-1.5"
+                  >
+                    Admin-Passwort
+                  </label>
+                  <input
+                    id="admin-password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Passwort eingeben"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white/80 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                  />
+                </div>
+              </>
             )}
 
             {error && (
