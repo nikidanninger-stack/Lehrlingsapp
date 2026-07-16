@@ -13,6 +13,12 @@ import { DataStore } from "../data/store";
 // Balken mehr). Ein Farbpaletten-Werkzeug oben erlaubt es, einen Typ
 // auszuwählen und dann per Klick auf beliebige Zellen direkt zu setzen -
 // genau wie im Original-Tool.
+//
+// WICHTIG (Mobile-Fix): Die Name/Beruf/Ort-Spalten sind nur ab Desktop-Breite
+// (lg:) sticky/fixiert. Auf Mobile (unter dem lg-Breakpoint) scrollen sie
+// ganz normal mit, damit beim horizontalen Scrollen durch die Tage nicht der
+// halbe Bildschirm dauerhaft von den Namen blockiert wird. Das Desktop-
+// Verhalten bleibt dadurch komplett unverändert.
 // ----------------------------------------------------------------------------
 
 const DARK_BLUE = "#1A237E";
@@ -66,6 +72,10 @@ function dayInfo(date: Date): { isSaturday: boolean; isSunday: boolean; holidayN
 }
 
 const PALETTE_TYPES: PlanEntryType[] = Object.keys(planTypeLabels) as PlanEntryType[];
+
+// Sticky-Klassen: nur ab lg (Desktop) fixiert, auf Mobile ganz normal im Fluss
+const STICKY_LEFT_CLASS = "static lg:sticky lg:left-0";
+const STICKY_CLASS = "static lg:sticky";
 
 export function AusbildungsplanMatrix({
   lehrlinge,
@@ -282,8 +292,8 @@ export function AusbildungsplanMatrix({
         >
           <div style={{ width: LABEL_WIDTH + totalWidth, minWidth: "100%" }}>
             {/* Monats-Kopfzeile */}
-            <div className="sticky top-0 z-20 flex" style={{ height: 14, backgroundColor: DARK_BLUE }}>
-              <div className="sticky left-0 z-30 shrink-0" style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }} />
+            <div className={`${STICKY_CLASS} top-0 z-20 flex`} style={{ height: 14, backgroundColor: DARK_BLUE }}>
+              <div className={`${STICKY_LEFT_CLASS} z-30 shrink-0`} style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }} />
               <div className="relative" style={{ width: totalWidth }}>
                 {monthMarkers.map((m) => (
                   <div
@@ -299,10 +309,10 @@ export function AusbildungsplanMatrix({
 
             {/* Tages-Kopfzeile */}
             <div
-              className="sticky z-20 flex text-white"
+              className={`${STICKY_CLASS} z-20 flex text-white`}
               style={{ top: 14, height: 14, backgroundColor: DARK_BLUE, fontSize: 8 }}
             >
-              <div className="sticky left-0 z-30 shrink-0" style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }} />
+              <div className={`${STICKY_LEFT_CLASS} z-30 shrink-0`} style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }} />
               {days.map((d, idx) => {
                 const isToday = fmt(d) === fmt(new Date());
                 const { isSaturday, isSunday, holidayName } = dayInfos[idx];
@@ -338,23 +348,23 @@ export function AusbildungsplanMatrix({
 
             {/* Namens-Header-Zeile */}
             <div
-              className="sticky z-20 flex text-white text-[9px] font-bold"
+              className={`${STICKY_CLASS} z-20 flex text-white text-[9px] font-bold`}
               style={{ top: 28, height: 16, backgroundColor: DARK_BLUE }}
             >
               <div
-                className="sticky left-0 z-30 flex items-center pl-1 shrink-0"
+                className={`${STICKY_LEFT_CLASS} z-30 flex items-center pl-1 shrink-0`}
                 style={{ width: NAME_WIDTH, backgroundColor: DARK_BLUE }}
               >
                 Name
               </div>
               <div
-                className="sticky z-30 flex items-center pl-1 shrink-0"
+                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
                 style={{ left: NAME_WIDTH, width: BERUF_WIDTH, backgroundColor: DARK_BLUE }}
               >
                 Beruf
               </div>
               <div
-                className="sticky z-30 flex items-center pl-1 shrink-0"
+                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
                 style={{ left: NAME_WIDTH + BERUF_WIDTH, width: ORT_WIDTH, backgroundColor: DARK_BLUE }}
               >
                 Ort
@@ -369,7 +379,7 @@ export function AusbildungsplanMatrix({
               return (
                 <div key={lj}>
                   <div
-                    className="sticky left-0 z-10 px-2 flex items-center text-[11px] font-bold text-white"
+                    className={`${STICKY_LEFT_CLASS} z-10 px-2 flex items-center text-[11px] font-bold text-white`}
                     style={{ height: 16, width: LABEL_WIDTH + totalWidth, backgroundColor: DARK_BLUE }}
                   >
                     {lj}. Lehrjahr ({gruppe.length})
@@ -384,7 +394,7 @@ export function AusbildungsplanMatrix({
                         style={{ height: ROW_HEIGHT, borderColor: "#eee" }}
                       >
                         <div
-                          className="sticky left-0 z-10 flex items-center pl-1 shrink-0 text-[11px] truncate"
+                          className={`${STICKY_LEFT_CLASS} z-10 flex items-center pl-1 shrink-0 text-[11px] truncate`}
                           style={{
                             width: NAME_WIDTH,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
@@ -395,7 +405,7 @@ export function AusbildungsplanMatrix({
                           {lehrling.name}
                         </div>
                         <div
-                          className="sticky z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate"
+                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
                           style={{
                             left: NAME_WIDTH,
                             width: BERUF_WIDTH,
@@ -407,7 +417,7 @@ export function AusbildungsplanMatrix({
                           {lehrling.beruf ?? ""}
                         </div>
                         <div
-                          className="sticky z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate"
+                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
                           style={{
                             left: NAME_WIDTH + BERUF_WIDTH,
                             width: ORT_WIDTH,
