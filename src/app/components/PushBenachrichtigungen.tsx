@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Bell, BellOff, BellRing } from "lucide-react";
 import { toast } from "sonner";
 import {
-  isPushSupported,
   getCurrentPushStatus,
   requestPushPermissionAndSubscribe,
   unsubscribeFromPush,

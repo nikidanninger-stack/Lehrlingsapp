@@ -25,12 +25,14 @@ export const isPushSupported =
   "PushManager" in window;
 
 // Wandelt den Base64-URL-kodierten VAPID-Key in ein Uint8Array um
-// (von der Push API so gefordert).
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
+// (von der Push API so gefordert). Rückgabetyp explizit als ArrayBuffer
+// gebacktes Uint8Array, damit TypeScript es als gültigen BufferSource für
+// applicationServerKey akzeptiert.
+function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+  const outputArray = new Uint8Array(new ArrayBuffer(rawData.length));
   for (let i = 0; i < rawData.length; i++) {
     outputArray[i] = rawData.charCodeAt(i);
   }
