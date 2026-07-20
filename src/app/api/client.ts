@@ -111,20 +111,44 @@ async function replaceTable(
 ): Promise<boolean> {
   if (!supabase) return false;
   try {
-    const { error: deleteError } = await supabase
+    // WICHTIG: Erst die neuen Daten sicher speichern (upsert), DANACH erst
+    // die nicht mehr gebrauchten alten Zeilen löschen. So bleiben bei einem
+    // Fehler/Netzwerkabbruch mitten im Sync wenigstens die alten Daten
+    // erhalten, statt dass die Tabelle leer zurückbleibt (delete-first war
+    // hier vorher die Ursache für sporadischen Datenverlust).
+    if (rows.length > 0) {
+      const chunkSize = 500;
+      for (let i = 0; i < rows.length; i += chunkSize) {
+        const chunk = rows.slice(i, i + chunkSize);
+        const { error: upsertError } = await supabase
+          .from(table)
+          .upsert(chunk, { onConflict: idColumn });
+        if (upsertError) throw upsertError;
+      }
+    }
+
+    const newIds = rows
+      .map((r) => r[idColumn])
+      .filter((v): v is string => typeof v === "string" && v.length > 0);
+
+    if (newIds.length === 0) {
+      // Wirklich alles löschen (z.B. wenn der Nutzer bewusst die komplette
+      // Liste geleert hat) - hier ist rows.length === 0, also gab es oben
+      // nichts zu upserten, und wir dürfen jetzt sicher alles entfernen.
+      const { error: deleteAllError } = await supabase
+        .from(table)
+        .delete()
+        .neq(idColumn, "__none__");
+      if (deleteAllError) throw deleteAllError;
+      return true;
+    }
+
+    const { error: deleteStaleError } = await supabase
       .from(table)
       .delete()
-      .neq(idColumn, "__none__");
-    if (deleteError) throw deleteError;
+      .not(idColumn, "in", `(${newIds.map((id) => `"${id}"`).join(",")})`);
+    if (deleteStaleError) throw deleteStaleError;
 
-    if (rows.length === 0) return true;
-
-    const chunkSize = 500;
-    for (let i = 0; i < rows.length; i += chunkSize) {
-      const chunk = rows.slice(i, i + chunkSize);
-      const { error: insertError } = await supabase.from(table).insert(chunk);
-      if (insertError) throw insertError;
-    }
     return true;
   } catch (err) {
     console.warn(`[api] replaceTable(${table}) fehlgeschlagen`, err);
