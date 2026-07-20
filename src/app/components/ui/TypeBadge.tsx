@@ -1,4 +1,5 @@
 import type { PlanEntryType } from "../../types";
+import { DataStore } from "../../data/store";
 
 // ----------------------------------------------------------------------------
 // Labels und Farben für alle PlanEntryType-Werte. Die Original-Kategorien aus
@@ -102,20 +103,47 @@ function getContrastTextColor(hex: string): string {
   return luminance > 0.6 ? "#1f2937" : "#ffffff";
 }
 
+// ----------------------------------------------------------------------------
+// Zusammengeführte Kategorien: eingebaute Standard-Kategorien + alles, was der
+// Admin selbst über die Werkzeugleiste im Lehrlingsplan angelegt oder in der
+// Farbe geändert hat (DataStore.getKategorien()). Eigene Einträge haben
+// Vorrang, damit z.B. eine geänderte Farbe für "Feiertag" auch wirklich
+// überall greift. Diese Funktionen live (nicht als Konstante) aufrufen, damit
+// neu angelegte Kategorien sofort berücksichtigt werden.
+export function getMergedLabels(): Record<string, string> {
+  const custom = DataStore.getKategorien();
+  const merged: Record<string, string> = { ...planTypeLabels };
+  custom.forEach((k) => {
+    merged[k.key] = k.label;
+  });
+  return merged;
+}
+
+export function getMergedColors(): Record<string, string> {
+  const custom = DataStore.getKategorien();
+  const merged: Record<string, string> = { ...planTypeHexColors };
+  custom.forEach((k) => {
+    merged[k.key] = k.farbe;
+  });
+  return merged;
+}
+
 interface TypeBadgeProps {
-  type: PlanEntryType;
+  type: string;
   className?: string;
 }
 
 export function TypeBadge({ type, className = "" }: TypeBadgeProps) {
-  const hex = planTypeHexColors[type] ?? "#9CA3AF";
+  const colors = getMergedColors();
+  const labels = getMergedLabels();
+  const hex = colors[type] ?? "#9CA3AF";
   const textColor = getContrastTextColor(hex);
   return (
     <span
       className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap border border-black/5 ${className}`}
       style={{ backgroundColor: hex, color: textColor }}
     >
-      {planTypeLabels[type] ?? type}
+      {labels[type] ?? type}
     </span>
   );
 }

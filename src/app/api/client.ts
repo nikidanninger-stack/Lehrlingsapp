@@ -7,6 +7,7 @@ import type {
   Ansprechpartner,
   Werkzeug,
   LeitfadenEintrag,
+  PlanKategorie,
 } from "../types";
 
 // ----------------------------------------------------------------------------
@@ -364,6 +365,32 @@ export async function syncLeitfadenDirect(
   list: LeitfadenEintrag[],
 ): Promise<boolean> {
   return replaceTable("leitfaden_eintraege", "id", list.map(leitfadenToRow));
+}
+
+// ---- Plan-Kategorien (vom Admin selbst angelegte/umbenannte Aktivitäten) ---
+
+function kategorieToRow(k: PlanKategorie): Record<string, unknown> {
+  return { key: k.key, label: k.label, farbe: k.farbe };
+}
+
+function rowToKategorie(row: Record<string, any>): PlanKategorie {
+  return { key: row.key, label: row.label ?? "", farbe: row.farbe ?? "#9E9E9E" };
+}
+
+export async function fetchKategorienDirect(): Promise<PlanKategorie[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase.from("plan_kategorien").select("*");
+    if (error) throw error;
+    return (data ?? []).map(rowToKategorie);
+  } catch (err) {
+    console.warn("[api] fetchKategorienDirect fehlgeschlagen", err);
+    return null;
+  }
+}
+
+export async function syncKategorienDirect(list: PlanKategorie[]): Promise<boolean> {
+  return replaceTable("plan_kategorien", "key", list.map(kategorieToRow));
 }
 
 // ---- Chatbot-Historie / API-Key Convenience-Wrapper ------------------------

@@ -69,8 +69,17 @@ export interface PlanEntry {
   startDate: string; // Format: "DD.MM.YYYY"
   endDate: string; // Format: "DD.MM.YYYY"
   location: string; // z.B. "Wien", "Linz", "St. Martin"
-  type: PlanEntryType;
+  type: string; // PlanEntryType-Key ODER Key einer selbst angelegten PlanKategorie
   details: string; // Freitext-Beschreibung
+}
+
+// Vom Admin selbst angelegte/umbenannte Kategorien (z.B. "BS Kältetechnik")
+// oder Farb-Überschreibungen für bereits eingebaute Kategorien. Wird mit den
+// eingebauten PlanEntryType-Kategorien zusammengeführt (siehe TypeBadge.tsx).
+export interface PlanKategorie {
+  key: string; // eindeutiger Schlüssel, z.B. "custom-bs-kaeltetechnik"
+  label: string; // Anzeigename, z.B. "BS Kältetechnik"
+  farbe: string; // Hex-Farbe, z.B. "#3d6d8f"
 }
 
 // Termin

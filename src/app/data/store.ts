@@ -1,6 +1,7 @@
 import type {
   Lehrling,
   PlanEntry,
+  PlanKategorie,
   Termin,
   Krankmeldung,
   Ansprechpartner,
@@ -24,6 +25,8 @@ import {
   syncWerkzeugeDirect,
   fetchLeitfadenDirect,
   syncLeitfadenDirect,
+  fetchKategorienDirect,
+  syncKategorienDirect,
   fetchLernabschnitteFromServer,
   saveLernabschnitteToServer,
   loadChatbotApiKey as apiLoadChatbotApiKey,
@@ -39,6 +42,7 @@ import {
 const KEYS = {
   lehrlinge: "lehrlingsapp_lehrlinge",
   planData: "lehrlingsapp_plan_data",
+  kategorien: "lehrlingsapp_kategorien",
   termine: "lehrlingsapp_termine",
   lastUpload: "lehrlingsapp_last_upload",
   backup: "lehrlingsapp_backup",
@@ -562,6 +566,39 @@ export const DataStore = {
     return result;
   },
 
+  // ---- Plan-Kategorien (selbst angelegte Aktivitäten / Farb-Änderungen) --
+
+  getKategorien(): PlanKategorie[] {
+    return readJSON<PlanKategorie[]>(KEYS.kategorien, []);
+  },
+
+  setKategorien(list: PlanKategorie[], syncToServer = true): void {
+    writeJSON(KEYS.kategorien, list);
+    notifyDataChange();
+    if (syncToServer) {
+      void syncKategorienDirect(list);
+    }
+  },
+
+  // Legt eine neue Kategorie an ODER überschreibt (Name/Farbe) eine
+  // bestehende - egal ob es vorher eine eingebaute oder selbst angelegte
+  // Kategorie war. So kann der Admin sowohl neue Aktivitäten hinzufügen
+  // als auch die Farbe bestehender Aktivitäten ändern.
+  upsertKategorie(key: string, label: string, farbe: string): void {
+    const alle = DataStore.getKategorien();
+    const idx = alle.findIndex((k) => k.key === key);
+    if (idx >= 0) {
+      alle[idx] = { key, label, farbe };
+    } else {
+      alle.push({ key, label, farbe });
+    }
+    DataStore.setKategorien(alle);
+  },
+
+  deleteKategorie(key: string): void {
+    DataStore.setKategorien(DataStore.getKategorien().filter((k) => k.key !== key));
+  },
+
   // ---- Chatbot -------------------------------------------------------
 
   getChatbotApiKeyLocal(): string {
@@ -621,12 +658,14 @@ export const DataStore = {
       remoteAnsprechpartner,
       remoteWerkzeuge,
       remoteLeitfaden,
+      remoteKategorien,
     ] = await Promise.all([
       fetchLehrlingeDirect(),
       fetchPlanDataDirect(),
       fetchAnsprechpartnerDirect(),
       fetchWerkzeugeDirect(),
       fetchLeitfadenDirect(),
+      fetchKategorienDirect(),
     ]);
 
     if (remoteLehrlinge && remoteLehrlinge.length > 0) {
@@ -643,6 +682,9 @@ export const DataStore = {
     }
     if (remoteLeitfaden && remoteLeitfaden.length > 0) {
       DataStore.setLeitfadenEintraege(remoteLeitfaden, false);
+    }
+    if (remoteKategorien && remoteKategorien.length > 0) {
+      DataStore.setKategorien(remoteKategorien, false);
     }
 
     return {
