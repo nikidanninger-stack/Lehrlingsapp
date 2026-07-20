@@ -21,7 +21,13 @@ export function autoMigrate(): void {
   const migrated = planData.map((entry) =>
     entry.type ? entry : { ...entry, type: "grundlagen" as const },
   );
-  DataStore.setPlanData(migrated);
+  // WICHTIG: syncToServer=false! Diese Migration läuft bei JEDEM App-Start
+  // auf JEDEM Gerät, bevor loadFromSupabase() die echten Serverdaten geholt
+  // hat. Mit syncToServer=true (Standard) würde ein Gerät ohne lokalen Cache
+  // hier versehentlich lokale Platzhalterdaten zur Datenbank hochladen und
+  // damit echte, neuere Serverdaten überschreiben - exakt derselbe Fehler
+  // wie beim Erstimport (siehe seedInitialData.ts).
+  DataStore.setPlanData(migrated, false);
 
   localStorage.setItem(MIGRATION_VERSION_KEY, String(CURRENT_MIGRATION_VERSION));
 }
