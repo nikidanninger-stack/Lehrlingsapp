@@ -47,6 +47,7 @@ export const planTypeLabels: Record<PlanEntryType, string> = {
   "berufschule-bueromann": "Berufschule Bürokauffrau",
   marketing: "Marketing",
   "technische-zeichnerin": "Technische Zeichnerin",
+  feiertag: "Feiertag",
 };
 
 // Original-Hex-Farben aus dem Planungstool (wo vorhanden), sonst sinnvolle Pastelltöne
@@ -89,6 +90,7 @@ export const planTypeHexColors: Record<PlanEntryType, string> = {
   "berufschule-bueromann": "#e00673",
   marketing: "#b1ddd5",
   "technische-zeichnerin": "#ab590d",
+  feiertag: "#E53935",
 };
 
 // Für Fließtext-Kontrast: helle Hintergrundfarben brauchen dunklen Text, dunkle Farben hellen Text

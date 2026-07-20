@@ -55,7 +55,8 @@ export type PlanEntryType =
   | "service-billing"
   | "berufschule-bueromann"
   | "marketing"
-  | "technische-zeichnerin";
+  | "technische-zeichnerin"
+  | "feiertag";
 
 // Planungseintrag (Ausbildungsplan-Eintrag)
 export interface PlanEntry {
