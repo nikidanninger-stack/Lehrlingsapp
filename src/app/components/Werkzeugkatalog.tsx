@@ -126,7 +126,7 @@ export function Werkzeugkatalog({ user }: WerkzeugkatalogProps) {
                 >
                   <div className="aspect-square bg-gray-100 flex items-center justify-center relative">
                     {w.bildUrl ? (
-                      <img src={w.bildUrl} alt={w.name} className="w-full h-full object-cover" />
+                      <img src={w.bildUrl} alt={w.name} className="w-full h-full object-contain" />
                     ) : (
                       <ImageOff size={28} className="text-gray-300" />
                     )}
