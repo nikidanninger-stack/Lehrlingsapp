@@ -12,7 +12,7 @@ import type {
   ChatMessage,
   LastUploadInfo,
 } from "../types";
-import { isWeekend } from "./holidays";
+import { isWeekend, isAustrianHoliday } from "./holidays";
 import {
   fetchLehrlingeDirect,
   fetchPlanDataDirect,
@@ -520,6 +520,46 @@ export const DataStore = {
 
   async cleanupWochenende(): Promise<void> {
     DataStore.cleanupWochenendeLocal();
+  },
+
+  // Korrigiert Einträge, die durch fehlerhaft übernommene Daten aus dem
+  // ursprünglichen Excel/HTML-Planungstool auf falschen Tagen als "Feiertag"
+  // markiert sind (die beweglichen Feiertage - Ostermontag, Christi
+  // Himmelfahrt, Pfingstmontag, Fronleichnam - wurden dort teils falsch
+  // berechnet). Entfernt:
+  //  a) "feiertag"-Einträge an Tagen, die KEIN echter österreichischer
+  //     Feiertag sind (z.B. fälschlich markierte Werktage)
+  //  b) alle anderen Einträge, die an einem ECHTEN Feiertag liegen (damit
+  //     die automatische Feiertags-Einfärbung sichtbar wird, statt von
+  //     einer Werktags-Farbe überdeckt zu werden)
+  // Funktioniert für alle Jahre, nicht nur für ein bestimmtes.
+  correctHolidaysLocal(): { removedWrongFeiertag: number; removedWorkOnHoliday: number } {
+    const entries = readJSON<PlanEntry[]>(KEYS.planData, []);
+    let removedWrongFeiertag = 0;
+    let removedWorkOnHoliday = 0;
+
+    const cleaned = entries.filter((e) => {
+      const isRealHoliday = isAustrianHoliday(e.startDate);
+      if (e.type === "feiertag" && !isRealHoliday) {
+        removedWrongFeiertag++;
+        return false;
+      }
+      if (e.type !== "feiertag" && isRealHoliday) {
+        removedWorkOnHoliday++;
+        return false;
+      }
+      return true;
+    });
+
+    writeJSON(KEYS.planData, cleaned);
+    notifyDataChange();
+    return { removedWrongFeiertag, removedWorkOnHoliday };
+  },
+
+  async correctHolidays(): Promise<{ removedWrongFeiertag: number; removedWorkOnHoliday: number }> {
+    const result = DataStore.correctHolidaysLocal();
+    void syncPlanDataDirect(DataStore.getPlanData());
+    return result;
   },
 
   // ---- Chatbot -------------------------------------------------------

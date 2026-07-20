@@ -89,6 +89,17 @@ export function AdminDatenManagementTab() {
     );
   }
 
+  async function handleCorrectHolidays() {
+    const { removedWrongFeiertag, removedWorkOnHoliday } = await DataStore.correctHolidays();
+    if (removedWrongFeiertag === 0 && removedWorkOnHoliday === 0) {
+      toast.success("Feiertage sind bereits korrekt.");
+    } else {
+      toast.success(
+        `Korrigiert: ${removedWrongFeiertag} falsche Feiertags-Markierungen entfernt, ${removedWorkOnHoliday} Werktags-Einträge an echten Feiertagen entfernt.`,
+      );
+    }
+  }
+
   function handleBackup() {
     DataStore.createBackup();
     toast.success("Backup erstellt.");
@@ -239,6 +250,13 @@ export function AdminDatenManagementTab() {
           description="Entfernt versehentlich importierte Samstag-/Sonntag-Einträge."
           buttonLabel="Bereinigen"
           onClick={handleCleanupWeekends}
+        />
+        <ActionRow
+          icon={<CalendarX2 size={16} />}
+          title="Feiertage korrigieren"
+          description="Behebt falsch übernommene bewegliche Feiertage (Ostermontag, Christi Himmelfahrt, Pfingstmontag, Fronleichnam) für alle Jahre - entfernt Feiertags-Markierungen an echten Werktagen und Werktags-Einträge an echten Feiertagen."
+          buttonLabel="Korrigieren"
+          onClick={handleCorrectHolidays}
         />
         <ActionRow
           icon={<Archive size={16} />}
