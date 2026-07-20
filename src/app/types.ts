@@ -9,6 +9,7 @@ export interface Lehrling {
   lehrjahr: number; // 1, 2, 3 oder 4
   standort?: "Wien" | "Linz" | "St. Martin";
   beruf?: string; // z.B. "KT + ET", "Bürokauffrau", "Konstrukteur"
+  reihenfolge?: number; // manuelle Sortierposition innerhalb des Lehrjahres (kleiner = weiter oben)
 }
 
 // Alle bekannten Planungs-Eintragstypen.
