@@ -17,9 +17,6 @@ export function Werkzeugkatalog({ user }: WerkzeugkatalogProps) {
   const [, setTick] = useState(0);
   const [search, setSearch] = useState("");
   const [kategorieFilter, setKategorieFilter] = useState<string>("alle");
-  const [lehrjahrFilter, setLehrjahrFilter] = useState<number | "alle">(
-    user.role === "admin" ? "alle" : user.lehrjahr,
-  );
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<WerkzeugType | null>(null);
 
@@ -34,9 +31,7 @@ export function Werkzeugkatalog({ user }: WerkzeugkatalogProps) {
       w.name.toLowerCase().includes(search.toLowerCase()) ||
       w.beschreibung.toLowerCase().includes(search.toLowerCase());
     const matchesKategorie = kategorieFilter === "alle" || w.kategorie === kategorieFilter;
-    const matchesLehrjahr =
-      lehrjahrFilter === "alle" || w.lehrjahre.includes(lehrjahrFilter as number);
-    return matchesSearch && matchesKategorie && matchesLehrjahr;
+    return matchesSearch && matchesKategorie;
   });
 
   function handleDelete(id: string) {
@@ -81,32 +76,30 @@ export function Werkzeugkatalog({ user }: WerkzeugkatalogProps) {
                 className="input pl-9"
               />
             </div>
-            <select
-              value={kategorieFilter}
-              onChange={(e) => setKategorieFilter(e.target.value)}
-              className="input w-auto"
-            >
-              <option value="alle">Alle Kategorien</option>
-              {kategorien.map((k) => (
-                <option key={k} value={k}>
-                  {k}
-                </option>
-              ))}
-            </select>
           </div>
 
-          <div className="flex gap-2">
-            {(["alle", 1, 2, 3, 4] as const).map((jahr) => (
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setKategorieFilter("alle")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                kategorieFilter === "alle"
+                  ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              Alle
+            </button>
+            {kategorien.map((k) => (
               <button
-                key={jahr}
-                onClick={() => setLehrjahrFilter(jahr)}
+                key={k}
+                onClick={() => setKategorieFilter(k)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  lehrjahrFilter === jahr
+                  kategorieFilter === k
                     ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                {jahr === "alle" ? "Alle" : `LJ ${jahr}`}
+                {k}
               </button>
             ))}
           </div>
