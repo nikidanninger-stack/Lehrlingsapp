@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
-import type { PlanEntry, PlanEntryType } from "../types";
-import { planTypeLabels, planTypeHexColors } from "./ui/TypeBadge";
+import type { PlanEntry } from "../types";
+import { getMergedLabels, getMergedColors } from "./ui/TypeBadge";
 import { parseDate } from "../utils/dateUtils";
 import { getHolidayName } from "../data/holidays";
 import { DataStore } from "../data/store";
@@ -19,8 +19,6 @@ import { Button } from "./ui/Button";
 // Im editierbaren Modus (editable=true, für Admin) kann der ausgewählte Tag
 // bearbeitet/gelöscht werden, und neue Einträge können hinzugefügt werden.
 // ----------------------------------------------------------------------------
-
-const planTypeBarColors = planTypeHexColors;
 
 const WOCHENTAGE = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 
@@ -67,6 +65,8 @@ export function LehrlingMonatskalender({
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEntry, setModalEntry] = useState<PlanEntry | null>(null);
   const [modalPrefillDate, setModalPrefillDate] = useState<string | null>(null);
+  const planTypeLabels = getMergedLabels();
+  const planTypeBarColors = getMergedColors();
 
   const year = anchor.getFullYear();
   const month = anchor.getMonth();
@@ -330,9 +330,10 @@ function PlanEntryEditModal({
 }) {
   const [startDate, setStartDate] = useState(entry?.startDate ?? prefillDate ?? "");
   const [endDate, setEndDate] = useState(entry?.endDate ?? prefillDate ?? "");
-  const [type, setType] = useState<PlanEntryType>(entry?.type ?? "grundlagen");
+  const [type, setType] = useState<string>(entry?.type ?? "grundlagen");
   const [location, setLocation] = useState(entry?.location ?? standort);
   const [details, setDetails] = useState(entry?.details ?? "");
+  const planTypeLabels = getMergedLabels();
 
   if (!isOpen) return null;
 
@@ -410,7 +411,7 @@ function PlanEntryEditModal({
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Typ</label>
           <select
             value={type}
-            onChange={(e) => setType(e.target.value as PlanEntryType)}
+            onChange={(e) => setType(e.target.value)}
             className="input"
           >
             {Object.entries(planTypeLabels).map(([value, label]) => (

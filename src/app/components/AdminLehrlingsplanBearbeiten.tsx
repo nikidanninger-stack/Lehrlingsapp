@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { Search, Plus, Pencil, Trash2, User as UserIcon, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
-import type { PlanEntry, PlanEntryType } from "../types";
+import type { PlanEntry } from "../types";
 import { DataStore } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
 import { Button } from "./ui/Button";
 import { Modal } from "./ui/Modal";
-import { TypeBadge, planTypeLabels } from "./ui/TypeBadge";
+import { TypeBadge, getMergedLabels } from "./ui/TypeBadge";
 import { formatDateLong, parseDate } from "../utils/dateUtils";
 
 // ----------------------------------------------------------------------------
@@ -197,7 +197,7 @@ function PlanEntryFormModal({
 }) {
   const [startDate, setStartDate] = useState(entry?.startDate ?? "");
   const [endDate, setEndDate] = useState(entry?.endDate ?? "");
-  const [type, setType] = useState<PlanEntryType>(entry?.type ?? "grundlagen");
+  const [type, setType] = useState<string>(entry?.type ?? "grundlagen");
   const [location, setLocation] = useState(entry?.location ?? standort);
   const [details, setDetails] = useState(entry?.details ?? "");
 
@@ -218,7 +218,7 @@ function PlanEntryFormModal({
       DataStore.setPlanData(
         alle.map((e) =>
           e.id === entry.id
-            ? { ...e, startDate, endDate, type, location, details: details || planTypeLabels[type] }
+            ? { ...e, startDate, endDate, type, location, details: details || getMergedLabels()[type] }
             : e,
         ),
       );
@@ -233,7 +233,7 @@ function PlanEntryFormModal({
         endDate,
         location,
         type,
-        details: details || planTypeLabels[type],
+        details: details || getMergedLabels()[type],
       };
       DataStore.setPlanData([...alle, neuerEintrag]);
       toast.success("Eintrag hinzugefügt");
@@ -275,10 +275,10 @@ function PlanEntryFormModal({
           <label className="block text-sm font-medium text-gray-700 mb-1.5">Typ</label>
           <select
             value={type}
-            onChange={(e) => setType(e.target.value as PlanEntryType)}
+            onChange={(e) => setType(e.target.value)}
             className="input"
           >
-            {Object.entries(planTypeLabels).map(([value, label]) => (
+            {Object.entries(getMergedLabels()).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
