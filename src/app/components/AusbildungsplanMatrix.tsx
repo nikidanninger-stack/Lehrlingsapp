@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { StickyNote } from "lucide-react";
 import type { Lehrling, PlanEntry } from "../types";
 import { getMergedLabels, getMergedColors } from "./ui/TypeBadge";
 import { getHolidayName } from "../data/holidays";
@@ -28,7 +29,7 @@ const ROW_HEIGHT = 18;
 const NAME_WIDTH = 140;
 const BERUF_WIDTH = 90;
 const ORT_WIDTH = 65;
-const KOMMENTAR_WIDTH = 130;
+const KOMMENTAR_WIDTH = 26;
 const GEBURTSDATUM_WIDTH = 95;
 const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
 
@@ -624,14 +625,15 @@ export function AusbildungsplanMatrix({
                 LJ
               </div>
               <div
-                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
+                className={`${STICKY_CLASS} z-30 flex items-center justify-center shrink-0`}
                 style={{
                   left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH,
                   width: KOMMENTAR_WIDTH,
                   backgroundColor: DARK_BLUE,
                 }}
+                title="Kommentar"
               >
-                Kommentar
+                <StickyNote size={11} />
               </div>
               <div
                 className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
@@ -756,14 +758,18 @@ export function AusbildungsplanMatrix({
                               wert: lehrling.kommentar ?? "",
                             })
                           }
-                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
+                          className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0`}
                           style={{
                             left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH,
                             width: KOMMENTAR_WIDTH,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                             borderRight: "1px solid #ddd",
+                            cursor: editable ? "pointer" : "default",
                           }}
-                          title={editable ? (lehrling.kommentar || "Doppelklick zum Bearbeiten") : lehrling.kommentar ?? ""}
+                          title={
+                            lehrling.kommentar ||
+                            (editable ? "Doppelklick, um einen Kommentar zu schreiben" : "")
+                          }
                         >
                           {bearbeitetesFeld?.personalnummer === lehrling.personalnummer &&
                           bearbeitetesFeld.feld === "kommentar" ? (
@@ -777,10 +783,16 @@ export function AusbildungsplanMatrix({
                                 if (e.key === "Escape") setBearbeitetesFeld(null);
                               }}
                               onClick={(e) => e.stopPropagation()}
-                              className="w-full bg-white border border-blue-400 rounded px-1 text-[9px] outline-none"
+                              className="absolute z-20 bg-white border border-blue-400 rounded px-1.5 py-1 text-[10px] outline-none shadow-lg"
+                              style={{ width: 220, left: 0, top: "100%" }}
+                              placeholder="Kommentar..."
                             />
                           ) : (
-                            lehrling.kommentar ?? ""
+                            <StickyNote
+                              size={12}
+                              className={lehrling.kommentar ? "text-amber-500" : "text-gray-300"}
+                              fill={lehrling.kommentar ? "currentColor" : "none"}
+                            />
                           )}
                         </div>
                         <div
