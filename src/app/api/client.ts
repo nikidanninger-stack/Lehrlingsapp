@@ -144,11 +144,32 @@ async function replaceTable(
       return true;
     }
 
-    const { error: deleteStaleError } = await supabase
+    // WICHTIG: Nicht mit einer riesigen "NOT IN (id1,id2,id3,...)"-Anfrage
+    // löschen! Bei tausenden Zeilen (z.B. plan_entries) wird die Web-Adresse
+    // dafür so lang, dass die Verbindung vom Server abgebrochen wird
+    // (ERR_CONNECTION_CLOSED) - dadurch ist NIE etwas gespeichert worden,
+    // obwohl kein Fehler sichtbar war. Stattdessen: vorhandene IDs holen,
+    // den Unterschied in JavaScript berechnen und nur die wirklich
+    // gelöschten Zeilen in kleinen Häppchen entfernen (meist nur eine
+    // Handvoll, nicht tausende).
+    const { data: existingRows, error: fetchIdsError } = await supabase
       .from(table)
-      .delete()
-      .not(idColumn, "in", `(${newIds.map((id) => `"${id}"`).join(",")})`);
-    if (deleteStaleError) throw deleteStaleError;
+      .select(idColumn);
+    if (fetchIdsError) throw fetchIdsError;
+
+    const newIdSet = new Set(newIds);
+    const staleIds = (existingRows ?? [])
+      .map((r: any) => r[idColumn])
+      .filter((id): id is string => typeof id === "string" && !newIdSet.has(id));
+
+    if (staleIds.length > 0) {
+      const deleteChunkSize = 200;
+      for (let i = 0; i < staleIds.length; i += deleteChunkSize) {
+        const chunk = staleIds.slice(i, i + deleteChunkSize);
+        const { error: deleteStaleError } = await supabase.from(table).delete().in(idColumn, chunk);
+        if (deleteStaleError) throw deleteStaleError;
+      }
+    }
 
     return true;
   } catch (err) {
