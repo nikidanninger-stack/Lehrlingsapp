@@ -156,6 +156,16 @@ export const DataStore = {
     }
   },
 
+  // Wie setLehrlinge, aber wartet wirklich auf die Bestätigung vom Server und
+  // gibt zurück, ob es geklappt hat - für Stellen in der UI, an denen der
+  // Nutzer aktiv eine Bestätigung braucht (z.B. Lehrling verschieben oder
+  // umbenennen), statt eines "fire and forget", das Fehler verschluckt.
+  async setLehrlingeAwaited(lehrlinge: Lehrling[]): Promise<boolean> {
+    writeJSON(KEYS.lehrlinge, lehrlinge);
+    notifyDataChange();
+    return syncLehrlingeDirect(lehrlinge);
+  },
+
   addLehrling(lehrling: Lehrling): void {
     const all = DataStore.getLehrlinge();
     if (all.some((l) => l.personalnummer === lehrling.personalnummer)) {
@@ -199,6 +209,14 @@ export const DataStore = {
     if (syncToServer) {
       void syncPlanDataDirect(clean);
     }
+  },
+
+  // Wie setPlanData, aber wartet wirklich auf die Server-Bestätigung.
+  async setPlanDataAwaited(entries: PlanEntry[]): Promise<boolean> {
+    const clean = filterWeekendEntries(entries);
+    writeJSON(KEYS.planData, clean);
+    notifyDataChange();
+    return syncPlanDataDirect(clean);
   },
 
   updatePlanDataForLehrjahr(lehrjahr: number, entries: PlanEntry[]): void {
@@ -621,6 +639,12 @@ export const DataStore = {
     if (syncToServer) {
       void syncKategorienDirect(list);
     }
+  },
+
+  async setKategorienAwaited(list: PlanKategorie[]): Promise<boolean> {
+    writeJSON(KEYS.kategorien, list);
+    notifyDataChange();
+    return syncKategorienDirect(list);
   },
 
   // Legt eine neue Kategorie an ODER überschreibt (Name/Farbe) eine

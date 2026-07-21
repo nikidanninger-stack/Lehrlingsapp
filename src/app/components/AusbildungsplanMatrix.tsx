@@ -128,7 +128,7 @@ export function AusbildungsplanMatrix({
     return groups;
   }, [lehrlinge]);
 
-  function reorderLehrling(lehrjahr: number, personalnummer: string, zielPersonalnummer: string) {
+  async function reorderLehrling(lehrjahr: number, personalnummer: string, zielPersonalnummer: string) {
     const gruppe = [...(lehrjahrGruppen[lehrjahr] ?? [])];
     const fromIdx = gruppe.findIndex((l) => l.personalnummer === personalnummer);
     const toIdx = gruppe.findIndex((l) => l.personalnummer === zielPersonalnummer);
@@ -144,8 +144,12 @@ export function AusbildungsplanMatrix({
         ? { ...l, reihenfolge: reihenfolgeByPersonalnummer.get(l.personalnummer) }
         : l,
     );
-    DataStore.setLehrlinge(aktualisiert);
-    toast.success("Reihenfolge gespeichert");
+    const ok = await DataStore.setLehrlingeAwaited(aktualisiert);
+    if (ok) {
+      toast.success("Reihenfolge gespeichert");
+    } else {
+      toast.error("Reihenfolge konnte NICHT gespeichert werden - siehe Konsole (F12)");
+    }
   }
 
   function handleNameDragStart(personalnummer: string) {
@@ -159,7 +163,7 @@ export function AusbildungsplanMatrix({
     reorderLehrling(lehrjahr, dragged, zielPersonalnummer);
   }
 
-  function handleNameSpeichern() {
+  async function handleNameSpeichern() {
     if (!bearbeiteterName) return;
     const neuerName = bearbeiteterName.wert.trim();
     setBearbeiteterName(null);
@@ -168,29 +172,45 @@ export function AusbildungsplanMatrix({
     const aktualisiert = alleLehrlinge.map((l) =>
       l.personalnummer === bearbeiteterName.personalnummer ? { ...l, name: neuerName } : l,
     );
-    DataStore.setLehrlinge(aktualisiert);
-    toast.success("Name gespeichert");
+    const ok = await DataStore.setLehrlingeAwaited(aktualisiert);
+    if (ok) {
+      toast.success("Name gespeichert");
+    } else {
+      toast.error("Name konnte NICHT gespeichert werden - siehe Konsole (F12)");
+    }
   }
 
-  function handleFarbeAendern(key: string, farbe: string) {
+  async function handleFarbeAendern(key: string, farbe: string) {
     const label = planTypeLabels[key] ?? key;
-    DataStore.upsertKategorie(key, label, farbe);
-    toast.success("Farbe gespeichert");
+    const alle = DataStore.getKategorien();
+    const idx = alle.findIndex((k) => k.key === key);
+    const neueListe = idx >= 0 ? alle.map((k, i) => (i === idx ? { key, label, farbe } : k)) : [...alle, { key, label, farbe }];
+    const ok = await DataStore.setKategorienAwaited(neueListe);
+    if (ok) {
+      toast.success("Farbe gespeichert");
+    } else {
+      toast.error("Farbe konnte NICHT gespeichert werden - siehe Konsole (F12)");
+    }
   }
 
-  function handleNeueKategorieSpeichern() {
+  async function handleNeueKategorieSpeichern() {
     const name = neuerName.trim();
     if (!name) return;
     const key = `custom-${name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "")}-${Date.now().toString(36).slice(-4)}`;
-    DataStore.upsertKategorie(key, name, neueFarbe);
+    const neueListe = [...DataStore.getKategorien(), { key, label: name, farbe: neueFarbe }];
     setActiveType(key);
     setNeuerName("");
     setNeueFarbe(FARB_VORSCHLAEGE[Math.floor(Math.random() * FARB_VORSCHLAEGE.length)]);
     setNeueKategorieOffen(false);
-    toast.success(`Kategorie "${name}" angelegt`);
+    const ok = await DataStore.setKategorienAwaited(neueListe);
+    if (ok) {
+      toast.success(`Kategorie "${name}" angelegt und gespeichert`);
+    } else {
+      toast.error(`Kategorie "${name}" konnte NICHT gespeichert werden - siehe Konsole (F12)`);
+    }
   }
 
   // Schnellzugriff: personalnummer -> (dateStr -> entry)
@@ -288,7 +308,7 @@ export function AusbildungsplanMatrix({
     forceRepaint((n) => n + 1);
   }
 
-  function commitPendingChanges() {
+  async function commitPendingChanges() {
     if (pendingChangesRef.current.size === 0) return;
     const alle = DataStore.getPlanData();
     const byKey = new Map(alle.map((e) => [`${e.personalnummer}|${e.startDate}`, e]));
@@ -299,12 +319,16 @@ export function AusbildungsplanMatrix({
         byKey.set(key, entry);
       }
     });
-    DataStore.setPlanData(Array.from(byKey.values()));
     const anzahl = pendingChangesRef.current.size;
     pendingChangesRef.current.clear();
     paintedCellsRef.current.clear();
+    const ok = await DataStore.setPlanDataAwaited(Array.from(byKey.values()));
     onDataChanged?.();
-    toast.success(anzahl === 1 ? "Änderung gespeichert" : `${anzahl} Änderungen gespeichert`);
+    if (ok) {
+      toast.success(anzahl === 1 ? "Änderung gespeichert" : `${anzahl} Änderungen gespeichert`);
+    } else {
+      toast.error("Speichern fehlgeschlagen - siehe Konsole (F12). Bitte nochmal versuchen.");
+    }
   }
 
   function handleMouseDown(lehrling: Lehrling, date: Date) {
