@@ -576,7 +576,15 @@ export const DataStore = {
   async importSeedDataAwaited(lehrlinge: Lehrling[], planData: PlanEntry[]): Promise<void> {
     DataStore.setLehrlinge(lehrlinge, false);
     DataStore.setPlanData(planData, false);
-    await Promise.all([syncLehrlingeDirect(lehrlinge), syncPlanDataDirect(planData)]);
+    const [okLehrlinge, okPlan] = await Promise.all([
+      syncLehrlingeDirect(lehrlinge),
+      syncPlanDataDirect(planData),
+    ]);
+    if (!okLehrlinge || !okPlan) {
+      throw new Error(
+        `Speichern zur Datenbank fehlgeschlagen (Lehrlinge: ${okLehrlinge ? "ok" : "FEHLER"}, Plan: ${okPlan ? "ok" : "FEHLER"}). Details in der Browser-Konsole.`,
+      );
+    }
   },
 
   async importContentSeedAwaited(
@@ -590,12 +598,15 @@ export const DataStore = {
     DataStore.setLeitfadenEintraege(leitfaden, false);
     writeJSON(KEYS.lernAbschnitte, lernAbschnitte);
     notifyDataChange();
-    await Promise.all([
+    const [okAnsprechpartner, okWerkzeuge, okLeitfaden] = await Promise.all([
       syncAnsprechpartnerDirect(ansprechpartner),
       syncWerkzeugeDirect(werkzeuge),
       syncLeitfadenDirect(leitfaden),
       saveLernabschnitteToServer(lernAbschnitte),
     ]);
+    if (!okAnsprechpartner || !okWerkzeuge || !okLeitfaden) {
+      throw new Error("Speichern zur Datenbank fehlgeschlagen. Details in der Browser-Konsole.");
+    }
   },
 
   // ---- Plan-Kategorien (selbst angelegte Aktivitäten / Farb-Änderungen) --

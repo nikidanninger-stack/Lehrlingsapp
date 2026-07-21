@@ -110,7 +110,10 @@ async function replaceTable(
   idColumn: string,
   rows: Record<string, unknown>[],
 ): Promise<boolean> {
-  if (!supabase) return false;
+  if (!supabase) {
+    console.warn(`[api] replaceTable(${table}): Supabase-Client ist nicht konfiguriert (VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY fehlen) - es wurde NICHTS gespeichert.`);
+    return false;
+  }
   try {
     // WICHTIG: Erst die neuen Daten sicher speichern (upsert), DANACH erst
     // die nicht mehr gebrauchten alten Zeilen löschen. So bleiben bei einem
