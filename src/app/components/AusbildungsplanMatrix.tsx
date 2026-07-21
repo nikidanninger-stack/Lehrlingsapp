@@ -28,7 +28,24 @@ const ROW_HEIGHT = 18;
 const NAME_WIDTH = 140;
 const BERUF_WIDTH = 90;
 const ORT_WIDTH = 65;
-const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH;
+const KOMMENTAR_WIDTH = 130;
+const GEBURTSDATUM_WIDTH = 95;
+const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
+
+function berechneAlter(geburtsdatum: string | undefined): string {
+  if (!geburtsdatum) return "";
+  const [tag, monat, jahr] = geburtsdatum.split(".").map(Number);
+  if (!tag || !monat || !jahr) return "";
+  const geburt = new Date(jahr, monat - 1, tag);
+  if (Number.isNaN(geburt.getTime())) return "";
+  const heute = new Date();
+  let alter = heute.getFullYear() - geburt.getFullYear();
+  const nochNichtGehabt =
+    heute.getMonth() < geburt.getMonth() ||
+    (heute.getMonth() === geburt.getMonth() && heute.getDate() < geburt.getDate());
+  if (nochNichtGehabt) alter--;
+  return `${alter} J.`;
+}
 
 interface TooltipState {
   x: number;
@@ -100,9 +117,15 @@ export function AusbildungsplanMatrix({
   const [neueFarbe, setNeueFarbe] = useState(FARB_VORSCHLAEGE[0]);
   const isPaintingRef = useRef(false);
   const paintedCellsRef = useRef<Set<string>>(new Set());
+  const [markierterPersonalnummer, setMarkierterPersonalnummer] = useState<string | null>(null);
   const [bearbeiteterName, setBearbeiteterName] = useState<{ personalnummer: string; wert: string } | null>(
     null,
   );
+  const [bearbeitetesFeld, setBearbeitetesFeld] = useState<{
+    personalnummer: string;
+    feld: "kommentar" | "geburtsdatum";
+    wert: string;
+  } | null>(null);
   const draggedPersonalnummerRef = useRef<string | null>(null);
 
   useEffect(() => subscribeToDataChanges(() => setTick((t) => t + 1)), []);
@@ -177,6 +200,22 @@ export function AusbildungsplanMatrix({
       toast.success("Name gespeichert");
     } else {
       toast.error("Name konnte NICHT gespeichert werden - siehe Konsole (F12)");
+    }
+  }
+
+  async function handleFeldSpeichern() {
+    if (!bearbeitetesFeld) return;
+    const { personalnummer, feld, wert } = bearbeitetesFeld;
+    setBearbeitetesFeld(null);
+    const alleLehrlinge = DataStore.getLehrlinge();
+    const aktualisiert = alleLehrlinge.map((l) =>
+      l.personalnummer === personalnummer ? { ...l, [feld]: wert.trim() || undefined } : l,
+    );
+    const ok = await DataStore.setLehrlingeAwaited(aktualisiert);
+    if (ok) {
+      toast.success(feld === "kommentar" ? "Kommentar gespeichert" : "Geburtsdatum gespeichert");
+    } else {
+      toast.error("Konnte nicht gespeichert werden - siehe Konsole (F12)");
     }
   }
 
@@ -276,6 +315,12 @@ export function AusbildungsplanMatrix({
     const dateStr = fmt(date);
     const cellKey = `${lehrling.personalnummer}|${dateStr}`;
     if (paintedCellsRef.current.has(cellKey)) return; // schon in diesem Zug bemalt
+
+    // Feiertage, Samstage und Sonntage sind geschützt und können nicht
+    // übermalt oder gelöscht werden - sie bleiben immer automatisch erkennbar.
+    const { isSaturday, isSunday, holidayName } = dayInfo(date);
+    if (isSaturday || isSunday || holidayName) return;
+
     paintedCellsRef.current.add(cellKey);
 
     if (activeType === "leer") {
@@ -361,12 +406,6 @@ export function AusbildungsplanMatrix({
         <p className="text-sm text-gray-500">
           {fmt(start)} – {fmt(end)} · {lehrlinge.length} Lehrlinge
         </p>
-        <button
-          onClick={scrollToToday}
-          className="text-xs font-semibold text-blue-700 hover:underline"
-        >
-          Zu heute springen
-        </button>
       </div>
 
       {/* Farbpaletten-Werkzeug (nur editierbar) */}
@@ -487,7 +526,13 @@ export function AusbildungsplanMatrix({
         {tooltip && (
           <div
             className="fixed z-50 pointer-events-none text-white text-[10px] rounded px-2 py-1.5 shadow-xl max-w-xs leading-snug"
-            style={{ left: tooltip.x + 12, top: tooltip.y + 12, backgroundColor: DARK_BLUE }}
+            style={{
+              left: tooltip.x + 10 > window.innerWidth - 180 ? tooltip.x - 10 : tooltip.x + 10,
+              top: tooltip.y + 10 > window.innerHeight - 60 ? tooltip.y - 40 : tooltip.y + 10,
+              transform:
+                tooltip.x + 10 > window.innerWidth - 180 ? "translateX(-100%)" : undefined,
+              backgroundColor: DARK_BLUE,
+            }}
           >
             <p className="font-semibold">{tooltip.title}</p>
             <p className="opacity-80">{tooltip.subtitle}</p>
@@ -576,7 +621,27 @@ export function AusbildungsplanMatrix({
                 className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
                 style={{ left: NAME_WIDTH + BERUF_WIDTH, width: ORT_WIDTH, backgroundColor: DARK_BLUE }}
               >
-                Ort
+                LJ
+              </div>
+              <div
+                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
+                style={{
+                  left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH,
+                  width: KOMMENTAR_WIDTH,
+                  backgroundColor: DARK_BLUE,
+                }}
+              >
+                Kommentar
+              </div>
+              <div
+                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
+                style={{
+                  left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH + KOMMENTAR_WIDTH,
+                  width: GEBURTSDATUM_WIDTH,
+                  backgroundColor: DARK_BLUE,
+                }}
+              >
+                Geb.datum / Alter
               </div>
               <div style={{ width: totalWidth }} />
             </div>
@@ -595,15 +660,27 @@ export function AusbildungsplanMatrix({
                   </div>
                   {gruppe.map((lehrling) => {
                     const personEntries = entryByPersonAndDate.get(lehrling.personalnummer);
-                    const isHighlighted = highlightPersonalnummer === lehrling.personalnummer;
+                    const isHighlighted =
+                      highlightPersonalnummer === lehrling.personalnummer ||
+                      markierterPersonalnummer === lehrling.personalnummer;
                     return (
                       <div
                         key={lehrling.personalnummer}
                         className="flex border-b"
-                        style={{ height: ROW_HEIGHT, borderColor: "#eee" }}
+                        style={{
+                          height: ROW_HEIGHT,
+                          borderColor: "#eee",
+                          outline: isHighlighted ? "2px solid #1976D2" : undefined,
+                          outlineOffset: isHighlighted ? "-1px" : undefined,
+                        }}
                       >
                         <div
                           draggable={editable && bearbeiteterName?.personalnummer !== lehrling.personalnummer}
+                          onClick={() =>
+                            setMarkierterPersonalnummer((aktuell) =>
+                              aktuell === lehrling.personalnummer ? null : lehrling.personalnummer,
+                            )
+                          }
                           onDragStart={(e) => {
                             e.stopPropagation();
                             handleNameDragStart(lehrling.personalnummer);
@@ -659,18 +736,99 @@ export function AusbildungsplanMatrix({
                           {lehrling.beruf ?? ""}
                         </div>
                         <div
-                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
+                          className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0 text-[9px] text-gray-600 truncate font-semibold`}
                           style={{
                             left: NAME_WIDTH + BERUF_WIDTH,
                             width: ORT_WIDTH,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                            borderRight: "1px solid #ddd",
+                          }}
+                          title={`Lehrjahr ${lehrling.lehrjahr}`}
+                        >
+                          {lehrling.lehrjahr}
+                        </div>
+                        <div
+                          onDoubleClick={() =>
+                            editable &&
+                            setBearbeitetesFeld({
+                              personalnummer: lehrling.personalnummer,
+                              feld: "kommentar",
+                              wert: lehrling.kommentar ?? "",
+                            })
+                          }
+                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
+                          style={{
+                            left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH,
+                            width: KOMMENTAR_WIDTH,
+                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                            borderRight: "1px solid #ddd",
+                          }}
+                          title={editable ? (lehrling.kommentar || "Doppelklick zum Bearbeiten") : lehrling.kommentar ?? ""}
+                        >
+                          {bearbeitetesFeld?.personalnummer === lehrling.personalnummer &&
+                          bearbeitetesFeld.feld === "kommentar" ? (
+                            <input
+                              autoFocus
+                              value={bearbeitetesFeld.wert}
+                              onChange={(e) => setBearbeitetesFeld({ ...bearbeitetesFeld, wert: e.target.value })}
+                              onBlur={handleFeldSpeichern}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") handleFeldSpeichern();
+                                if (e.key === "Escape") setBearbeitetesFeld(null);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-full bg-white border border-blue-400 rounded px-1 text-[9px] outline-none"
+                            />
+                          ) : (
+                            lehrling.kommentar ?? ""
+                          )}
+                        </div>
+                        <div
+                          onDoubleClick={() =>
+                            editable &&
+                            setBearbeitetesFeld({
+                              personalnummer: lehrling.personalnummer,
+                              feld: "geburtsdatum",
+                              wert: lehrling.geburtsdatum ?? "",
+                            })
+                          }
+                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
+                          style={{
+                            left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH + KOMMENTAR_WIDTH,
+                            width: GEBURTSDATUM_WIDTH,
+                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                             borderRight: "2px solid #aaa",
                           }}
-                          title={lehrling.standort ?? ""}
+                          title={editable ? "Doppelklick zum Bearbeiten (TT.MM.JJJJ)" : ""}
                         >
-                          {lehrling.standort ?? ""}
+                          {bearbeitetesFeld?.personalnummer === lehrling.personalnummer &&
+                          bearbeitetesFeld.feld === "geburtsdatum" ? (
+                            <input
+                              autoFocus
+                              placeholder="TT.MM.JJJJ"
+                              value={bearbeitetesFeld.wert}
+                              onChange={(e) => setBearbeitetesFeld({ ...bearbeitetesFeld, wert: e.target.value })}
+                              onBlur={handleFeldSpeichern}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") handleFeldSpeichern();
+                                if (e.key === "Escape") setBearbeitetesFeld(null);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-full bg-white border border-blue-400 rounded px-1 text-[9px] outline-none"
+                            />
+                          ) : lehrling.geburtsdatum ? (
+                            `${lehrling.geburtsdatum} (${berechneAlter(lehrling.geburtsdatum)})`
+                          ) : (
+                            ""
+                          )}
                         </div>
                         <div className="relative flex" style={{ width: totalWidth }}>
+                          {isHighlighted && (
+                            <div
+                              className="absolute inset-0 pointer-events-none"
+                              style={{ backgroundColor: "rgba(25, 118, 210, 0.18)", zIndex: 5 }}
+                            />
+                          )}
                           {days.map((d, idx) => {
                             const dateStr = fmt(d);
                             const cellKey = `${lehrling.personalnummer}|${dateStr}`;

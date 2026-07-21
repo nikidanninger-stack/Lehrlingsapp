@@ -10,10 +10,12 @@ import {
   Stethoscope,
   CalendarDays,
   Bot,
+  LayoutDashboard,
 } from "lucide-react";
 import type { Screen, User } from "../types";
 import { DataStore, subscribeToDataChanges } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
+import { SectionHeader } from "./ui/SectionHeader";
 import { TypeBadge } from "./ui/TypeBadge";
 import { getGreeting, formatDateLong, daysBetween, parseDate } from "../utils/dateUtils";
 
@@ -239,7 +241,6 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
 function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }) {
   const lehrlinge = DataStore.getLehrlinge();
   const planData = DataStore.getPlanData();
-  const krankmeldungen = DataStore.getKrankmeldungen();
   const lastUpload = DataStore.getLastUpload();
 
   const perLehrjahr = [1, 2, 3, 4].map((jahr) => ({
@@ -247,22 +248,17 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
     count: lehrlinge.filter((l) => l.lehrjahr === jahr).length,
   }));
 
-  const offeneKrankmeldungen = useMemo(() => {
-    const today = new Date();
-    return krankmeldungen.filter((k) => {
-      const end = parseDate(k.endDate);
-      return end && end >= today;
-    });
-  }, [krankmeldungen]);
-
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Admin-Dashboard</h1>
-        <p className="text-gray-500 text-sm mt-1">Überblick über alle Lehrlinge und Daten</p>
-      </div>
+      <GlassCard className="overflow-hidden">
+        <SectionHeader
+          icon={<LayoutDashboard size={22} />}
+          title="Admin-Dashboard"
+          subtitle="Überblick über alle Lehrlinge und Daten"
+        />
+      </GlassCard>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           icon={<GraduationCap size={22} />}
           label="Lehrlinge gesamt"
@@ -274,12 +270,6 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
           label="Planeinträge"
           value={String(planData.length)}
           gradient="from-purple-500 to-purple-700 shadow-purple-500/30"
-        />
-        <StatCard
-          icon={<Stethoscope size={22} />}
-          label="Offene Krankmeld."
-          value={String(offeneKrankmeldungen.length)}
-          gradient="from-red-500 to-red-700 shadow-red-500/30"
         />
         <StatCard
           icon={<TrendingUp size={22} />}
@@ -346,7 +336,7 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
         </GlassCard>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <QuickAction
           icon={<CalendarDays size={22} />}
           label="Jahresplanung"
@@ -364,12 +354,6 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
           label="Lernapp"
           gradient="from-green-500 to-green-700 shadow-green-500/30"
           onClick={() => onNavigate("lernapp")}
-        />
-        <QuickAction
-          icon={<Stethoscope size={22} />}
-          label="Krankmeldungen"
-          gradient="from-red-500 to-red-700 shadow-red-500/30"
-          onClick={() => onNavigate("admin")}
         />
       </div>
     </div>

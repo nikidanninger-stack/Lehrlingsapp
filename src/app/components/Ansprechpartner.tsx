@@ -29,10 +29,14 @@ export function Ansprechpartner({ user }: AnsprechpartnerProps) {
       p.position.toLowerCase().includes(search.toLowerCase()),
   );
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
     if (!confirm("Diesen Ansprechpartner wirklich löschen?")) return;
-    DataStore.deleteAnsprechpartner(id);
-    toast.success("Ansprechpartner gelöscht");
+    const ok = await DataStore.deleteAnsprechpartnerAwaited(id);
+    if (ok) {
+      toast.success("Ansprechpartner gelöscht");
+    } else {
+      toast.error("Löschen fehlgeschlagen - siehe Konsole (F12)");
+    }
   }
 
   function openNew() {
@@ -174,24 +178,24 @@ function AnsprechpartnerFormModal({
     setEmail(person?.email ?? "");
   }, [person, isOpen]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !position.trim()) {
       toast.error("Bitte Name und Position ausfüllen.");
       return;
     }
 
+    let ok: boolean;
     if (person) {
-      DataStore.updateAnsprechpartner(person.id, {
+      ok = await DataStore.updateAnsprechpartnerAwaited(person.id, {
         name,
         position,
         abteilung,
         phone,
         email,
       });
-      toast.success("Ansprechpartner aktualisiert");
     } else {
-      DataStore.addAnsprechpartner({
+      ok = await DataStore.addAnsprechpartnerAwaited({
         id: crypto.randomUUID(),
         name,
         position,
@@ -200,7 +204,13 @@ function AnsprechpartnerFormModal({
         email,
         responsibilities: [],
       });
-      toast.success("Ansprechpartner hinzugefügt");
+    }
+
+    if (ok) {
+      toast.success(person ? "Ansprechpartner aktualisiert" : "Ansprechpartner hinzugefügt");
+    } else {
+      toast.error("Konnte nicht gespeichert werden - siehe Konsole (F12)");
+      return;
     }
     onClose();
   }

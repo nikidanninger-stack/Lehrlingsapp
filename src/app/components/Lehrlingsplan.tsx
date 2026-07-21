@@ -128,9 +128,6 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
         </GlassCard>
       )}
 
-      {/* Massenänderung für ganze Gruppen */}
-      <AdminMassenaenderung />
-
       {/* Breite Matrix-Übersicht aller Lehrlinge */}
       <GlassCard>
         <SectionHeader
@@ -169,6 +166,9 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
           )}
         </div>
       </GlassCard>
+
+      {/* Massenänderung für ganze Gruppen */}
+      <AdminMassenaenderung />
     </div>
   );
 }

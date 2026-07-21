@@ -43,10 +43,14 @@ export function Lehrlingsleitfaden({ user }: LehrlingsleitfadenProps) {
 
   const kategorien = Array.from(new Set(relevante.map((e) => e.kategorie)));
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
     if (!confirm("Diesen Eintrag wirklich löschen?")) return;
-    DataStore.deleteLeitfadenEintrag(id);
-    toast.success("Eintrag gelöscht");
+    const ok = await DataStore.deleteLeitfadenEintragAwaited(id);
+    if (ok) {
+      toast.success("Eintrag gelöscht");
+    } else {
+      toast.error("Löschen fehlgeschlagen - siehe Konsole (F12)");
+    }
   }
 
   function openNew() {
@@ -205,24 +209,24 @@ function LeitfadenFormModal({
     );
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!titel.trim() || !kategorie.trim()) {
       toast.error("Bitte Titel und Kategorie ausfüllen.");
       return;
     }
 
+    let ok: boolean;
     if (eintrag) {
-      DataStore.updateLeitfadenEintrag(eintrag.id, {
+      ok = await DataStore.updateLeitfadenEintragAwaited(eintrag.id, {
         titel,
         kategorie,
         inhalt,
         lehrjahre,
         sortierung,
       });
-      toast.success("Eintrag aktualisiert");
     } else {
-      DataStore.addLeitfadenEintrag({
+      ok = await DataStore.addLeitfadenEintragAwaited({
         id: crypto.randomUUID(),
         titel,
         kategorie,
@@ -231,7 +235,13 @@ function LeitfadenFormModal({
         wichtig: false,
         sortierung,
       });
-      toast.success("Eintrag hinzugefügt");
+    }
+
+    if (ok) {
+      toast.success(eintrag ? "Eintrag aktualisiert" : "Eintrag hinzugefügt");
+    } else {
+      toast.error("Konnte nicht gespeichert werden - siehe Konsole (F12)");
+      return;
     }
     onClose();
   }

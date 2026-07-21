@@ -7,6 +7,21 @@ import { GlassCard } from "./ui/GlassCard";
 import { Button } from "./ui/Button";
 import { Modal } from "./ui/Modal";
 
+function berechneAlter(geburtsdatum: string | undefined): string {
+  if (!geburtsdatum) return "";
+  const [tag, monat, jahr] = geburtsdatum.split(".").map(Number);
+  if (!tag || !monat || !jahr) return "";
+  const geburt = new Date(jahr, monat - 1, tag);
+  if (Number.isNaN(geburt.getTime())) return "";
+  const heute = new Date();
+  let alter = heute.getFullYear() - geburt.getFullYear();
+  const nochNichtGehabt =
+    heute.getMonth() < geburt.getMonth() ||
+    (heute.getMonth() === geburt.getMonth() && heute.getDate() < geburt.getDate());
+  if (nochNichtGehabt) alter--;
+  return `${alter} Jahre`;
+}
+
 export function AdminLehrlingeTab() {
   const [, forceUpdate] = useState(0);
   const [search, setSearch] = useState("");
@@ -23,11 +38,15 @@ export function AdminLehrlingeTab() {
     return matchesSearch && matchesJahr;
   });
 
-  function handleDelete(personalnummer: string) {
+  async function handleDelete(personalnummer: string) {
     if (!confirm("Diesen Lehrling wirklich löschen?")) return;
-    DataStore.deleteLehrling(personalnummer);
+    const ok = await DataStore.deleteLehrlingAwaited(personalnummer);
     forceUpdate((n) => n + 1);
-    toast.success("Lehrling gelöscht");
+    if (ok) {
+      toast.success("Lehrling gelöscht");
+    } else {
+      toast.error("Löschen fehlgeschlagen - siehe Konsole (F12)");
+    }
   }
 
   function openNew() {
@@ -150,15 +169,19 @@ function LehrlingFormModal({
   const [name, setName] = useState(lehrling?.name ?? "");
   const [lehrjahr, setLehrjahr] = useState(lehrling?.lehrjahr ?? 1);
   const [standort, setStandort] = useState<Lehrling["standort"]>(lehrling?.standort);
+  const [kommentar, setKommentar] = useState(lehrling?.kommentar ?? "");
+  const [geburtsdatum, setGeburtsdatum] = useState(lehrling?.geburtsdatum ?? "");
 
   useState(() => {
     setPersonalnummer(lehrling?.personalnummer ?? "");
     setName(lehrling?.name ?? "");
     setLehrjahr(lehrling?.lehrjahr ?? 1);
     setStandort(lehrling?.standort);
+    setKommentar(lehrling?.kommentar ?? "");
+    setGeburtsdatum(lehrling?.geburtsdatum ?? "");
   });
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!personalnummer.trim() || !name.trim()) {
       toast.error("Bitte Personalnummer und Name ausfüllen.");
@@ -166,18 +189,31 @@ function LehrlingFormModal({
     }
 
     try {
+      let ok: boolean;
       if (lehrling) {
-        DataStore.updateLehrling(lehrling.personalnummer, {
+        ok = await DataStore.updateLehrlingAwaited(lehrling.personalnummer, {
           name,
           lehrjahr,
           standort,
+          kommentar: kommentar.trim() || undefined,
+          geburtsdatum: geburtsdatum.trim() || undefined,
         });
-        toast.success("Lehrling aktualisiert");
       } else {
-        DataStore.addLehrling({ personalnummer, name, lehrjahr, standort });
-        toast.success("Lehrling hinzugefügt");
+        ok = await DataStore.addLehrlingAwaited({
+          personalnummer,
+          name,
+          lehrjahr,
+          standort,
+          kommentar: kommentar.trim() || undefined,
+          geburtsdatum: geburtsdatum.trim() || undefined,
+        });
       }
-      onClose();
+      if (ok) {
+        toast.success(lehrling ? "Lehrling aktualisiert" : "Lehrling hinzugefügt");
+        onClose();
+      } else {
+        toast.error("Speichern fehlgeschlagen - siehe Konsole (F12)");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Fehler beim Speichern");
     }
@@ -239,7 +275,30 @@ function LehrlingFormModal({
             <option value="Wien">Wien</option>
             <option value="Linz">Linz</option>
             <option value="St. Martin">St. Martin</option>
+            <option value="Deutschland">Deutschland</option>
           </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Geburtsdatum</label>
+          <input
+            value={geburtsdatum}
+            onChange={(e) => setGeburtsdatum(e.target.value)}
+            className="input"
+            placeholder="TT.MM.JJJJ, z.B. 15.03.2008"
+          />
+          {geburtsdatum.trim() && berechneAlter(geburtsdatum) && (
+            <p className="text-xs text-gray-500 mt-1">Aktuelles Alter: {berechneAlter(geburtsdatum)}</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Kommentar</label>
+          <textarea
+            value={kommentar}
+            onChange={(e) => setKommentar(e.target.value)}
+            className="input"
+            rows={2}
+            placeholder="Freie Notiz zu diesem Lehrling..."
+          />
         </div>
         <div className="flex gap-2 pt-2">
           <Button type="submit" className="flex-1">

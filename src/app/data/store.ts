@@ -190,6 +190,26 @@ export const DataStore = {
     );
   },
 
+  async addLehrlingAwaited(lehrling: Lehrling): Promise<boolean> {
+    const all = DataStore.getLehrlinge();
+    if (all.some((l) => l.personalnummer === lehrling.personalnummer)) {
+      throw new Error("Personalnummer bereits vergeben");
+    }
+    return DataStore.setLehrlingeAwaited([...all, lehrling]);
+  },
+
+  async updateLehrlingAwaited(personalnummer: string, updates: Partial<Lehrling>): Promise<boolean> {
+    const all = DataStore.getLehrlinge();
+    return DataStore.setLehrlingeAwaited(
+      all.map((l) => (l.personalnummer === personalnummer ? { ...l, ...updates } : l)),
+    );
+  },
+
+  async deleteLehrlingAwaited(personalnummer: string): Promise<boolean> {
+    const all = DataStore.getLehrlinge();
+    return DataStore.setLehrlingeAwaited(all.filter((l) => l.personalnummer !== personalnummer));
+  },
+
   findLehrling(personalnummer: string): Lehrling | undefined {
     return DataStore.getLehrlinge().find(
       (l) => l.personalnummer === personalnummer,
@@ -294,6 +314,28 @@ export const DataStore = {
     }
   },
 
+  async setAnsprechpartnerAwaited(list: Ansprechpartner[]): Promise<boolean> {
+    writeJSON(KEYS.ansprechpartner, list);
+    notifyDataChange();
+    return syncAnsprechpartnerDirect(list);
+  },
+
+  async addAnsprechpartnerAwaited(person: Ansprechpartner): Promise<boolean> {
+    return DataStore.setAnsprechpartnerAwaited([...DataStore.getAnsprechpartner(), person]);
+  },
+
+  async updateAnsprechpartnerAwaited(id: string, updates: Partial<Ansprechpartner>): Promise<boolean> {
+    return DataStore.setAnsprechpartnerAwaited(
+      DataStore.getAnsprechpartner().map((p) => (p.id === id ? { ...p, ...updates } : p)),
+    );
+  },
+
+  async deleteAnsprechpartnerAwaited(id: string): Promise<boolean> {
+    return DataStore.setAnsprechpartnerAwaited(
+      DataStore.getAnsprechpartner().filter((p) => p.id !== id),
+    );
+  },
+
   addAnsprechpartner(person: Ansprechpartner): void {
     DataStore.setAnsprechpartner([...DataStore.getAnsprechpartner(), person]);
   },
@@ -356,6 +398,28 @@ export const DataStore = {
     if (syncToServer) {
       void syncLeitfadenDirect(list);
     }
+  },
+
+  async setLeitfadenEintraegeAwaited(list: LeitfadenEintrag[]): Promise<boolean> {
+    writeJSON(KEYS.leitfadenEintraege, list);
+    notifyDataChange();
+    return syncLeitfadenDirect(list);
+  },
+
+  async addLeitfadenEintragAwaited(eintrag: LeitfadenEintrag): Promise<boolean> {
+    return DataStore.setLeitfadenEintraegeAwaited([...DataStore.getLeitfadenEintraege(), eintrag]);
+  },
+
+  async updateLeitfadenEintragAwaited(id: string, updates: Partial<LeitfadenEintrag>): Promise<boolean> {
+    return DataStore.setLeitfadenEintraegeAwaited(
+      DataStore.getLeitfadenEintraege().map((e) => (e.id === id ? { ...e, ...updates } : e)),
+    );
+  },
+
+  async deleteLeitfadenEintragAwaited(id: string): Promise<boolean> {
+    return DataStore.setLeitfadenEintraegeAwaited(
+      DataStore.getLeitfadenEintraege().filter((e) => e.id !== id),
+    );
   },
 
   addLeitfadenEintrag(eintrag: LeitfadenEintrag): void {

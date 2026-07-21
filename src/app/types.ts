@@ -7,9 +7,11 @@ export interface Lehrling {
   personalnummer: string; // Eindeutige ID, z.B. "12345"
   name: string; // "Max Mustermann"
   lehrjahr: number; // 1, 2, 3 oder 4
-  standort?: "Wien" | "Linz" | "St. Martin";
+  standort?: "Wien" | "Linz" | "St. Martin" | "Deutschland";
   beruf?: string; // z.B. "KT + ET", "Bürokauffrau", "Konstrukteur"
   reihenfolge?: number; // manuelle Sortierposition innerhalb des Lehrjahres (kleiner = weiter oben)
+  kommentar?: string; // freier Kommentar/Notiz zum Lehrling
+  geburtsdatum?: string; // Format: "DD.MM.YYYY"
 }
 
 // Alle bekannten Planungs-Eintragstypen.
