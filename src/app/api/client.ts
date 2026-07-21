@@ -104,6 +104,35 @@ export async function updateTable(
 // ohne dass jedes Gerät erneut importieren muss.
 // ----------------------------------------------------------------------------
 
+// Generischer Helfer: ALLE Zeilen einer Tabelle laden, nicht nur die ersten
+// 1000. Supabase/PostgREST liefert bei .select("*") ohne .range() standard-
+// mäßig nur maximal 1000 Zeilen pro Anfrage zurück - bei größeren Tabellen
+// (z.B. plan_entries mit über 14.000 Zeilen) wurden dadurch stillschweigend
+// alle weiteren Zeilen abgeschnitten, ohne dass ein Fehler sichtbar war. Das
+// war die Ursache dafür, dass nach jedem frischen Laden nur ein Teil der
+// Termine zu sehen war. Hier wird seitenweise nachgeladen, bis wirklich
+// alles da ist.
+async function fetchAllRows(table: string, columns = "*"): Promise<Record<string, any>[] | null> {
+  if (!supabase) return null;
+  const pageSize = 1000;
+  const allRows: Record<string, any>[] = [];
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .range(from, from + pageSize - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    allRows.push(...data);
+    if (data.length < pageSize) break; // letzte Seite erreicht
+    from += pageSize;
+  }
+
+  return allRows;
+}
+
 // Generischer Helfer: komplette Tabelle ersetzen (löschen + neu einfügen)
 async function replaceTable(
   table: string,
@@ -155,10 +184,7 @@ async function replaceTable(
     // den Unterschied in JavaScript berechnen und nur die wirklich
     // gelöschten Zeilen in kleinen Häppchen entfernen (meist nur eine
     // Handvoll, nicht tausende).
-    const { data: existingRows, error: fetchIdsError } = await supabase
-      .from(table)
-      .select(idColumn);
-    if (fetchIdsError) throw fetchIdsError;
+    const existingRows = await fetchAllRows(table, idColumn);
 
     const newIdSet = new Set(newIds);
     const staleIds = (existingRows ?? [])
@@ -186,8 +212,7 @@ async function replaceTable(
 export async function fetchLehrlingeDirect(): Promise<Lehrling[] | null> {
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase.from("lehrlinge").select("*");
-    if (error) throw error;
+    const data = await fetchAllRows("lehrlinge");
     return (data ?? []) as Lehrling[];
   } catch (err) {
     console.warn("[api] fetchLehrlingeDirect fehlgeschlagen", err);
@@ -238,8 +263,7 @@ function rowToPlanEntry(row: Record<string, any>): PlanEntry {
 export async function fetchPlanDataDirect(): Promise<PlanEntry[] | null> {
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase.from("plan_entries").select("*");
-    if (error) throw error;
+    const data = await fetchAllRows("plan_entries");
     return (data ?? []).map(rowToPlanEntry);
   } catch (err) {
     console.warn("[api] fetchPlanDataDirect fehlgeschlagen", err);
@@ -286,8 +310,7 @@ export async function fetchAnsprechpartnerDirect(): Promise<
 > {
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase.from("ansprechpartner").select("*");
-    if (error) throw error;
+    const data = await fetchAllRows("ansprechpartner");
     return (data ?? []).map(rowToAnsprechpartner);
   } catch (err) {
     console.warn("[api] fetchAnsprechpartnerDirect fehlgeschlagen", err);
@@ -330,8 +353,7 @@ function rowToWerkzeug(row: Record<string, any>): Werkzeug {
 export async function fetchWerkzeugeDirect(): Promise<Werkzeug[] | null> {
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase.from("werkzeuge").select("*");
-    if (error) throw error;
+    const data = await fetchAllRows("werkzeuge");
     return (data ?? []).map(rowToWerkzeug);
   } catch (err) {
     console.warn("[api] fetchWerkzeugeDirect fehlgeschlagen", err);
@@ -374,10 +396,7 @@ export async function fetchLeitfadenDirect(): Promise<
 > {
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase
-      .from("leitfaden_eintraege")
-      .select("*");
-    if (error) throw error;
+    const data = await fetchAllRows("leitfaden_eintraege");
     return (data ?? []).map(rowToLeitfaden);
   } catch (err) {
     console.warn("[api] fetchLeitfadenDirect fehlgeschlagen", err);
@@ -404,8 +423,7 @@ function rowToKategorie(row: Record<string, any>): PlanKategorie {
 export async function fetchKategorienDirect(): Promise<PlanKategorie[] | null> {
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase.from("plan_kategorien").select("*");
-    if (error) throw error;
+    const data = await fetchAllRows("plan_kategorien");
     return (data ?? []).map(rowToKategorie);
   } catch (err) {
     console.warn("[api] fetchKategorienDirect fehlgeschlagen", err);
