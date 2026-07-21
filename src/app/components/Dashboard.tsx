@@ -15,7 +15,6 @@ import {
 import type { Screen, User } from "../types";
 import { DataStore, subscribeToDataChanges } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
-import { SectionHeader } from "./ui/SectionHeader";
 import { TypeBadge } from "./ui/TypeBadge";
 import { getGreeting, formatDateLong, daysBetween, parseDate } from "../utils/dateUtils";
 
@@ -83,22 +82,26 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
   return (
     <div className="space-y-6">
       {/* Begrüßung */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">
-          {getGreeting()}, {user.name.split(" ")[0]}!
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Lehrjahr {user.lehrjahr}
-          {lehrling?.standort ? ` | ${lehrling.standort}` : ""}
-        </p>
-        <p className="text-gray-400 text-xs mt-0.5 capitalize">
-          {new Date().toLocaleDateString("de-AT", {
-            weekday: "long",
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white px-6 py-6 shadow-xl shadow-indigo-500/20">
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+        <div className="absolute -bottom-14 -left-10 w-48 h-48 bg-pink-400/20 rounded-full blur-2xl" />
+        <div className="relative">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            {getGreeting()}, {user.name.split(" ")[0]}! 👋
+          </h1>
+          <p className="text-blue-100 text-sm mt-1.5 font-medium">
+            Lehrjahr {user.lehrjahr}
+            {lehrling?.standort ? ` · ${lehrling.standort}` : ""}
+          </p>
+          <p className="text-blue-200/80 text-xs mt-0.5 capitalize">
+            {new Date().toLocaleDateString("de-AT", {
+              weekday: "long",
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+        </div>
       </div>
 
       {/* Statistik-Karten */}
@@ -131,7 +134,7 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Leaderboard */}
-        <GlassCard className="p-6">
+        <GlassCard className="p-6" hoverEffect>
           <div className="flex items-center gap-2 mb-4">
             <Trophy size={20} className="text-amber-500" />
             <h2 className="font-bold text-gray-800">Lernapp Rangliste</h2>
@@ -178,7 +181,7 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
         </GlassCard>
 
         {/* Nächste Aktivität */}
-        <GlassCard className="p-6">
+        <GlassCard className="p-6" hoverEffect>
           <div className="flex items-center gap-2 mb-4">
             <CalendarDays size={20} className="text-blue-600" />
             <h2 className="font-bold text-gray-800">Nächste Aktivität</h2>
@@ -202,7 +205,7 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
 
       {/* Schnellzugriff */}
       <div>
-        <h2 className="font-bold text-gray-800 mb-3">Schnellzugriff</h2>
+        <h2 className="font-bold text-gray-800 mb-3">Schnellzugriff ⚡</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <QuickAction
             icon={<GraduationCap size={22} />}
@@ -250,13 +253,21 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
 
   return (
     <div className="space-y-6">
-      <GlassCard className="overflow-hidden">
-        <SectionHeader
-          icon={<LayoutDashboard size={22} />}
-          title="Admin-Dashboard"
-          subtitle="Überblick über alle Lehrlinge und Daten"
-        />
-      </GlassCard>
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white px-6 py-6 shadow-xl shadow-indigo-500/20">
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+        <div className="absolute -bottom-14 -left-10 w-48 h-48 bg-pink-400/20 rounded-full blur-2xl" />
+        <div className="relative flex items-center gap-3">
+          <div className="p-2.5 bg-white/20 rounded-xl">
+            <LayoutDashboard size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight">Admin-Dashboard 🚀</h1>
+            <p className="text-blue-100 text-sm font-medium">
+              Überblick über alle Lehrlinge und Daten
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
@@ -290,7 +301,7 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        <GlassCard className="p-6">
+        <GlassCard className="p-6" hoverEffect>
           <h2 className="font-bold text-gray-800 mb-4">Lehrlinge nach Lehrjahr</h2>
           <div className="space-y-3">
             {perLehrjahr.map(({ jahr, count }) => (
@@ -312,7 +323,7 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
           </div>
         </GlassCard>
 
-        <GlassCard className="p-6">
+        <GlassCard className="p-6" hoverEffect>
           <h2 className="font-bold text-gray-800 mb-4">Letzter Upload</h2>
           {lastUpload ? (
             <div className="text-sm text-gray-600 space-y-1">
@@ -377,11 +388,14 @@ function StatCard({
 }) {
   return (
     <div
-      className={`bg-gradient-to-br ${gradient} text-white rounded-2xl shadow-lg p-4 hover:scale-105 hover:shadow-2xl transition-all duration-300`}
+      className={`relative overflow-hidden bg-gradient-to-br ${gradient} text-white rounded-2xl shadow-lg p-4 hover:scale-[1.04] hover:shadow-2xl transition-all duration-300`}
     >
-      <div className="opacity-90 mb-2">{icon}</div>
-      <div className="text-2xl font-bold leading-tight">{value}</div>
-      <div className="text-xs opacity-90 mt-0.5">{label}</div>
+      <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/10 rounded-full blur-xl" />
+      <div className="relative">
+        <div className="inline-flex p-2 bg-white/20 rounded-xl mb-2.5">{icon}</div>
+        <div className="text-2xl font-extrabold leading-tight tracking-tight">{value}</div>
+        <div className="text-xs opacity-90 mt-0.5 font-medium">{label}</div>
+      </div>
     </div>
   );
 }
@@ -400,10 +414,11 @@ function QuickAction({
   return (
     <button
       onClick={onClick}
-      className={`bg-gradient-to-br ${gradient} text-white rounded-2xl shadow-lg p-5 flex flex-col items-center gap-2 hover:scale-105 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300`}
+      className={`relative overflow-hidden bg-gradient-to-br ${gradient} text-white rounded-2xl shadow-lg p-5 flex flex-col items-center gap-2.5 hover:scale-[1.06] hover:shadow-2xl hover:-translate-y-1 transition-all duration-300`}
     >
-      {icon}
-      <span className="text-xs font-semibold">{label}</span>
+      <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-white/10 rounded-full blur-xl" />
+      <div className="relative p-2.5 bg-white/20 rounded-full">{icon}</div>
+      <span className="relative text-xs font-bold">{label}</span>
     </button>
   );
 }
