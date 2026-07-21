@@ -28,10 +28,9 @@ const DAY_WIDTH = 11;
 const ROW_HEIGHT = 18;
 const NAME_WIDTH = 140;
 const BERUF_WIDTH = 90;
-const ORT_WIDTH = 65;
 const KOMMENTAR_WIDTH = 26;
 const GEBURTSDATUM_WIDTH = 95;
-const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
+const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
 
 function berechneAlter(geburtsdatum: string | undefined): string {
   if (!geburtsdatum) return "";
@@ -126,6 +125,8 @@ export function AusbildungsplanMatrix({
     personalnummer: string;
     feld: "kommentar" | "geburtsdatum";
     wert: string;
+    x: number;
+    y: number;
   } | null>(null);
   const draggedPersonalnummerRef = useRef<string | null>(null);
 
@@ -539,6 +540,62 @@ export function AusbildungsplanMatrix({
             <p className="opacity-80">{tooltip.subtitle}</p>
           </div>
         )}
+        {bearbeitetesFeld && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setBearbeitetesFeld(null)} />
+            <div
+              className="fixed z-50 bg-white border border-blue-400 rounded-lg shadow-2xl p-2"
+              style={{
+                left: Math.min(bearbeitetesFeld.x, window.innerWidth - 240),
+                top: Math.min(bearbeitetesFeld.y + 8, window.innerHeight - 70),
+                width: 220,
+              }}
+            >
+              <label className="block text-[9px] font-semibold text-gray-500 mb-1">
+                {bearbeitetesFeld.feld === "kommentar" ? "Kommentar" : "Geburtsdatum (TT.MM.JJJJ)"}
+              </label>
+              {bearbeitetesFeld.feld === "kommentar" ? (
+                <textarea
+                  autoFocus
+                  value={bearbeitetesFeld.wert}
+                  onChange={(e) => setBearbeitetesFeld({ ...bearbeitetesFeld, wert: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") setBearbeitetesFeld(null);
+                  }}
+                  rows={3}
+                  placeholder="Kommentar..."
+                  className="w-full bg-white border border-gray-300 rounded px-1.5 py-1 text-[11px] outline-none focus:border-blue-500"
+                />
+              ) : (
+                <input
+                  autoFocus
+                  placeholder="TT.MM.JJJJ"
+                  value={bearbeitetesFeld.wert}
+                  onChange={(e) => setBearbeitetesFeld({ ...bearbeitetesFeld, wert: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleFeldSpeichern();
+                    if (e.key === "Escape") setBearbeitetesFeld(null);
+                  }}
+                  className="w-full bg-white border border-gray-300 rounded px-1.5 py-1 text-[11px] outline-none focus:border-blue-500"
+                />
+              )}
+              <div className="flex justify-end gap-1.5 mt-1.5">
+                <button
+                  onClick={() => setBearbeitetesFeld(null)}
+                  className="text-[10px] px-2 py-1 text-gray-500 hover:text-gray-700"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={handleFeldSpeichern}
+                  className="text-[10px] px-2.5 py-1 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700"
+                >
+                  Speichern
+                </button>
+              </div>
+            </div>
+          </>
+        )}
         <div
           ref={scrollRef}
           onMouseLeave={() => setTooltip(null)}
@@ -619,15 +676,9 @@ export function AusbildungsplanMatrix({
                 Beruf
               </div>
               <div
-                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
-                style={{ left: NAME_WIDTH + BERUF_WIDTH, width: ORT_WIDTH, backgroundColor: DARK_BLUE }}
-              >
-                LJ
-              </div>
-              <div
                 className={`${STICKY_CLASS} z-30 flex items-center justify-center shrink-0`}
                 style={{
-                  left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH,
+                  left: NAME_WIDTH + BERUF_WIDTH,
                   width: KOMMENTAR_WIDTH,
                   backgroundColor: DARK_BLUE,
                 }}
@@ -638,7 +689,7 @@ export function AusbildungsplanMatrix({
               <div
                 className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
                 style={{
-                  left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH + KOMMENTAR_WIDTH,
+                  left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
                   width: GEBURTSDATUM_WIDTH,
                   backgroundColor: DARK_BLUE,
                 }}
@@ -738,29 +789,19 @@ export function AusbildungsplanMatrix({
                           {lehrling.beruf ?? ""}
                         </div>
                         <div
-                          className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0 text-[9px] text-gray-600 truncate font-semibold`}
-                          style={{
-                            left: NAME_WIDTH + BERUF_WIDTH,
-                            width: ORT_WIDTH,
-                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
-                            borderRight: "1px solid #ddd",
-                          }}
-                          title={`Lehrjahr ${lehrling.lehrjahr}`}
-                        >
-                          {lehrling.lehrjahr}
-                        </div>
-                        <div
-                          onDoubleClick={() =>
+                          onDoubleClick={(e) =>
                             editable &&
                             setBearbeitetesFeld({
                               personalnummer: lehrling.personalnummer,
                               feld: "kommentar",
                               wert: lehrling.kommentar ?? "",
+                              x: e.clientX,
+                              y: e.clientY,
                             })
                           }
                           className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0`}
                           style={{
-                            left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH,
+                            left: NAME_WIDTH + BERUF_WIDTH,
                             width: KOMMENTAR_WIDTH,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                             borderRight: "1px solid #ddd",
@@ -771,68 +812,35 @@ export function AusbildungsplanMatrix({
                             (editable ? "Doppelklick, um einen Kommentar zu schreiben" : "")
                           }
                         >
-                          {bearbeitetesFeld?.personalnummer === lehrling.personalnummer &&
-                          bearbeitetesFeld.feld === "kommentar" ? (
-                            <input
-                              autoFocus
-                              value={bearbeitetesFeld.wert}
-                              onChange={(e) => setBearbeitetesFeld({ ...bearbeitetesFeld, wert: e.target.value })}
-                              onBlur={handleFeldSpeichern}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") handleFeldSpeichern();
-                                if (e.key === "Escape") setBearbeitetesFeld(null);
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                              className="absolute z-20 bg-white border border-blue-400 rounded px-1.5 py-1 text-[10px] outline-none shadow-lg"
-                              style={{ width: 220, left: 0, top: "100%" }}
-                              placeholder="Kommentar..."
-                            />
-                          ) : (
-                            <StickyNote
-                              size={12}
-                              className={lehrling.kommentar ? "text-amber-500" : "text-gray-300"}
-                              fill={lehrling.kommentar ? "currentColor" : "none"}
-                            />
-                          )}
+                          <StickyNote
+                            size={12}
+                            className={lehrling.kommentar ? "text-amber-500" : "text-gray-300"}
+                            fill={lehrling.kommentar ? "currentColor" : "none"}
+                          />
                         </div>
                         <div
-                          onDoubleClick={() =>
+                          onDoubleClick={(e) =>
                             editable &&
                             setBearbeitetesFeld({
                               personalnummer: lehrling.personalnummer,
                               feld: "geburtsdatum",
                               wert: lehrling.geburtsdatum ?? "",
+                              x: e.clientX,
+                              y: e.clientY,
                             })
                           }
                           className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
                           style={{
-                            left: NAME_WIDTH + BERUF_WIDTH + ORT_WIDTH + KOMMENTAR_WIDTH,
+                            left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
                             width: GEBURTSDATUM_WIDTH,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                             borderRight: "2px solid #aaa",
                           }}
                           title={editable ? "Doppelklick zum Bearbeiten (TT.MM.JJJJ)" : ""}
                         >
-                          {bearbeitetesFeld?.personalnummer === lehrling.personalnummer &&
-                          bearbeitetesFeld.feld === "geburtsdatum" ? (
-                            <input
-                              autoFocus
-                              placeholder="TT.MM.JJJJ"
-                              value={bearbeitetesFeld.wert}
-                              onChange={(e) => setBearbeitetesFeld({ ...bearbeitetesFeld, wert: e.target.value })}
-                              onBlur={handleFeldSpeichern}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") handleFeldSpeichern();
-                                if (e.key === "Escape") setBearbeitetesFeld(null);
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                              className="w-full bg-white border border-blue-400 rounded px-1 text-[9px] outline-none"
-                            />
-                          ) : lehrling.geburtsdatum ? (
-                            `${lehrling.geburtsdatum} (${berechneAlter(lehrling.geburtsdatum)})`
-                          ) : (
-                            ""
-                          )}
+                          {lehrling.geburtsdatum
+                            ? `${lehrling.geburtsdatum} (${berechneAlter(lehrling.geburtsdatum)})`
+                            : ""}
                         </div>
                         <div className="relative flex" style={{ width: totalWidth }}>
                           {isHighlighted && (
