@@ -566,6 +566,38 @@ export const DataStore = {
     return result;
   },
 
+  // Für den manuellen "Jetzt importieren"-Button im Admin-Bereich: schreibt
+  // erst lokal (schnell, für sofortiges UI-Feedback), wartet DANACH aber
+  // wirklich auf den Abschluss des Uploads zur Datenbank, bevor die Funktion
+  // zurückkehrt. Ohne dieses Warten könnte der Admin (oder ein versehentlich
+  // zu früh geschlossener Tab / gelöschte Browserdaten) den noch laufenden
+  // Upload von tausenden Einträgen mittendrin abbrechen - dann wäre trotz
+  // "Erfolgreich importiert"-Meldung nie wirklich alles gespeichert worden.
+  async importSeedDataAwaited(lehrlinge: Lehrling[], planData: PlanEntry[]): Promise<void> {
+    DataStore.setLehrlinge(lehrlinge, false);
+    DataStore.setPlanData(planData, false);
+    await Promise.all([syncLehrlingeDirect(lehrlinge), syncPlanDataDirect(planData)]);
+  },
+
+  async importContentSeedAwaited(
+    ansprechpartner: Ansprechpartner[],
+    werkzeuge: Werkzeug[],
+    leitfaden: LeitfadenEintrag[],
+    lernAbschnitte: LernAbschnitt[],
+  ): Promise<void> {
+    DataStore.setAnsprechpartner(ansprechpartner, false);
+    DataStore.setWerkzeuge(werkzeuge, false);
+    DataStore.setLeitfadenEintraege(leitfaden, false);
+    writeJSON(KEYS.lernAbschnitte, lernAbschnitte);
+    notifyDataChange();
+    await Promise.all([
+      syncAnsprechpartnerDirect(ansprechpartner),
+      syncWerkzeugeDirect(werkzeuge),
+      syncLeitfadenDirect(leitfaden),
+      saveLernabschnitteToServer(lernAbschnitte),
+    ]);
+  },
+
   // ---- Plan-Kategorien (selbst angelegte Aktivitäten / Farb-Änderungen) --
 
   getKategorien(): PlanKategorie[] {

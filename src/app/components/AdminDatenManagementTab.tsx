@@ -28,14 +28,13 @@ export function AdminDatenManagementTab() {
     setSeeding(true);
     try {
       const mod = await import("../data/seedData");
-      DataStore.setLehrlinge(mod.SEED_LEHRLINGE);
-      DataStore.setPlanData(mod.SEED_PLAN_DATA);
+      await DataStore.importSeedDataAwaited(mod.SEED_LEHRLINGE, mod.SEED_PLAN_DATA);
       DataStore.setLastUpload({
         date: new Date().toISOString(),
         fileName: "Lehrlingsplan_2026_2027.html (manueller Import)",
       });
       toast.success(
-        `${mod.SEED_LEHRLINGE.length} Lehrlinge und ${mod.SEED_PLAN_DATA.length} Plan-Einträge importiert.`,
+        `${mod.SEED_LEHRLINGE.length} Lehrlinge und ${mod.SEED_PLAN_DATA.length} Plan-Einträge importiert und gespeichert.`,
       );
     } catch (err) {
       console.error("Seed-Import fehlgeschlagen:", err);
@@ -51,16 +50,20 @@ export function AdminDatenManagementTab() {
     setSeedingContent(true);
     try {
       const mod = await import("../data/seedContentData");
-      DataStore.setAnsprechpartner(mod.SEED_ANSPRECHPARTNER);
-      DataStore.setWerkzeuge(mod.SEED_WERKZEUGE);
-      DataStore.setLeitfadenEintraege(mod.SEED_LEITFADEN);
 
       const seedIds = new Set(mod.SEED_LERNABSCHNITTE.map((a) => a.id));
       const bestehende = DataStore.getLernAbschnitte().filter((a) => !seedIds.has(a.id));
-      DataStore.setLernAbschnitte([...bestehende, ...mod.SEED_LERNABSCHNITTE]);
+      const alleLernAbschnitte = [...bestehende, ...mod.SEED_LERNABSCHNITTE];
+
+      await DataStore.importContentSeedAwaited(
+        mod.SEED_ANSPRECHPARTNER,
+        mod.SEED_WERKZEUGE,
+        mod.SEED_LEITFADEN,
+        alleLernAbschnitte,
+      );
 
       toast.success(
-        `${mod.SEED_ANSPRECHPARTNER.length} Ansprechpartner, ${mod.SEED_WERKZEUGE.length} Werkzeuge, ${mod.SEED_LEITFADEN.length} Leitfaden-Einträge und ${mod.SEED_LERNABSCHNITTE.length} Lernmodule importiert.`,
+        `${mod.SEED_ANSPRECHPARTNER.length} Ansprechpartner, ${mod.SEED_WERKZEUGE.length} Werkzeuge, ${mod.SEED_LEITFADEN.length} Leitfaden-Einträge und ${mod.SEED_LERNABSCHNITTE.length} Lernmodule importiert und gespeichert.`,
       );
     } catch (err) {
       console.error("Content-Seed-Import fehlgeschlagen:", err);
