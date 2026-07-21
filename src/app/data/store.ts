@@ -562,7 +562,7 @@ export const DataStore = {
 
   async correctHolidays(): Promise<{ removedWrongFeiertag: number; removedWorkOnHoliday: number }> {
     const result = DataStore.correctHolidaysLocal();
-    void syncPlanDataDirect(DataStore.getPlanData());
+    await syncPlanDataDirect(DataStore.getPlanData());
     return result;
   },
 

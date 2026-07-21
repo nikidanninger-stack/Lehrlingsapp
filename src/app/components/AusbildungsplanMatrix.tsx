@@ -580,9 +580,15 @@ export function AusbildungsplanMatrix({
                       >
                         <div
                           draggable={editable && bearbeiteterName?.personalnummer !== lehrling.personalnummer}
-                          onDragStart={() => handleNameDragStart(lehrling.personalnummer)}
+                          onDragStart={(e) => {
+                            e.stopPropagation();
+                            handleNameDragStart(lehrling.personalnummer);
+                          }}
                           onDragOver={(e) => editable && e.preventDefault()}
-                          onDrop={() => handleNameDrop(lj, lehrling.personalnummer)}
+                          onDrop={(e) => {
+                            e.stopPropagation();
+                            handleNameDrop(lj, lehrling.personalnummer);
+                          }}
                           onDoubleClick={() =>
                             editable && setBearbeiteterName({ personalnummer: lehrling.personalnummer, wert: lehrling.name })
                           }
