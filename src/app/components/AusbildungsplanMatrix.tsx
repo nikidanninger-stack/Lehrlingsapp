@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { StickyNote } from "lucide-react";
+import { StickyNote, Trash2 } from "lucide-react";
 import type { Lehrling, PlanEntry } from "../types";
 import { getMergedLabels, getMergedColors, getVersteckteKategorien } from "./ui/TypeBadge";
 import { getHolidayName } from "../data/holidays";
@@ -206,6 +206,27 @@ export function AusbildungsplanMatrix({
       toast.success("Name gespeichert");
     } else {
       toast.error("Name konnte NICHT gespeichert werden - siehe Konsole (F12)");
+    }
+  }
+
+  async function handleLehrlingLoeschen(lehrling: Lehrling) {
+    if (
+      !confirm(
+        `${lehrling.name} wirklich komplett löschen? Das entfernt auch alle Kalender-Einträge dieser Person und kann nicht rückgängig gemacht werden.`,
+      )
+    ) {
+      return;
+    }
+    const ok = await DataStore.deleteLehrlingAwaited(lehrling.personalnummer);
+    if (ok) {
+      const restlichePlanEintraege = DataStore.getPlanData().filter(
+        (e) => e.personalnummer !== lehrling.personalnummer,
+      );
+      await DataStore.setPlanDataAwaited(restlichePlanEintraege);
+      toast.success(`${lehrling.name} gelöscht`);
+      onDataChanged?.();
+    } else {
+      toast.error("Löschen fehlgeschlagen - siehe Konsole (F12)");
     }
   }
 
@@ -794,7 +815,7 @@ export function AusbildungsplanMatrix({
                           onDoubleClick={() =>
                             editable && setBearbeiteterName({ personalnummer: lehrling.personalnummer, wert: lehrling.name })
                           }
-                          className={`${STICKY_LEFT_CLASS} z-10 flex items-center gap-1 pl-1 shrink-0 text-[11px] truncate ${
+                          className={`${STICKY_LEFT_CLASS} z-10 flex items-center gap-1 pl-1 pr-0.5 shrink-0 text-[11px] truncate group ${
                             editable ? "cursor-grab active:cursor-grabbing" : ""
                           }`}
                           style={{
@@ -820,7 +841,20 @@ export function AusbildungsplanMatrix({
                           ) : (
                             <>
                               {editable && <span className="text-gray-300 shrink-0 select-none">⠿</span>}
-                              <span className="truncate">{lehrling.name}</span>
+                              <span className="truncate flex-1">{lehrling.name}</span>
+                              {editable && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleLehrlingLoeschen(lehrling);
+                                  }}
+                                  className="shrink-0 opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-opacity"
+                                  title="Lehrling löschen"
+                                >
+                                  <Trash2 size={11} />
+                                </button>
+                              )}
                             </>
                           )}
                         </div>
