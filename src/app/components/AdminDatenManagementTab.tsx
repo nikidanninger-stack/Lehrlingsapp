@@ -103,6 +103,21 @@ export function AdminDatenManagementTab() {
     }
   }
 
+  async function handleImportGeburtsdaten() {
+    try {
+      const { gesetzt, nichtGefunden } = await DataStore.importGeburtsdaten();
+      if (nichtGefunden.length === 0) {
+        toast.success(`${gesetzt} Geburtsdaten gespeichert.`);
+      } else {
+        toast.success(
+          `${gesetzt} Geburtsdaten gespeichert. ${nichtGefunden.length} Namen nicht gefunden: ${nichtGefunden.join(", ")}`,
+        );
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Import fehlgeschlagen");
+    }
+  }
+
   function handleBackup() {
     DataStore.createBackup();
     toast.success("Backup erstellt.");
@@ -260,6 +275,13 @@ export function AdminDatenManagementTab() {
           description="Behebt falsch übernommene bewegliche Feiertage (Ostermontag, Christi Himmelfahrt, Pfingstmontag, Fronleichnam) für alle Jahre - entfernt Feiertags-Markierungen an echten Werktagen und Werktags-Einträge an echten Feiertagen."
           buttonLabel="Korrigieren"
           onClick={handleCorrectHolidays}
+        />
+        <ActionRow
+          icon={<CalendarX2 size={16} />}
+          title="Geburtsdaten importieren"
+          description="Trägt die Geburtsdaten aus der Excel-Liste bei allen passenden Lehrlingen ein (per Namensabgleich)."
+          buttonLabel="Importieren"
+          onClick={handleImportGeburtsdaten}
         />
         <ActionRow
           icon={<Archive size={16} />}

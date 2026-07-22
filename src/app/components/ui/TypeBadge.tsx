@@ -128,6 +128,13 @@ export function getMergedColors(): Record<string, string> {
   return merged;
 }
 
+// Kategorien, die der Admin aus der Werkzeugleiste/Palette entfernt hat (aber
+// bestehende Kalender-Einträge behalten trotzdem ihren Namen/ihre Farbe, siehe
+// getMergedLabels/getMergedColors oben).
+export function getVersteckteKategorien(): Set<string> {
+  return new Set(DataStore.getKategorien().filter((k) => k.versteckt).map((k) => k.key));
+}
+
 interface TypeBadgeProps {
   type: string;
   className?: string;

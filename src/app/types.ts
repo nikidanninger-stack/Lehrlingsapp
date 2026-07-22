@@ -82,6 +82,7 @@ export interface PlanKategorie {
   key: string; // eindeutiger Schlüssel, z.B. "custom-bs-kaeltetechnik"
   label: string; // Anzeigename, z.B. "BS Kältetechnik"
   farbe: string; // Hex-Farbe, z.B. "#3d6d8f"
+  versteckt?: boolean; // true = aus der Werkzeugleiste/Palette ausgeblendet (nicht mehr neu auswählbar), bestehende Einträge behalten aber Name+Farbe
 }
 
 // Termin

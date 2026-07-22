@@ -648,6 +648,71 @@ export const DataStore = {
     return result;
   },
 
+  // Einmaliger Import der Geburtsdaten aus der Excel-Liste "Geburtsdaten_Lehrlinge.xlsx".
+  // Matcht per Name (Groß-/Kleinschreibung und Leerzeichen werden ignoriert).
+  async importGeburtsdaten(): Promise<{ gesetzt: number; nichtGefunden: string[] }> {
+    const GEBURTSDATEN: { name: string; geburtsdatum: string }[] = [
+  { name: 'Lukas Hennerbichler', geburtsdatum: '07.06.2010' },
+  { name: 'Philip Franz Svoboda', geburtsdatum: '20.03.2010' },
+  { name: 'Besian Behrami', geburtsdatum: '24.09.2009' },
+  { name: 'Kristian Reindl', geburtsdatum: '11.09.2009' },
+  { name: 'Elias SCHWEIGER', geburtsdatum: '02.08.2009' },
+  { name: 'David Ondrak', geburtsdatum: '14.04.2009' },
+  { name: 'Jeremy Falkner', geburtsdatum: '26.03.2009' },
+  { name: 'Lukas GUSENBAUER', geburtsdatum: '22.09.2008' },
+  { name: 'Houssien Khatab', geburtsdatum: '23.08.2008' },
+  { name: 'Josef HANDLBAUER', geburtsdatum: '05.08.2008' },
+  { name: 'Ivan KOCIC', geburtsdatum: '24.07.2008' },
+  { name: 'Jeremy SCHAFFER', geburtsdatum: '07.05.2008' },
+  { name: 'Clemens PIRKER', geburtsdatum: '23.03.2008' },
+  { name: 'Phillip LANDERL', geburtsdatum: '17.01.2008' },
+  { name: 'David SCHWARZ', geburtsdatum: '30.12.2007' },
+  { name: 'Thomas FENEBERGER', geburtsdatum: '18.05.2007' },
+  { name: 'Moritz KESZLER', geburtsdatum: '10.05.2007' },
+  { name: 'Chirko MOHAMAD', geburtsdatum: '16.03.2007' },
+  { name: 'Jonas SCHWEIGER', geburtsdatum: '29.12.2006' },
+  { name: 'Arian BEHRAMI', geburtsdatum: '17.12.2006' },
+  { name: 'Leon GASSNER', geburtsdatum: '19.10.2006' },
+  { name: 'Mihajlo ALEKSIC', geburtsdatum: '22.02.2006' },
+  { name: 'Ahmet CALISKAN', geburtsdatum: '09.02.2006' },
+  { name: 'Anna AUTENGRUBER', geburtsdatum: '17.11.2005' },
+  { name: 'Mevlüt AKTAS', geburtsdatum: '15.10.2005' },
+  { name: 'Leon BRANDSTÄTTER', geburtsdatum: '30.09.2005' },
+  { name: 'Dario PINDUR', geburtsdatum: '02.07.2005' },
+  { name: 'Lucas CSOKAY', geburtsdatum: '29.06.2005' },
+  { name: 'Oliver WIMMER', geburtsdatum: '18.10.2004' },
+  { name: 'Mohamed Yasin Caliskan', geburtsdatum: '05.01.2004' },
+  { name: 'Idaver Jusuf MURATOV', geburtsdatum: '26.06.2002' },
+    ];
+
+    const normalize = (s: string) => s.trim().toLowerCase().replace(/\s+/g, " ");
+    const alle = DataStore.getLehrlinge();
+    const byNormalizedName = new Map(alle.map((l) => [normalize(l.name), l]));
+
+    let gesetzt = 0;
+    const nichtGefunden: string[] = [];
+    const aktualisiert = [...alle];
+
+    for (const { name, geburtsdatum } of GEBURTSDATEN) {
+      const treffer = byNormalizedName.get(normalize(name));
+      if (!treffer) {
+        nichtGefunden.push(name);
+        continue;
+      }
+      const idx = aktualisiert.findIndex((l) => l.personalnummer === treffer.personalnummer);
+      if (idx >= 0) {
+        aktualisiert[idx] = { ...aktualisiert[idx], geburtsdatum };
+        gesetzt++;
+      }
+    }
+
+    const ok = await DataStore.setLehrlingeAwaited(aktualisiert);
+    if (!ok) {
+      throw new Error("Speichern der Geburtsdaten fehlgeschlagen. Details in der Browser-Konsole.");
+    }
+    return { gesetzt, nichtGefunden };
+  },
+
   // Für den manuellen "Jetzt importieren"-Button im Admin-Bereich: schreibt
   // erst lokal (schnell, für sofortiges UI-Feedback), wartet DANACH aber
   // wirklich auf den Abschluss des Uploads zur Datenbank, bevor die Funktion

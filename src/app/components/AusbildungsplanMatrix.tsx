@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { StickyNote } from "lucide-react";
 import type { Lehrling, PlanEntry } from "../types";
-import { getMergedLabels, getMergedColors } from "./ui/TypeBadge";
+import { getMergedLabels, getMergedColors, getVersteckteKategorien } from "./ui/TypeBadge";
 import { getHolidayName } from "../data/holidays";
 import { DataStore, subscribeToDataChanges } from "../data/store";
 
@@ -134,7 +134,11 @@ export function AusbildungsplanMatrix({
 
   const planTypeLabels = useMemo(() => getMergedLabels(), [tick]);
   const planTypeBarColors = useMemo(() => getMergedColors(), [tick]);
-  const PALETTE_TYPES = useMemo(() => Object.keys(planTypeLabels), [planTypeLabels]);
+  const versteckteKategorien = useMemo(() => getVersteckteKategorien(), [tick]);
+  const PALETTE_TYPES = useMemo(
+    () => Object.keys(planTypeLabels).filter((k) => !versteckteKategorien.has(k)),
+    [planTypeLabels, versteckteKategorien],
+  );
 
   const lehrjahrGruppen = useMemo(() => {
     const groups: Record<number, Lehrling[]> = { 1: [], 2: [], 3: [], 4: [] };
@@ -231,6 +235,27 @@ export function AusbildungsplanMatrix({
       toast.success("Farbe gespeichert");
     } else {
       toast.error("Farbe konnte NICHT gespeichert werden - siehe Konsole (F12)");
+    }
+  }
+
+  async function handleKategorieLoeschen(key: string) {
+    const label = planTypeLabels[key] ?? key;
+    if (!confirm(`"${label}" aus der Werkzeugleiste entfernen? Bereits gesetzte Farbfelder mit diesem Typ bleiben unverändert erhalten, du kannst diesen Typ danach nur nicht mehr neu auswählen.`)) {
+      return;
+    }
+    const alle = DataStore.getKategorien();
+    const idx = alle.findIndex((k) => k.key === key);
+    const farbe = planTypeBarColors[key] ?? "#9E9E9E";
+    const neueListe =
+      idx >= 0
+        ? alle.map((k, i) => (i === idx ? { ...k, versteckt: true } : k))
+        : [...alle, { key, label, farbe, versteckt: true }];
+    const ok = await DataStore.setKategorienAwaited(neueListe);
+    if (ok) {
+      if (activeType === key) setActiveType(null);
+      toast.success(`"${label}" entfernt`);
+    } else {
+      toast.error("Konnte nicht gespeichert werden - siehe Konsole (F12)");
     }
   }
 
@@ -379,7 +404,14 @@ export function AusbildungsplanMatrix({
   }
 
   function handleMouseDown(lehrling: Lehrling, date: Date) {
-    if (!editable || !activeType) return;
+    if (!editable) return;
+    if (!activeType) {
+      // Kein Typ ausgewählt: Klick auf eine Zelle markiert/entmarkiert stattdessen die ganze Zeile
+      setMarkierterPersonalnummer((aktuell) =>
+        aktuell === lehrling.personalnummer ? null : lehrling.personalnummer,
+      );
+      return;
+    }
     isPaintingRef.current = true;
     paintCell(lehrling, date);
   }
@@ -461,6 +493,17 @@ export function AusbildungsplanMatrix({
                   className="whitespace-nowrap"
                 >
                   {planTypeLabels[t]}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleKategorieLoeschen(t);
+                  }}
+                  className="text-gray-300 hover:text-red-500 shrink-0 ml-0.5"
+                  title="Diese Kategorie nicht mehr benötigt? Aus der Werkzeugleiste entfernen"
+                >
+                  ✕
                 </button>
               </div>
             ))}
@@ -799,6 +842,17 @@ export function AusbildungsplanMatrix({
                               y: e.clientY,
                             })
                           }
+                          onMouseEnter={(e) => {
+                            if (lehrling.kommentar) {
+                              setTooltip({
+                                x: e.clientX,
+                                y: e.clientY,
+                                title: "Kommentar",
+                                subtitle: lehrling.kommentar,
+                              });
+                            }
+                          }}
+                          onMouseLeave={() => setTooltip(null)}
                           className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0`}
                           style={{
                             left: NAME_WIDTH + BERUF_WIDTH,
@@ -807,10 +861,7 @@ export function AusbildungsplanMatrix({
                             borderRight: "1px solid #ddd",
                             cursor: editable ? "pointer" : "default",
                           }}
-                          title={
-                            lehrling.kommentar ||
-                            (editable ? "Doppelklick, um einen Kommentar zu schreiben" : "")
-                          }
+                          title={!lehrling.kommentar && editable ? "Doppelklick, um einen Kommentar zu schreiben" : ""}
                         >
                           <StickyNote
                             size={12}
@@ -891,24 +942,6 @@ export function AusbildungsplanMatrix({
             })}
           </div>
         </div>
-      </div>
-
-      {/* Legende */}
-      <div className="flex flex-wrap gap-3 pt-1">
-        {PALETTE_TYPES.map((type) => (
-          <span key={type} className="flex items-center gap-1.5 text-xs text-gray-500">
-            <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: planTypeBarColors[type] }} />
-            {planTypeLabels[type]}
-          </span>
-        ))}
-        <span className="flex items-center gap-1.5 text-xs text-gray-500">
-          <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: "#FFF3E0" }} />
-          Samstag
-        </span>
-        <span className="flex items-center gap-1.5 text-xs text-gray-500">
-          <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: "#E3F2FD" }} />
-          Sonntag
-        </span>
       </div>
     </div>
   );
