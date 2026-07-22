@@ -464,128 +464,7 @@ export function AusbildungsplanMatrix({
         </p>
       </div>
 
-      {/* Farbpaletten-Werkzeug (nur editierbar) */}
-      {editable && (
-        <div className="rounded-xl border border-gray-200 bg-white/70 p-3">
-          <p className="text-xs font-semibold text-gray-500 mb-2">
-            {activeType
-              ? `Aktiv: "${activeType === "leer" ? "Leer / Löschen" : planTypeLabels[activeType]}" – klicke und ziehe über Zellen, um mehrere auf einmal zu setzen`
-              : "Typ auswählen, dann klicken und ziehen um Zellen zu setzen"}
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            <button
-              onClick={() => setActiveType(activeType === "leer" ? null : "leer")}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border-2 transition-all ${
-                activeType === "leer" ? "border-red-600 bg-red-50" : "border-transparent hover:bg-gray-50"
-              }`}
-              title="Zellen leeren (z.B. für Feiertage ohne Eintrag)"
-            >
-              <span
-                className="w-3 h-3 rounded-sm shrink-0 border border-gray-400"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(45deg, #fff, #fff 2px, #f87171 2px, #f87171 3px)",
-                }}
-              />
-              Leer / Löschen
-            </button>
-            {PALETTE_TYPES.map((t) => (
-              <div
-                key={t}
-                className={`flex items-center gap-1 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 transition-all ${
-                  activeType === t ? "border-blue-600 bg-blue-50" : "border-transparent hover:bg-gray-50"
-                }`}
-              >
-                <label
-                  className="w-3 h-3 rounded-sm shrink-0 cursor-pointer border border-black/10"
-                  style={{ backgroundColor: planTypeBarColors[t] }}
-                  title="Farbe ändern"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    type="color"
-                    className="sr-only"
-                    value={planTypeBarColors[t]}
-                    onChange={(e) => handleFarbeAendern(t, e.target.value)}
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setActiveType(activeType === t ? null : t)}
-                  className="whitespace-nowrap"
-                >
-                  {planTypeLabels[t]}
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleKategorieLoeschen(t);
-                  }}
-                  className="text-gray-300 hover:text-red-500 shrink-0 ml-0.5"
-                  title="Diese Kategorie nicht mehr benötigt? Aus der Werkzeugleiste entfernen"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-
-            {neueKategorieOffen ? (
-              <div className="flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 border-dashed border-blue-300 bg-blue-50/50">
-                <label
-                  className="w-3 h-3 rounded-sm shrink-0 cursor-pointer border border-black/10"
-                  style={{ backgroundColor: neueFarbe }}
-                  title="Farbe wählen"
-                >
-                  <input
-                    type="color"
-                    className="sr-only"
-                    value={neueFarbe}
-                    onChange={(e) => setNeueFarbe(e.target.value)}
-                  />
-                </label>
-                <input
-                  autoFocus
-                  value={neuerName}
-                  onChange={(e) => setNeuerName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleNeueKategorieSpeichern();
-                    if (e.key === "Escape") setNeueKategorieOffen(false);
-                  }}
-                  placeholder="z.B. BS Kältetechnik"
-                  className="w-32 bg-white border border-gray-300 rounded px-1.5 py-0.5 text-[11px] outline-none focus:border-blue-500"
-                />
-                <button
-                  type="button"
-                  onClick={handleNeueKategorieSpeichern}
-                  className="text-green-700 font-bold px-1"
-                  title="Speichern"
-                >
-                  ✓
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setNeueKategorieOffen(false)}
-                  className="text-gray-400 font-bold px-1"
-                  title="Abbrechen"
-                >
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setNeueKategorieOffen(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all"
-                title="Neue Aktivität/Kategorie mit eigener Farbe anlegen"
-              >
-                + Neue Kategorie
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
+      {/* Kalender-Übersicht */}
       <div
         className="border border-gray-300 rounded-lg overflow-hidden bg-white relative"
         style={{ fontFamily: "Arial, sans-serif" }}
@@ -997,6 +876,127 @@ export function AusbildungsplanMatrix({
           </div>
         </div>
       </div>
+
+      {editable && (
+        <div className="rounded-xl border border-gray-200 bg-white/70 p-3">
+          <p className="text-xs font-semibold text-gray-500 mb-2">
+            {activeType
+              ? `Aktiv: "${activeType === "leer" ? "Leer / Löschen" : planTypeLabels[activeType]}" – klicke und ziehe über Zellen, um mehrere auf einmal zu setzen`
+              : "Typ auswählen, dann klicken und ziehen um Zellen zu setzen"}
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              onClick={() => setActiveType(activeType === "leer" ? null : "leer")}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border-2 transition-all ${
+                activeType === "leer" ? "border-red-600 bg-red-50" : "border-transparent hover:bg-gray-50"
+              }`}
+              title="Zellen leeren (z.B. für Feiertage ohne Eintrag)"
+            >
+              <span
+                className="w-3 h-3 rounded-sm shrink-0 border border-gray-400"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(45deg, #fff, #fff 2px, #f87171 2px, #f87171 3px)",
+                }}
+              />
+              Leer / Löschen
+            </button>
+            {PALETTE_TYPES.map((t) => (
+              <div
+                key={t}
+                className={`flex items-center gap-1 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 transition-all ${
+                  activeType === t ? "border-blue-600 bg-blue-50" : "border-transparent hover:bg-gray-50"
+                }`}
+              >
+                <label
+                  className="w-3 h-3 rounded-sm shrink-0 cursor-pointer border border-black/10"
+                  style={{ backgroundColor: planTypeBarColors[t] }}
+                  title="Farbe ändern"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <input
+                    type="color"
+                    className="sr-only"
+                    value={planTypeBarColors[t]}
+                    onChange={(e) => handleFarbeAendern(t, e.target.value)}
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setActiveType(activeType === t ? null : t)}
+                  className="whitespace-nowrap"
+                >
+                  {planTypeLabels[t]}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleKategorieLoeschen(t);
+                  }}
+                  className="text-gray-300 hover:text-red-500 shrink-0 ml-0.5"
+                  title="Diese Kategorie nicht mehr benötigt? Aus der Werkzeugleiste entfernen"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+
+            {neueKategorieOffen ? (
+              <div className="flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 border-dashed border-blue-300 bg-blue-50/50">
+                <label
+                  className="w-3 h-3 rounded-sm shrink-0 cursor-pointer border border-black/10"
+                  style={{ backgroundColor: neueFarbe }}
+                  title="Farbe wählen"
+                >
+                  <input
+                    type="color"
+                    className="sr-only"
+                    value={neueFarbe}
+                    onChange={(e) => setNeueFarbe(e.target.value)}
+                  />
+                </label>
+                <input
+                  autoFocus
+                  value={neuerName}
+                  onChange={(e) => setNeuerName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleNeueKategorieSpeichern();
+                    if (e.key === "Escape") setNeueKategorieOffen(false);
+                  }}
+                  placeholder="z.B. BS Kältetechnik"
+                  className="w-32 bg-white border border-gray-300 rounded px-1.5 py-0.5 text-[11px] outline-none focus:border-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={handleNeueKategorieSpeichern}
+                  className="text-green-700 font-bold px-1"
+                  title="Speichern"
+                >
+                  ✓
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNeueKategorieOffen(false)}
+                  className="text-gray-400 font-bold px-1"
+                  title="Abbrechen"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setNeueKategorieOffen(true)}
+                className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all"
+                title="Neue Aktivität/Kategorie mit eigener Farbe anlegen"
+              >
+                + Neue Kategorie
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

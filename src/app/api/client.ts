@@ -447,6 +447,7 @@ function todoToRow(t: Todo): Record<string, unknown> {
     monat: t.monat,
     lehrjahr: String(t.lehrjahr),
     erstelltAm: t.erstelltAm,
+    wiederholtSichMonatlich: t.wiederholtSichMonatlich ?? false,
   };
 }
 
@@ -458,6 +459,7 @@ function rowToTodo(row: Record<string, any>): Todo {
     monat: row.monat ?? "",
     lehrjahr: row.lehrjahr === "alle" ? "alle" : Number(row.lehrjahr),
     erstelltAm: row.erstelltAm ?? new Date().toISOString(),
+    wiederholtSichMonatlich: row.wiederholtSichMonatlich === true || row.wiederholtSichMonatlich === "true",
   };
 }
 
@@ -481,6 +483,7 @@ function erledigungToRow(e: TodoErledigung): Record<string, unknown> {
     id: e.id,
     todoId: e.todoId,
     personalnummer: e.personalnummer,
+    monat: e.monat,
     erledigtAm: e.erledigtAm,
   };
 }
@@ -490,6 +493,7 @@ function rowToErledigung(row: Record<string, any>): TodoErledigung {
     id: row.id,
     todoId: row.todoId,
     personalnummer: row.personalnummer,
+    monat: row.monat ?? "",
     erledigtAm: row.erledigtAm ?? new Date().toISOString(),
   };
 }

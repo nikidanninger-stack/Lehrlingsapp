@@ -70,6 +70,45 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
 
   return (
     <div className="space-y-4">
+      {/* Breite Matrix-Übersicht aller Lehrlinge - ganz oben */}
+      <GlassCard>
+        <SectionHeader
+          icon={<CalendarDays size={22} />}
+          title="Lehrlingsplan"
+          subtitle="Ausbildungsplan aller Lehrlinge"
+        />
+        <div className="p-6 space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {(["alle", 1, 2, 3, 4] as const).map((jahr) => (
+              <button
+                key={jahr}
+                onClick={() => setLehrjahrFilter(jahr)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  lehrjahrFilter === jahr
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {jahr === "alle" ? "Alle Lehrjahre" : `Lehrjahr ${jahr}`}
+              </button>
+            ))}
+          </div>
+
+          {gefilterteLehrlinge.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-10">
+              Keine Lehrlinge für diese Auswahl gefunden.
+            </p>
+          ) : (
+            <AusbildungsplanMatrix
+              lehrlinge={gefilterteLehrlinge}
+              planData={gefiltertePlanEntries}
+              editable
+              onDataChanged={() => setTick((t) => t + 1)}
+            />
+          )}
+        </div>
+      </GlassCard>
+
       {/* Personalnummer-Suche (kompakt) */}
       <GlassCard>
         <SectionHeader
@@ -127,45 +166,6 @@ export function Lehrlingsplan({ user }: LehrlingsplanProps) {
           </div>
         </GlassCard>
       )}
-
-      {/* Breite Matrix-Übersicht aller Lehrlinge */}
-      <GlassCard>
-        <SectionHeader
-          icon={<CalendarDays size={22} />}
-          title="Lehrlingsplan"
-          subtitle="Ausbildungsplan aller Lehrlinge"
-        />
-        <div className="p-6 space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {(["alle", 1, 2, 3, 4] as const).map((jahr) => (
-              <button
-                key={jahr}
-                onClick={() => setLehrjahrFilter(jahr)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  lehrjahrFilter === jahr
-                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {jahr === "alle" ? "Alle Lehrjahre" : `Lehrjahr ${jahr}`}
-              </button>
-            ))}
-          </div>
-
-          {gefilterteLehrlinge.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-10">
-              Keine Lehrlinge für diese Auswahl gefunden.
-            </p>
-          ) : (
-            <AusbildungsplanMatrix
-              lehrlinge={gefilterteLehrlinge}
-              planData={gefiltertePlanEntries}
-              editable
-              onDataChanged={() => setTick((t) => t + 1)}
-            />
-          )}
-        </div>
-      </GlassCard>
 
       {/* Massenänderung für ganze Gruppen */}
       <AdminMassenaenderung />

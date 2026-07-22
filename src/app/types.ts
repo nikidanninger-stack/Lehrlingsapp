@@ -243,15 +243,18 @@ export interface Todo {
   id: string;
   titel: string;
   beschreibung?: string;
-  monat: string; // Format "YYYY-MM", z.B. "2026-07"
+  monat: string; // Format "YYYY-MM" - bei laufenden To-Dos: Startmonat
   lehrjahr: number | "alle"; // für welches Lehrjahr gilt es
   erstelltAm: string; // ISO-Datum
+  wiederholtSichMonatlich?: boolean; // true = läuft ab "monat" jeden Monat weiter (ganzjährig)
 }
 
-// Wer welches To-Do schon erledigt hat
+// Wer welches To-Do schon erledigt hat (pro Monat, damit laufende To-Dos
+// jeden Monat neu abgehakt werden müssen)
 export interface TodoErledigung {
   id: string;
   todoId: string;
   personalnummer: string;
+  monat: string; // Format "YYYY-MM" - für welchen Monat wurde abgehakt
   erledigtAm: string; // ISO-Datum
 }

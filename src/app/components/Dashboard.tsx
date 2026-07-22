@@ -130,6 +130,8 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
         />
       </div>
 
+      <LehrlingTodoListe personalnummer={user.personalnummer} lehrjahr={user.lehrjahr} />
+
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Leaderboard */}
         <GlassCard className="p-6">
@@ -200,8 +202,6 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
           )}
         </GlassCard>
       </div>
-
-      <LehrlingTodoListe personalnummer={user.personalnummer} lehrjahr={user.lehrjahr} />
 
       {/* Schnellzugriff */}
       <div>

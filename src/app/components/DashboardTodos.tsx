@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { ListChecks, Plus, Trash2, ChevronDown, ChevronRight, Check } from "lucide-react";
+import { ListChecks, Plus, Trash2, ChevronDown, ChevronRight, Check, Repeat } from "lucide-react";
 import type { Lehrling, Todo } from "../types";
 import { DataStore } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
@@ -14,6 +14,14 @@ function formatMonat(monat: string): string {
   const [jahr, mon] = monat.split("-").map(Number);
   if (!jahr || !mon) return monat;
   return new Date(jahr, mon - 1, 1).toLocaleDateString("de-AT", { month: "long", year: "numeric" });
+}
+
+// Ist ein To-Do in einem bestimmten Monat aktiv? Einmalige To-Dos nur in
+// ihrem eigenen Monat, laufende (wiederholtSichMonatlich) ab ihrem Startmonat
+// jeden Monat danach.
+function istAktivInMonat(todo: Todo, monat: string): boolean {
+  if (todo.wiederholtSichMonatlich) return todo.monat <= monat;
+  return todo.monat === monat;
 }
 
 // ============================================================================
@@ -32,11 +40,11 @@ export function LehrlingTodoListe({
   const erledigungen = DataStore.getTodoErledigungen();
 
   const meineTodos = alleTodos.filter(
-    (t) => t.monat === monat && (t.lehrjahr === "alle" || t.lehrjahr === lehrjahr),
+    (t) => istAktivInMonat(t, monat) && (t.lehrjahr === "alle" || t.lehrjahr === lehrjahr),
   );
 
   async function handleToggle(todoId: string) {
-    const ok = await DataStore.toggleTodoErledigtAwaited(todoId, personalnummer);
+    const ok = await DataStore.toggleTodoErledigtAwaited(todoId, personalnummer, monat);
     if (!ok) {
       toast.error("Konnte nicht gespeichert werden - siehe Konsole (F12)");
     }
@@ -45,7 +53,7 @@ export function LehrlingTodoListe({
   if (meineTodos.length === 0) return null;
 
   const erledigtCount = meineTodos.filter((t) =>
-    erledigungen.some((e) => e.todoId === t.id && e.personalnummer === personalnummer),
+    erledigungen.some((e) => e.todoId === t.id && e.personalnummer === personalnummer && e.monat === monat),
   ).length;
 
   return (
@@ -62,7 +70,7 @@ export function LehrlingTodoListe({
       <ul className="space-y-2">
         {meineTodos.map((todo) => {
           const erledigt = erledigungen.some(
-            (e) => e.todoId === todo.id && e.personalnummer === personalnummer,
+            (e) => e.todoId === todo.id && e.personalnummer === personalnummer && e.monat === monat,
           );
           return (
             <li key={todo.id}>
@@ -79,6 +87,9 @@ export function LehrlingTodoListe({
                 <div>
                   <p className={`text-sm ${erledigt ? "text-gray-400 line-through" : "text-gray-700"}`}>
                     {todo.titel}
+                    {todo.wiederholtSichMonatlich && (
+                      <Repeat size={11} className="inline ml-1.5 text-gray-300" />
+                    )}
                   </p>
                   {todo.beschreibung && (
                     <p className="text-xs text-gray-400 mt-0.5">{todo.beschreibung}</p>
@@ -102,13 +113,14 @@ export function AdminTodoVerwaltung({ lehrlinge }: { lehrlinge: Lehrling[] }) {
   const [titel, setTitel] = useState("");
   const [beschreibung, setBeschreibung] = useState("");
   const [lehrjahrAuswahl, setLehrjahrAuswahl] = useState<"alle" | number>("alle");
+  const [laufend, setLaufend] = useState(false);
   const [speichert, setSpeichert] = useState(false);
   const [offenTodoId, setOffenTodoId] = useState<string | null>(null);
 
   const alleTodos = DataStore.getTodos();
   const erledigungen = DataStore.getTodoErledigungen();
   const todosDiesenMonat = alleTodos
-    .filter((t) => t.monat === monat)
+    .filter((t) => istAktivInMonat(t, monat))
     .sort((a, b) => a.erstelltAm.localeCompare(b.erstelltAm));
 
   async function handleHinzufuegen(e: React.FormEvent) {
@@ -125,19 +137,24 @@ export function AdminTodoVerwaltung({ lehrlinge }: { lehrlinge: Lehrling[] }) {
       monat,
       lehrjahr: lehrjahrAuswahl,
       erstelltAm: new Date().toISOString(),
+      wiederholtSichMonatlich: laufend,
     });
     setSpeichert(false);
     if (ok) {
-      toast.success("To-Do angelegt");
+      toast.success(laufend ? "Laufendes To-Do angelegt" : "To-Do angelegt");
       setTitel("");
       setBeschreibung("");
+      setLaufend(false);
     } else {
       toast.error("Konnte nicht gespeichert werden - siehe Konsole (F12)");
     }
   }
 
   async function handleLoeschen(todo: Todo) {
-    if (!confirm(`"${todo.titel}" wirklich löschen?`)) return;
+    const hinweis = todo.wiederholtSichMonatlich
+      ? `"${todo.titel}" wirklich löschen? Das ist ein LAUFENDES To-Do - es verschwindet dann auch für alle zukünftigen Monate.`
+      : `"${todo.titel}" wirklich löschen?`;
+    if (!confirm(hinweis)) return;
     const ok = await DataStore.deleteTodoAwaited(todo.id);
     if (ok) {
       toast.success("To-Do gelöscht");
@@ -152,7 +169,10 @@ export function AdminTodoVerwaltung({ lehrlinge }: { lehrlinge: Lehrling[] }) {
 
   function nichtErledigt(todo: Todo): Lehrling[] {
     return betroffeneLehrlinge(todo).filter(
-      (l) => !erledigungen.some((e) => e.todoId === todo.id && e.personalnummer === l.personalnummer),
+      (l) =>
+        !erledigungen.some(
+          (e) => e.todoId === todo.id && e.personalnummer === l.personalnummer && e.monat === monat,
+        ),
     );
   }
 
@@ -164,7 +184,7 @@ export function AdminTodoVerwaltung({ lehrlinge }: { lehrlinge: Lehrling[] }) {
       </div>
 
       <div className="mb-4">
-        <label className="block text-xs font-medium text-gray-500 mb-1">Monat</label>
+        <label className="block text-xs font-medium text-gray-500 mb-1">Monat ansehen</label>
         <input
           type="month"
           value={monat}
@@ -173,8 +193,8 @@ export function AdminTodoVerwaltung({ lehrlinge }: { lehrlinge: Lehrling[] }) {
         />
       </div>
 
-      <form onSubmit={handleHinzufuegen} className="grid sm:grid-cols-[1fr_auto_auto] gap-2 mb-5">
-        <div className="sm:col-span-3 grid sm:grid-cols-2 gap-2">
+      <form onSubmit={handleHinzufuegen} className="space-y-2 mb-5">
+        <div className="grid sm:grid-cols-2 gap-2">
           <input
             value={titel}
             onChange={(e) => setTitel(e.target.value)}
@@ -188,24 +208,35 @@ export function AdminTodoVerwaltung({ lehrlinge }: { lehrlinge: Lehrling[] }) {
             className="input"
           />
         </div>
-        <select
-          value={lehrjahrAuswahl}
-          onChange={(e) => setLehrjahrAuswahl(e.target.value === "alle" ? "alle" : Number(e.target.value))}
-          className="input"
-        >
-          <option value="alle">Alle Lehrjahre</option>
-          <option value={1}>Lehrjahr 1</option>
-          <option value={2}>Lehrjahr 2</option>
-          <option value={3}>Lehrjahr 3</option>
-          <option value={4}>Lehrjahr 4</option>
-        </select>
-        <button
-          type="submit"
-          disabled={speichert}
-          className="flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg px-4 py-2 transition-colors"
-        >
-          <Plus size={16} /> Hinzufügen
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={lehrjahrAuswahl}
+            onChange={(e) => setLehrjahrAuswahl(e.target.value === "alle" ? "alle" : Number(e.target.value))}
+            className="input w-auto"
+          >
+            <option value="alle">Alle Lehrjahre</option>
+            <option value={1}>Lehrjahr 1</option>
+            <option value={2}>Lehrjahr 2</option>
+            <option value={3}>Lehrjahr 3</option>
+            <option value={4}>Lehrjahr 4</option>
+          </select>
+          <label className="flex items-center gap-1.5 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={laufend}
+              onChange={(e) => setLaufend(e.target.checked)}
+              className="accent-green-600"
+            />
+            Läuft ab {formatMonat(monat)} jeden Monat weiter (ganzjährig)
+          </label>
+          <button
+            type="submit"
+            disabled={speichert}
+            className="flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg px-4 py-2 transition-colors ml-auto"
+          >
+            <Plus size={16} /> Hinzufügen
+          </button>
+        </div>
       </form>
 
       {todosDiesenMonat.length === 0 ? (
@@ -224,20 +255,28 @@ export function AdminTodoVerwaltung({ lehrlinge }: { lehrlinge: Lehrling[] }) {
                   <button
                     type="button"
                     onClick={() => setOffenTodoId(istOffen ? null : todo.id)}
-                    className="flex items-center gap-2 flex-1 text-left"
+                    className="flex items-center gap-2 flex-1 text-left min-w-0"
                   >
                     {istOffen ? (
                       <ChevronDown size={15} className="text-gray-400 shrink-0" />
                     ) : (
                       <ChevronRight size={15} className="text-gray-400 shrink-0" />
                     )}
-                    <span className="text-sm font-medium text-gray-700">{todo.titel}</span>
-                    <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+                    <span className="text-sm font-medium text-gray-700 truncate">{todo.titel}</span>
+                    {todo.wiederholtSichMonatlich && (
+                      <span
+                        className="text-[10px] font-semibold text-blue-600 bg-blue-50 rounded-full px-2 py-0.5 shrink-0 flex items-center gap-0.5"
+                        title={`Laufend seit ${formatMonat(todo.monat)}`}
+                      >
+                        <Repeat size={9} /> laufend
+                      </span>
+                    )}
+                    <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 rounded-full px-2 py-0.5 shrink-0">
                       {todo.lehrjahr === "alle" ? "Alle LJ" : `LJ ${todo.lehrjahr}`}
                     </span>
                   </button>
                   <span
-                    className={`text-xs font-semibold ${
+                    className={`text-xs font-semibold shrink-0 ${
                       offene.length === 0 ? "text-green-600" : "text-amber-600"
                     }`}
                   >

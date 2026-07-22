@@ -839,14 +839,14 @@ export const DataStore = {
   },
 
   // Hakt ein To-Do für einen Lehrling ab bzw. macht das Abhaken rückgängig
-  async toggleTodoErledigtAwaited(todoId: string, personalnummer: string): Promise<boolean> {
+  async toggleTodoErledigtAwaited(todoId: string, personalnummer: string, monat: string): Promise<boolean> {
     const alle = DataStore.getTodoErledigungen();
     const bereitsErledigt = alle.find(
-      (e) => e.todoId === todoId && e.personalnummer === personalnummer,
+      (e) => e.todoId === todoId && e.personalnummer === personalnummer && e.monat === monat,
     );
     const neueListe = bereitsErledigt
       ? alle.filter((e) => e.id !== bereitsErledigt.id)
-      : [...alle, { id: crypto.randomUUID(), todoId, personalnummer, erledigtAm: new Date().toISOString() }];
+      : [...alle, { id: crypto.randomUUID(), todoId, personalnummer, monat, erledigtAm: new Date().toISOString() }];
     return DataStore.setTodoErledigungenAwaited(neueListe);
   },
 
