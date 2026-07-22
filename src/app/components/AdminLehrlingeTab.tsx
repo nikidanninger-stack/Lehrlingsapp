@@ -101,13 +101,14 @@ export function AdminLehrlingeTab() {
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Lehrjahr</th>
                 <th className="px-4 py-3 font-medium">Standort</th>
+                <th className="px-4 py-3 font-medium">Geburtsdatum</th>
                 <th className="px-4 py-3 font-medium text-right">Aktionen</th>
               </tr>
             </thead>
             <tbody>
               {gefiltert.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
                     Keine Lehrlinge gefunden.
                   </td>
                 </tr>
@@ -118,6 +119,7 @@ export function AdminLehrlingeTab() {
                     <td className="px-4 py-3 font-medium text-gray-800">{l.name}</td>
                     <td className="px-4 py-3 text-gray-600">LJ {l.lehrjahr}</td>
                     <td className="px-4 py-3 text-gray-600">{l.standort ?? "–"}</td>
+                    <td className="px-4 py-3 text-gray-600">{l.geburtsdatum ?? "–"}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
                         <button

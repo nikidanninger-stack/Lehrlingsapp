@@ -29,7 +29,7 @@ const ROW_HEIGHT = 18;
 const NAME_WIDTH = 140;
 const BERUF_WIDTH = 90;
 const KOMMENTAR_WIDTH = 26;
-const GEBURTSDATUM_WIDTH = 95;
+const GEBURTSDATUM_WIDTH = 42;
 const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
 
 function berechneAlter(geburtsdatum: string | undefined): string {
@@ -763,7 +763,7 @@ export function AusbildungsplanMatrix({
                   backgroundColor: DARK_BLUE,
                 }}
               >
-                Geb.datum / Alter
+                Alter
               </div>
               <div style={{ width: totalWidth }} />
             </div>
@@ -930,18 +930,22 @@ export function AusbildungsplanMatrix({
                               y: e.clientY,
                             })
                           }
-                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
+                          className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0 text-[9px] text-gray-600 truncate`}
                           style={{
                             left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
                             width: GEBURTSDATUM_WIDTH,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                             borderRight: "2px solid #aaa",
                           }}
-                          title={editable ? "Doppelklick zum Bearbeiten (TT.MM.JJJJ)" : ""}
+                          title={
+                            lehrling.geburtsdatum
+                              ? `Geburtsdatum: ${lehrling.geburtsdatum}${editable ? " (Doppelklick zum Bearbeiten)" : ""}`
+                              : editable
+                                ? "Doppelklick, um das Geburtsdatum einzutragen"
+                                : ""
+                          }
                         >
-                          {lehrling.geburtsdatum
-                            ? `${lehrling.geburtsdatum} (${berechneAlter(lehrling.geburtsdatum)})`
-                            : ""}
+                          {lehrling.geburtsdatum ? berechneAlter(lehrling.geburtsdatum) : ""}
                         </div>
                         <div className="relative flex" style={{ width: totalWidth }}>
                           {isHighlighted && (
