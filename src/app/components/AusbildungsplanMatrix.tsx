@@ -123,7 +123,7 @@ export function AusbildungsplanMatrix({
   );
   const [bearbeitetesFeld, setBearbeitetesFeld] = useState<{
     personalnummer: string;
-    feld: "kommentar" | "geburtsdatum";
+    feld: "kommentar" | "geburtsdatum" | "beruf";
     wert: string;
     x: number;
     y: number;
@@ -219,7 +219,8 @@ export function AusbildungsplanMatrix({
     );
     const ok = await DataStore.setLehrlingeAwaited(aktualisiert);
     if (ok) {
-      toast.success(feld === "kommentar" ? "Kommentar gespeichert" : "Geburtsdatum gespeichert");
+      const label = feld === "kommentar" ? "Kommentar" : feld === "geburtsdatum" ? "Geburtsdatum" : "Beruf";
+      toast.success(`${label} gespeichert`);
     } else {
       toast.error("Konnte nicht gespeichert werden - siehe Konsole (F12)");
     }
@@ -595,7 +596,11 @@ export function AusbildungsplanMatrix({
               }}
             >
               <label className="block text-[9px] font-semibold text-gray-500 mb-1">
-                {bearbeitetesFeld.feld === "kommentar" ? "Kommentar" : "Geburtsdatum (TT.MM.JJJJ)"}
+                {bearbeitetesFeld.feld === "kommentar"
+                  ? "Kommentar"
+                  : bearbeitetesFeld.feld === "geburtsdatum"
+                    ? "Geburtsdatum (TT.MM.JJJJ)"
+                    : "Beruf"}
               </label>
               {bearbeitetesFeld.feld === "kommentar" ? (
                 <textarea
@@ -612,7 +617,7 @@ export function AusbildungsplanMatrix({
               ) : (
                 <input
                   autoFocus
-                  placeholder="TT.MM.JJJJ"
+                  placeholder={bearbeitetesFeld.feld === "geburtsdatum" ? "TT.MM.JJJJ" : "z.B. KT + ET"}
                   value={bearbeitetesFeld.wert}
                   onChange={(e) => setBearbeitetesFeld({ ...bearbeitetesFeld, wert: e.target.value })}
                   onKeyDown={(e) => {
@@ -820,14 +825,25 @@ export function AusbildungsplanMatrix({
                           )}
                         </div>
                         <div
+                          onDoubleClick={(e) =>
+                            editable &&
+                            setBearbeitetesFeld({
+                              personalnummer: lehrling.personalnummer,
+                              feld: "beruf",
+                              wert: lehrling.beruf ?? "",
+                              x: e.clientX,
+                              y: e.clientY,
+                            })
+                          }
                           className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
                           style={{
                             left: NAME_WIDTH,
                             width: BERUF_WIDTH,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                             borderRight: "1px solid #ddd",
+                            cursor: editable ? "pointer" : "default",
                           }}
-                          title={lehrling.beruf ?? ""}
+                          title={editable ? (lehrling.beruf || "Doppelklick zum Bearbeiten") : lehrling.beruf ?? ""}
                         >
                           {lehrling.beruf ?? ""}
                         </div>
