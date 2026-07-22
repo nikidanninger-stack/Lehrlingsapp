@@ -12,6 +12,8 @@ import type {
   LernFortschritt,
   ChatMessage,
   LastUploadInfo,
+  Todo,
+  TodoErledigung,
 } from "../types";
 import { isWeekend, isAustrianHoliday } from "./holidays";
 import {
@@ -27,6 +29,10 @@ import {
   syncLeitfadenDirect,
   fetchKategorienDirect,
   syncKategorienDirect,
+  fetchTodosDirect,
+  syncTodosDirect,
+  fetchTodoErledigungenDirect,
+  syncTodoErledigungenDirect,
   fetchLernabschnitteFromServer,
   saveLernabschnitteToServer,
   loadChatbotApiKey as apiLoadChatbotApiKey,
@@ -43,6 +49,8 @@ const KEYS = {
   lehrlinge: "lehrlingsapp_lehrlinge",
   planData: "lehrlingsapp_plan_data",
   kategorien: "lehrlingsapp_kategorien",
+  todos: "lehrlingsapp_todos",
+  todoErledigungen: "lehrlingsapp_todo_erledigungen",
   termine: "lehrlingsapp_termine",
   lastUpload: "lehrlingsapp_last_upload",
   backup: "lehrlingsapp_backup",
@@ -795,6 +803,53 @@ export const DataStore = {
     DataStore.setKategorien(DataStore.getKategorien().filter((k) => k.key !== key));
   },
 
+  // ---- To-Dos (monatliche Aufgaben für Lehrlinge) ------------------------
+
+  getTodos(): Todo[] {
+    return readJSON<Todo[]>(KEYS.todos, []);
+  },
+
+  async setTodosAwaited(list: Todo[]): Promise<boolean> {
+    writeJSON(KEYS.todos, list);
+    notifyDataChange();
+    return syncTodosDirect(list);
+  },
+
+  async addTodoAwaited(todo: Todo): Promise<boolean> {
+    return DataStore.setTodosAwaited([...DataStore.getTodos(), todo]);
+  },
+
+  async deleteTodoAwaited(id: string): Promise<boolean> {
+    const okTodo = await DataStore.setTodosAwaited(DataStore.getTodos().filter((t) => t.id !== id));
+    // Zugehörige Erledigungen gleich mit aufräumen
+    const okErledigungen = await DataStore.setTodoErledigungenAwaited(
+      DataStore.getTodoErledigungen().filter((e) => e.todoId !== id),
+    );
+    return okTodo && okErledigungen;
+  },
+
+  getTodoErledigungen(): TodoErledigung[] {
+    return readJSON<TodoErledigung[]>(KEYS.todoErledigungen, []);
+  },
+
+  async setTodoErledigungenAwaited(list: TodoErledigung[]): Promise<boolean> {
+    writeJSON(KEYS.todoErledigungen, list);
+    notifyDataChange();
+    return syncTodoErledigungenDirect(list);
+  },
+
+  // Hakt ein To-Do für einen Lehrling ab bzw. macht das Abhaken rückgängig
+  async toggleTodoErledigtAwaited(todoId: string, personalnummer: string): Promise<boolean> {
+    const alle = DataStore.getTodoErledigungen();
+    const bereitsErledigt = alle.find(
+      (e) => e.todoId === todoId && e.personalnummer === personalnummer,
+    );
+    const neueListe = bereitsErledigt
+      ? alle.filter((e) => e.id !== bereitsErledigt.id)
+      : [...alle, { id: crypto.randomUUID(), todoId, personalnummer, erledigtAm: new Date().toISOString() }];
+    return DataStore.setTodoErledigungenAwaited(neueListe);
+  },
+
   // ---- Chatbot -------------------------------------------------------
 
   getChatbotApiKeyLocal(): string {
@@ -855,6 +910,8 @@ export const DataStore = {
       remoteWerkzeuge,
       remoteLeitfaden,
       remoteKategorien,
+      remoteTodos,
+      remoteTodoErledigungen,
     ] = await Promise.all([
       fetchLehrlingeDirect(),
       fetchPlanDataDirect(),
@@ -862,6 +919,8 @@ export const DataStore = {
       fetchWerkzeugeDirect(),
       fetchLeitfadenDirect(),
       fetchKategorienDirect(),
+      fetchTodosDirect(),
+      fetchTodoErledigungenDirect(),
     ]);
 
     if (remoteLehrlinge && remoteLehrlinge.length > 0) {
@@ -881,6 +940,14 @@ export const DataStore = {
     }
     if (remoteKategorien && remoteKategorien.length > 0) {
       DataStore.setKategorien(remoteKategorien, false);
+    }
+    if (remoteTodos && remoteTodos.length > 0) {
+      writeJSON(KEYS.todos, remoteTodos);
+      notifyDataChange();
+    }
+    if (remoteTodoErledigungen && remoteTodoErledigungen.length > 0) {
+      writeJSON(KEYS.todoErledigungen, remoteTodoErledigungen);
+      notifyDataChange();
     }
 
     return {

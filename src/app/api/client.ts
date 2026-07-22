@@ -8,6 +8,8 @@ import type {
   Werkzeug,
   LeitfadenEintrag,
   PlanKategorie,
+  Todo,
+  TodoErledigung,
 } from "../types";
 
 // ----------------------------------------------------------------------------
@@ -433,6 +435,78 @@ export async function fetchKategorienDirect(): Promise<PlanKategorie[] | null> {
 
 export async function syncKategorienDirect(list: PlanKategorie[]): Promise<boolean> {
   return replaceTable("plan_kategorien", "key", list.map(kategorieToRow));
+}
+
+// ---- To-Dos (monatliche Aufgaben für Lehrlinge) ----------------------------
+
+function todoToRow(t: Todo): Record<string, unknown> {
+  return {
+    id: t.id,
+    titel: t.titel,
+    beschreibung: t.beschreibung ?? "",
+    monat: t.monat,
+    lehrjahr: String(t.lehrjahr),
+    erstelltAm: t.erstelltAm,
+  };
+}
+
+function rowToTodo(row: Record<string, any>): Todo {
+  return {
+    id: row.id,
+    titel: row.titel ?? "",
+    beschreibung: row.beschreibung || undefined,
+    monat: row.monat ?? "",
+    lehrjahr: row.lehrjahr === "alle" ? "alle" : Number(row.lehrjahr),
+    erstelltAm: row.erstelltAm ?? new Date().toISOString(),
+  };
+}
+
+export async function fetchTodosDirect(): Promise<Todo[] | null> {
+  if (!supabase) return null;
+  try {
+    const data = await fetchAllRows("todos");
+    return (data ?? []).map(rowToTodo);
+  } catch (err) {
+    console.warn("[api] fetchTodosDirect fehlgeschlagen", err);
+    return null;
+  }
+}
+
+export async function syncTodosDirect(list: Todo[]): Promise<boolean> {
+  return replaceTable("todos", "id", list.map(todoToRow));
+}
+
+function erledigungToRow(e: TodoErledigung): Record<string, unknown> {
+  return {
+    id: e.id,
+    todoId: e.todoId,
+    personalnummer: e.personalnummer,
+    erledigtAm: e.erledigtAm,
+  };
+}
+
+function rowToErledigung(row: Record<string, any>): TodoErledigung {
+  return {
+    id: row.id,
+    todoId: row.todoId,
+    personalnummer: row.personalnummer,
+    erledigtAm: row.erledigtAm ?? new Date().toISOString(),
+  };
+}
+
+export async function fetchTodoErledigungenDirect(): Promise<TodoErledigung[] | null> {
+  if (!supabase) return null;
+  try {
+    const data = await fetchAllRows("todo_erledigungen");
+    return (data ?? []).map(rowToErledigung);
+  } catch (err) {
+    console.warn("[api] fetchTodoErledigungenDirect fehlgeschlagen", err);
+    return null;
+  }
+}
+
+export async function syncTodoErledigungenDirect(list: TodoErledigung[]): Promise<boolean> {
+  return replaceTable("todo_erledigungen", "id", list.map(erledigungToRow));
 }
 
 // ---- Chatbot-Historie / API-Key Convenience-Wrapper ------------------------

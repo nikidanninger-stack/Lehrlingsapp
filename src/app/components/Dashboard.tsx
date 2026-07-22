@@ -17,6 +17,7 @@ import { DataStore, subscribeToDataChanges } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
 import { SectionHeader } from "./ui/SectionHeader";
 import { TypeBadge } from "./ui/TypeBadge";
+import { LehrlingTodoListe, AdminTodoVerwaltung } from "./DashboardTodos";
 import { getGreeting, formatDateLong, daysBetween, parseDate } from "../utils/dateUtils";
 
 interface DashboardProps {
@@ -200,6 +201,8 @@ function LehrlingDashboard({ user, onNavigate }: DashboardProps) {
         </GlassCard>
       </div>
 
+      <LehrlingTodoListe personalnummer={user.personalnummer} lehrjahr={user.lehrjahr} />
+
       {/* Schnellzugriff */}
       <div>
         <h2 className="font-bold text-gray-800 mb-3">Schnellzugriff</h2>
@@ -335,6 +338,8 @@ function AdminDashboard({ onNavigate }: { onNavigate: (screen: Screen) => void }
           </button>
         </GlassCard>
       </div>
+
+      <AdminTodoVerwaltung lehrlinge={lehrlinge} />
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <QuickAction

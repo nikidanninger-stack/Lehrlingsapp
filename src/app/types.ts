@@ -237,3 +237,21 @@ export interface LastUploadInfo {
   date: string;
   fileName: string;
 }
+
+// Monatliche To-Dos für Lehrlinge (vom Admin angelegt, im Dashboard abhakbar)
+export interface Todo {
+  id: string;
+  titel: string;
+  beschreibung?: string;
+  monat: string; // Format "YYYY-MM", z.B. "2026-07"
+  lehrjahr: number | "alle"; // für welches Lehrjahr gilt es
+  erstelltAm: string; // ISO-Datum
+}
+
+// Wer welches To-Do schon erledigt hat
+export interface TodoErledigung {
+  id: string;
+  todoId: string;
+  personalnummer: string;
+  erledigtAm: string; // ISO-Datum
+}
