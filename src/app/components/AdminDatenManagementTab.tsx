@@ -127,6 +127,21 @@ export function AdminDatenManagementTab() {
     }
   }
 
+  async function handleWerkzeugFotosReparieren() {
+    try {
+      const { gesetzt, keinFotoVorhanden } = await DataStore.repariereWerkzeugFotos();
+      if (keinFotoVorhanden.length === 0) {
+        toast.success(`${gesetzt} Werkzeug-Fotos wiederhergestellt.`);
+      } else {
+        toast.success(
+          `${gesetzt} Werkzeug-Fotos wiederhergestellt. ${keinFotoVorhanden.length} Werkzeuge ohne passendes Foto: ${keinFotoVorhanden.join(", ")}`,
+        );
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Reparatur fehlgeschlagen");
+    }
+  }
+
   function handleBackup() {
     DataStore.createBackup();
     toast.success("Backup erstellt.");
@@ -300,6 +315,13 @@ export function AdminDatenManagementTab() {
           description="Legt einen Demo-Lehrling 'EAKON Team' (Personalnummer 9999) mit gefülltem Beispiel-Kalender und Beispiel-To-Dos an - zum Weiterschicken, z.B. für eine Bewerbung/Präsentation."
           buttonLabel="Anlegen"
           onClick={handleTestaccountErstellen}
+        />
+        <ActionRow
+          icon={<UserCog size={16} />}
+          title="Werkzeug-Fotos reparieren"
+          description="Stellt die Bild-URLs der Werkzeuge anhand der ursprünglichen Datei-Zuordnung wieder her (Fotos liegen weiterhin im Speicher, nur die Verknüpfung fehlte)."
+          buttonLabel="Reparieren"
+          onClick={handleWerkzeugFotosReparieren}
         />
         <ActionRow
           icon={<Archive size={16} />}

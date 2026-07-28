@@ -376,6 +376,12 @@ export const DataStore = {
     }
   },
 
+  async setWerkzeugeAwaited(list: Werkzeug[]): Promise<boolean> {
+    writeJSON(KEYS.werkzeuge, list);
+    notifyDataChange();
+    return syncWerkzeugeDirect(list);
+  },
+
   addWerkzeug(werkzeug: Werkzeug): void {
     DataStore.setWerkzeuge([...DataStore.getWerkzeuge(), werkzeug]);
   },
@@ -719,6 +725,155 @@ export const DataStore = {
       throw new Error("Speichern der Geburtsdaten fehlgeschlagen. Details in der Browser-Konsole.");
     }
     return { gesetzt, nichtGefunden };
+  },
+
+  // Repariert die Werkzeug-Fotos: Ein früherer Import-Button hat versehentlich
+  // alle Werkzeuge in der Datenbank durch eine veraltete, fotolose Liste
+  // ersetzt. Die eigentlichen Fotodateien liegen aber unverändert im
+  // Supabase-Storage-Bucket "werkzeug-fotos" - hier wird per Namensabgleich
+  // mit der ursprünglichen mapping.json die Bild-URL wiederhergestellt, wo
+  // ein passendes Foto existiert.
+  async repariereWerkzeugFotos(): Promise<{ gesetzt: number; keinFotoVorhanden: string[] }> {
+    const NAME_ZU_DATEI: { name: string; file: string }[] = [
+  { name: 'schukostecker', file: '0774_110_010.eps_Eshop.jpg' },
+  { name: 'abisolierzange', file: 'Picture8.jpg' },
+  { name: 'ausbläser', file: '0539267.jpg' },
+  { name: 'hilti hit auspressgerät', file: 'Picture6.jpg' },
+  { name: 'biegegerät', file: 'biegegerät.jpg' },
+  { name: 'bitset', file: 'Picture83.jpg' },
+  { name: 'hammerbohrer', file: '0005132.jpg' },
+  { name: 'bohrerkassette', file: '0005141.jpg' },
+  { name: 'bördelgerät', file: 'bördeljpg.jpg' },
+  { name: 'brenner', file: 'Hagelbrenner.jpg' },
+  { name: 'brennergriff', file: 'Picture2.jpg' },
+  { name: 'crimpzange', file: 'PZ6.jpg' },
+  { name: 'crimpzange für flachstecker', file: 'Picture1.jpg' },
+  { name: 'druckminderer', file: 'azetylen.jpg' },
+  { name: 'eckrohrzange', file: '0005125.jpg' },
+  { name: 'ersatzklingen', file: 'Picture44.jpg' },
+  { name: 'faust schraubendreher', file: 'Picture41.jpg' },
+  { name: 'flachmeißel', file: 'Picture43.jpg' },
+  { name: 'flammschutzmatte', file: 'Picture45.jpg' },
+  { name: 'doppelmaulschlüssel', file: 'Picture46.jpg' },
+  { name: 'gardena-schlauch', file: 'Picture47.jpg' },
+  { name: 'gripzange', file: '0703_901_180.eps_Eshop.jpg' },
+  { name: 'hammer', file: '2691_375_05.eps_Eshop.jpg' },
+  { name: 'handblechschere', file: 'Picture50.jpg' },
+  { name: 'handdrahtbürste', file: 'Drahtbürste.jpg' },
+  { name: 'handfäustel', file: 'Picture51.jpg' },
+  { name: 'handnietenzange', file: 'Picture52.jpg' },
+  { name: 'inspektionsspiegel', file: 'Picture86.jpg' },
+  { name: 'kabelmesser', file: '0520259_.jpg' },
+  { name: 'kabeleinziehgerät', file: 'Picture53.jpg' },
+  { name: 'kabeleinziehstrumpf', file: 'Picture54.jpg' },
+  { name: 'kabelschere kt45 weidmüller', file: 'kabelschere.jpg' },
+  { name: 'kabelschneider', file: 'KT8.jpg' },
+  { name: 'kerbzange', file: '0308781.jpg' },
+  { name: 'klingen zu entgrater', file: 'Picture56.jpg' },
+  { name: 'kombizange', file: '0005162.jpg' },
+  { name: 'körner', file: 'Picture57.jpg' },
+  { name: 'kraftschraubereinsatz', file: 'Kraftschraubereinsatz.jpg' },
+  { name: 'lamellenkamm', file: 'Lamellenkamm.jpg' },
+  { name: 'lochsäge', file: 'Picture82.jpg' },
+  { name: 'lochsäge schaft', file: 'LochsägeS.jpg' },
+  { name: 'farbkreide', file: 'DV005-ppic_Farbkreide_rot_0.jpg' },
+  { name: 'lötschnurrautomat', file: '2692_003_2.eps_Eshop.jpg' },
+  { name: 'metallsägebogen', file: '0695_552_900.eps_Eshop.jpg' },
+  { name: 'pistole für pu schaum', file: '0184183.jpg' },
+  { name: 'plastik-öler', file: '2697_130_012.eps_Eshop.jpg' },
+  { name: 'pucksäge', file: 'GED_pic_ps_6500480.eps_Eshop.jpg' },
+  { name: 'ratschensatz', file: '111111111.jpg' },
+  { name: 'ratschensatz belzer', file: '1111111.jpg' },
+  { name: 'reißnadel', file: '0005217.jpg' },
+  { name: 'revolverzange', file: '0005235.jpg' },
+  { name: 'rohrabschneider', file: '0005207.jpg' },
+  { name: 'rohrschneider schneidrad', file: '0493035.jpg' },
+  { name: 'rollbandmass', file: '0705_240_5_fest.eps_Eshop.jpg' },
+  { name: 'rollgabelschlüssel', file: '0700_301_160.eps_Eshop.jpg' },
+  { name: 'schnellentgrater', file: '0243201.jpg' },
+  { name: 'schraubendreher', file: '0005171.jpg' },
+  { name: 'sechskant-stiftschlüsselsatz', file: '0701_729_309.eps_Eshop.jpg' },
+  { name: 'seitenschneider', file: '0703_062_160.eps_Eshop.jpg' },
+  { name: 'spannungsprüfer', file: '0701_568_615.eps_Eshop.jpg' },
+  { name: 'spannungsprüfer combi-check', file: '2691_975_5.eps_Eshop.jpg' },
+  { name: 'nietenbohrer', file: '0636_20.eps_Eshop.jpg' },
+  { name: 'spiralbohrer', file: 'Spiralbohrer.jpg' },
+  { name: 'stanleymesser', file: 'Stanleymesser.jpg' },
+  { name: 'stecknuss-satz', file: '61k-kSMcdaL._AC_SX569_.jpg' },
+  { name: 'steckschlüssel', file: 'Steckschlüssel.jpg' },
+  { name: 'stufenbohrer', file: '0297373.jpg' },
+  { name: 'kegelbohrer', file: '0692_812_820.eps_Eshop.jpg' },
+  { name: 'taschenlampe', file: '0005240.jpg' },
+  { name: 'telefonzange', file: '0703_076_205.eps_Eshop.jpg' },
+  { name: 'torax schlüsselsatz', file: '0021513.jpg' },
+  { name: 'vorschlagahle', file: '2696_650_115.eps_Eshop.jpg' },
+  { name: 'wasserpumpenzange cobra quick', file: '0005218.jpg' },
+  { name: 'wasserwaage', file: '0005119.jpg' },
+  { name: 'zange f. pg verschraubung', file: '0522525.jpg' },
+  { name: 'zentrierbohrer für lochsäge', file: '0005187.jpg' },
+  { name: 'tieflochmarker', file: '0623932.jpg' },
+  { name: 'ersatzmienen für tieflochmarker', file: '0623934.jpg' },
+  { name: 'flaschenanschluß', file: '0212008.jpg' },
+  { name: 'füllschlauch', file: '0269484.jpg' },
+  { name: 'hochdruck schlauch', file: '0590849.jpg' },
+  { name: 'abklemmzange', file: '455773.jpg' },
+  { name: 'zapfventilzange', file: 'Picture3.jüg.png' },
+  { name: 'schraderventildurchgangsöffner', file: 'Durchgangsöffner.jpg' },
+  { name: 'ventileinsatzentferner', file: 'ventilkernentferner.jpg' },
+  { name: 'ventilkernentferner', file: '718A3708.png' },
+  { name: 'sägeblatt puksäge', file: '0609_2.eps_Eshop.jpg' },
+  { name: 'bit', file: '0702_331_002_.eps_Eshop123.jpg' },
+  { name: 'knipex rohrabschneider', file: 'Rigidschneider.jpg' },
+  { name: 'gew. stangen entgrater', file: '0702_000_001_d.eps_Eshop.jpg' },
+  { name: 'steckschlüssel einsatz', file: '943024013288101X_837156680183.jpg' },
+  { name: 'kälteknarre', file: 'Refco KalteRatsche R6950 NEU.png' },
+  { name: 'schnellverschluss', file: '5673.jpg' },
+  { name: 'setzwerkzeug', file: '9488184934430.jpg' },
+  { name: 'hand ölpumpe', file: 'OPHZnaeO0RAd0gJv_600x600.jpg' },
+  { name: 'verlängerung für aufnahne', file: 'milwaukee-7-16-verlaengerung-300-mm.jpg' },
+  { name: 'verlängerung für aufnahme', file: '48281030-hero_1_jpg_detail_600x600.jpg' },
+  { name: 'schleifvlies', file: '2671_699_992.eps_Eshop.jpg' },
+  { name: 'kugelschreiber', file: '10_LT87767_N0021.jpg' },
+  { name: 'bleistift', file: '0695_900_215.eps_Eshop.jpg' },
+  { name: 'dauermagnetspule', file: '0021457.jpg' },
+  { name: 'trennscheibe', file: '0004182.jpg' },
+  { name: 'bit halter', file: '0702_812_075.eps_Eshop.jpg' },
+  { name: 'schlauchklemme', file: '0541_2.eps_Eshop.jpg' },
+  { name: 'brenner dichtung', file: 'MicrosoftTeams-image (13).png' },
+  { name: 'kartuschenpresse', file: '0006517.png' },
+  { name: 'schraubzwinge', file: '0005124.jpg' },
+  { name: 'säbelsägeblatt', file: '0651269.jpg' },
+  { name: 'zurrgurt 1-tlg. mit ratsche', file: '81664501.jpg' },
+  { name: 'wasserpumpenzange cobra mini', file: '0005218.jpg' },
+  { name: 'permanentmarker duo schwarz', file: 'Duo marker.png' },
+  { name: 'serviceanschluss r744', file: '20260707_140703.jpg' },
+  { name: 'dräger strömungsprüfer', file: '20260707_140814.jpg' },    ];
+
+    const STORAGE_BASIS =
+      "https://babizkwevswcwlmpyxkj.supabase.co/storage/v1/object/public/werkzeug-fotos/werkzeuge/";
+
+    const normalize = (s: string) => s.trim().toLowerCase();
+    const dateiByName = new Map(NAME_ZU_DATEI.map((m) => [normalize(m.name), m.file]));
+
+    const alleWerkzeuge = DataStore.getWerkzeuge();
+    let gesetzt = 0;
+    const keinFotoVorhanden: string[] = [];
+
+    const aktualisiert = alleWerkzeuge.map((w) => {
+      const datei = dateiByName.get(normalize(w.name));
+      if (datei) {
+        gesetzt++;
+        return { ...w, bildUrl: `${STORAGE_BASIS}${datei}` };
+      }
+      keinFotoVorhanden.push(w.name);
+      return w;
+    });
+
+    const ok = await DataStore.setWerkzeugeAwaited(aktualisiert);
+    if (!ok) {
+      throw new Error("Speichern der Werkzeug-Fotos fehlgeschlagen. Details in der Browser-Konsole.");
+    }
+    return { gesetzt, keinFotoVorhanden };
   },
 
   // Legt (bzw. aktualisiert) einen Test-/Demo-Lehrling mit Personalnummer
