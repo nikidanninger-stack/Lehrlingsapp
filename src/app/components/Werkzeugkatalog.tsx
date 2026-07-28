@@ -31,7 +31,6 @@ function WerkzeugBild({ src, alt }: { src: string; alt: string }) {
       key={versuch}
       src={versuch === 0 ? src : `${src}${src.includes("?") ? "&" : "?"}retry=${versuch}`}
       alt={alt}
-      loading="lazy"
       decoding="async"
       className="w-full h-full object-contain"
       onError={() => {
