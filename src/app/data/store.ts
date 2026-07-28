@@ -722,10 +722,11 @@ export const DataStore = {
   },
 
   // Legt (bzw. aktualisiert) einen Test-/Demo-Lehrling mit Personalnummer
-  // 9999 an, samt einem gefüllten Beispiel-Kalender (6 Wochen ab Start des
-  // Ausbildungsjahres) und zwei Beispiel-To-Dos, damit sich jemand von außen
-  // (z.B. für eine Bewerbung/Präsentation) die App mit echten Daten ansehen
-  // kann, ohne die Daten eines echten Lehrlings zu verwenden.
+  // 9999 an, samt einem für das GESAMTE Ausbildungsjahr (September bis
+  // September) gefüllten Beispiel-Kalender und zwei Beispiel-To-Dos, damit
+  // sich jemand von außen (z.B. für eine Bewerbung/Präsentation) die App mit
+  // echten Daten ansehen kann, ohne die Daten eines echten Lehrlings zu
+  // verwenden.
   async erstelleTestaccountAwaited(): Promise<void> {
     const TEST_PERSONALNUMMER = "9999";
     const TEST_NAME = "EAKON Team";
@@ -750,17 +751,22 @@ export const DataStore = {
       throw new Error("Anlegen des Test-Lehrlings fehlgeschlagen. Details in der Browser-Konsole.");
     }
 
-    // Beispiel-Kalender: 6 Wochen ab 01.09.2026, abwechselnde Tätigkeiten,
-    // damit der Plan direkt gefüllt aussieht.
-    const ablauf: { typ: string; label: string; tageAnzahl: number }[] = [
-      { typ: "grundlagen", label: "Grundlagen", tageAnzahl: 5 },
-      { typ: "berufsschule", label: "Berufsschule", tageAnzahl: 5 },
-      { typ: "montage-kt-et-linz", label: "Montage Linz", tageAnzahl: 5 },
-      { typ: "testlabor", label: "Testlabor", tageAnzahl: 3 },
-      { typ: "service", label: "Service", tageAnzahl: 4 },
-      { typ: "schulung", label: "Schulungen", tageAnzahl: 3 },
-      { typ: "konstrukteur-st-martin", label: "Konstrukteur St. Martin", tageAnzahl: 5 },
+    // Beispiel-Kalender: das GESAMTE Ausbildungsjahr (01.09.2026 - 31.08.2027),
+    // abwechselnde Tätigkeiten im Kreislauf, damit der Plan wirklich
+    // durchgehend gefüllt aussieht, nicht nur am Anfang.
+    const ablauf: { typ: string; label: string }[] = [
+      { typ: "grundlagen", label: "Grundlagen" },
+      { typ: "berufsschule", label: "Berufsschule" },
+      { typ: "montage-kt-et-linz", label: "Montage Linz" },
+      { typ: "testlabor", label: "Testlabor" },
+      { typ: "service", label: "Service" },
+      { typ: "schulung", label: "Schulungen" },
+      { typ: "konstrukteur-st-martin", label: "Konstrukteur St. Martin" },
+      { typ: "montage-kt-et-wien", label: "Montage Wien / St. Pölten" },
+      { typ: "werkzeugpruefung", label: "Werkzeugprüfung" },
+      { typ: "lap-vorbereitung-kt", label: "LAP-Vorbereitung KT" },
     ];
+    const BLOCK_LAENGE_TAGE = 5; // eine Arbeitswoche pro Tätigkeit, dann wechselt's
 
     const fmt = (d: Date) => {
       const dd = String(d.getDate()).padStart(2, "0");
@@ -768,11 +774,15 @@ export const DataStore = {
       return `${dd}.${mm}.${d.getFullYear()}`;
     };
 
+    const ausbildungsjahrEnde = new Date(2027, 7, 31); // 31. August 2027
     const neueEintraege: PlanEntry[] = [];
     let cursor = new Date(2026, 8, 1); // 1. September 2026
-    for (const block of ablauf) {
+    let blockIndex = 0;
+
+    while (cursor <= ausbildungsjahrEnde) {
+      const block = ablauf[blockIndex % ablauf.length];
       let hinzugefuegt = 0;
-      while (hinzugefuegt < block.tageAnzahl) {
+      while (hinzugefuegt < BLOCK_LAENGE_TAGE && cursor <= ausbildungsjahrEnde) {
         const tag = cursor.getDay();
         if (tag !== 0 && tag !== 6) {
           const dateStr = fmt(cursor);
@@ -792,6 +802,7 @@ export const DataStore = {
         cursor = new Date(cursor);
         cursor.setDate(cursor.getDate() + 1);
       }
+      blockIndex++;
     }
 
     const alleEintraege = DataStore.getPlanData().filter(

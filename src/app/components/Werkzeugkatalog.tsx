@@ -13,6 +13,38 @@ interface WerkzeugkatalogProps {
   user: User;
 }
 
+// Bild mit automatischer Wiederholung: falls das Bild beim ersten Versuch
+// nicht lädt (z.B. kurzer Verbindungsaussetzer bei vielen gleichzeitigen
+// Anfragen), wird nach kurzer Wartezeit automatisch nochmal versucht, bevor
+// endgültig das "kein Bild"-Symbol angezeigt wird.
+function WerkzeugBild({ src, alt }: { src: string; alt: string }) {
+  const [versuch, setVersuch] = useState(0);
+  const [fehlgeschlagen, setFehlgeschlagen] = useState(false);
+  const maxVersuche = 3;
+
+  if (fehlgeschlagen) {
+    return <ImageOff size={28} className="text-gray-300" />;
+  }
+
+  return (
+    <img
+      key={versuch}
+      src={versuch === 0 ? src : `${src}${src.includes("?") ? "&" : "?"}retry=${versuch}`}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      className="w-full h-full object-contain"
+      onError={() => {
+        if (versuch < maxVersuche - 1) {
+          setTimeout(() => setVersuch((v) => v + 1), 600 * (versuch + 1));
+        } else {
+          setFehlgeschlagen(true);
+        }
+      }}
+    />
+  );
+}
+
 export function Werkzeugkatalog({ user }: WerkzeugkatalogProps) {
   const [, setTick] = useState(0);
   const [search, setSearch] = useState("");
@@ -119,7 +151,7 @@ export function Werkzeugkatalog({ user }: WerkzeugkatalogProps) {
                 >
                   <div className="aspect-square bg-gray-100 flex items-center justify-center relative">
                     {w.bildUrl ? (
-                      <img src={w.bildUrl} alt={w.name} className="w-full h-full object-contain" />
+                      <WerkzeugBild src={w.bildUrl} alt={w.name} />
                     ) : (
                       <ImageOff size={28} className="text-gray-300" />
                     )}
