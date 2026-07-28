@@ -63,7 +63,7 @@ export function AdminDatenManagementTab() {
       );
 
       toast.success(
-        `${mod.SEED_ANSPRECHPARTNER.length} Ansprechpartner, ${mod.SEED_WERKZEUGE.length} Werkzeuge, ${mod.SEED_LEITFADEN.length} Leitfaden-Einträge und ${mod.SEED_LERNABSCHNITTE.length} Lernmodule importiert und gespeichert.`,
+        `${mod.SEED_ANSPRECHPARTNER.length} Ansprechpartner, ${mod.SEED_LEITFADEN.length} Leitfaden-Einträge und ${mod.SEED_LERNABSCHNITTE.length} Lernmodule importiert und gespeichert. (Werkzeuge werden hier bewusst NICHT mehr angerührt - siehe Hinweis.)`,
       );
     } catch (err) {
       console.error("Content-Seed-Import fehlgeschlagen:", err);
@@ -184,14 +184,16 @@ export function AdminDatenManagementTab() {
         <div className="flex items-center gap-2 mb-1">
           <UploadCloud size={18} className="text-purple-600" />
           <h3 className="font-bold text-gray-800">
-            Ansprechpartner, Werkzeuge, Leitfaden &amp; LernApp importieren
+            Ansprechpartner, Leitfaden &amp; LernApp importieren
           </h3>
         </div>
         <p className="text-sm text-gray-500 mb-4">
-          Lädt 4 Ansprechpartner, den vollständigen Werkzeugkatalog, alle
-          Leitfaden-Kapitel sowie die LernApp-Module (Allgemeine Kältetechnik &amp;
-          Verdichter) direkt in die App. Bestehende Einträge in diesen Bereichen
-          werden überschrieben.
+          Lädt 4 Ansprechpartner, alle Leitfaden-Kapitel sowie die LernApp-Module
+          (Allgemeine Kältetechnik &amp; Verdichter) direkt in die App. Bestehende
+          Einträge in diesen Bereichen werden überschrieben.{" "}
+          <strong>Werkzeuge werden hier bewusst NICHT importiert</strong> - dafür
+          gibt es die echten, mit Fotos versehenen Werkzeuge direkt in der
+          Datenbank, die hierdurch nicht mehr überschrieben werden können.
         </p>
         <Button
           onClick={handleManualContentSeed}

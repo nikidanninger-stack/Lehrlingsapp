@@ -879,24 +879,28 @@ export const DataStore = {
     }
   },
 
+  // WICHTIG: Werkzeuge werden hier bewusst NICHT mehr überschrieben! Die
+  // Werkzeuge in der Datenbank wurden separat mit echten Fotos befüllt
+  // (über ein eigenes Upload-Skript) - die eingebaute SEED_WERKZEUGE-Liste
+  // hier im Code ist ein veralteter Schnappschuss OHNE Fotos. Ein früherer
+  // Aufruf dieser Funktion hat dadurch versehentlich alle echten, mit Fotos
+  // versehenen Werkzeuge gelöscht und durch die fotolose Seed-Liste ersetzt.
   async importContentSeedAwaited(
     ansprechpartner: Ansprechpartner[],
-    werkzeuge: Werkzeug[],
+    _werkzeugeNichtMehrVerwendet: Werkzeug[],
     leitfaden: LeitfadenEintrag[],
     lernAbschnitte: LernAbschnitt[],
   ): Promise<void> {
     DataStore.setAnsprechpartner(ansprechpartner, false);
-    DataStore.setWerkzeuge(werkzeuge, false);
     DataStore.setLeitfadenEintraege(leitfaden, false);
     writeJSON(KEYS.lernAbschnitte, lernAbschnitte);
     notifyDataChange();
-    const [okAnsprechpartner, okWerkzeuge, okLeitfaden] = await Promise.all([
+    const [okAnsprechpartner, okLeitfaden] = await Promise.all([
       syncAnsprechpartnerDirect(ansprechpartner),
-      syncWerkzeugeDirect(werkzeuge),
       syncLeitfadenDirect(leitfaden),
       saveLernabschnitteToServer(lernAbschnitte),
     ]);
-    if (!okAnsprechpartner || !okWerkzeuge || !okLeitfaden) {
+    if (!okAnsprechpartner || !okLeitfaden) {
       throw new Error("Speichern zur Datenbank fehlgeschlagen. Details in der Browser-Konsole.");
     }
   },
