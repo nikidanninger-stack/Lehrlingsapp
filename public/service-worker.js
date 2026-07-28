@@ -14,7 +14,7 @@
 // activate() den alten Cache zuverlässig wegwirft.
 // ----------------------------------------------------------------------------
 
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `lehrlingsapp-cache-${CACHE_VERSION}`;
 const PRECACHE_URLS = ["/", "/manifest.json"];
 
@@ -43,6 +43,15 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
+
+  // Bilder NIE speziell abfangen: Supabase Storage liefert Bild-URLs oft über
+  // eine Weiterleitung aus, und ein Service Worker, der eine no-cors
+  // Bild-Anfrage manuell per fetch() erneut stellt, bricht bei
+  // Weiterleitungen ab ("redirect mode is not 'follow'"). Deshalb lassen wir
+  // den Browser Bilder ganz normal selbst laden, ohne Eingriff.
+  if (request.destination === "image") {
+    return;
+  }
 
   const url = new URL(request.url);
 
