@@ -147,6 +147,29 @@ export function AdminDatenManagementTab() {
     toast.success("Backup erstellt.");
   }
 
+  function handleBackupExportieren() {
+    const backup = DataStore.getBackup();
+    if (!backup) {
+      toast.error("Kein Backup im Browser-Speicher gefunden.");
+      return;
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `lehrlingsapp-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    const zeitpunkt = (backup as any).timestamp;
+    toast.success(
+      zeitpunkt
+        ? `Backup heruntergeladen (erstellt am ${new Date(zeitpunkt).toLocaleString("de-AT")}).`
+        : "Backup heruntergeladen.",
+    );
+  }
+
   function handleDiagnose() {
     const raw = localStorage.getItem("lehrlingsapp_plan_data");
     if (!raw) {
@@ -329,6 +352,13 @@ export function AdminDatenManagementTab() {
           description="Sichert alle aktuellen Daten lokal (übersteht ein Leeren des Caches nicht)."
           buttonLabel="Backup erstellen"
           onClick={handleBackup}
+        />
+        <ActionRow
+          icon={<Archive size={16} />}
+          title="Vorhandenes Backup herunterladen"
+          description="Lädt ein eventuell bereits vorhandenes Backup als Datei herunter, OHNE es zu überschreiben. Wichtig zum Prüfen, bevor du 'Backup erstellen' erneut klickst."
+          buttonLabel="Herunterladen"
+          onClick={handleBackupExportieren}
         />
         <ActionRow
           icon={<Trash2 size={16} />}
