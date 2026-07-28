@@ -721,6 +721,132 @@ export const DataStore = {
     return { gesetzt, nichtGefunden };
   },
 
+  // Legt (bzw. aktualisiert) einen Test-/Demo-Lehrling mit Personalnummer
+  // 9999 an, samt einem gefüllten Beispiel-Kalender (6 Wochen ab Start des
+  // Ausbildungsjahres) und zwei Beispiel-To-Dos, damit sich jemand von außen
+  // (z.B. für eine Bewerbung/Präsentation) die App mit echten Daten ansehen
+  // kann, ohne die Daten eines echten Lehrlings zu verwenden.
+  async erstelleTestaccountAwaited(): Promise<void> {
+    const TEST_PERSONALNUMMER = "9999";
+    const TEST_NAME = "EAKON Team";
+
+    const alleLehrlinge = DataStore.getLehrlinge();
+    const testLehrling: Lehrling = {
+      personalnummer: TEST_PERSONALNUMMER,
+      name: TEST_NAME,
+      lehrjahr: 2,
+      standort: "Linz",
+      beruf: "KT + ET",
+      kommentar: "Test-/Demo-Account zum Vorzeigen der App",
+      geburtsdatum: "01.01.2008",
+      reihenfolge: 9999,
+    };
+    const neueLehrlingsliste = [
+      ...alleLehrlinge.filter((l) => l.personalnummer !== TEST_PERSONALNUMMER),
+      testLehrling,
+    ];
+    const okLehrling = await DataStore.setLehrlingeAwaited(neueLehrlingsliste);
+    if (!okLehrling) {
+      throw new Error("Anlegen des Test-Lehrlings fehlgeschlagen. Details in der Browser-Konsole.");
+    }
+
+    // Beispiel-Kalender: 6 Wochen ab 01.09.2026, abwechselnde Tätigkeiten,
+    // damit der Plan direkt gefüllt aussieht.
+    const ablauf: { typ: string; label: string; tageAnzahl: number }[] = [
+      { typ: "grundlagen", label: "Grundlagen", tageAnzahl: 5 },
+      { typ: "berufsschule", label: "Berufsschule", tageAnzahl: 5 },
+      { typ: "montage-kt-et-linz", label: "Montage Linz", tageAnzahl: 5 },
+      { typ: "testlabor", label: "Testlabor", tageAnzahl: 3 },
+      { typ: "service", label: "Service", tageAnzahl: 4 },
+      { typ: "schulung", label: "Schulungen", tageAnzahl: 3 },
+      { typ: "konstrukteur-st-martin", label: "Konstrukteur St. Martin", tageAnzahl: 5 },
+    ];
+
+    const fmt = (d: Date) => {
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      return `${dd}.${mm}.${d.getFullYear()}`;
+    };
+
+    const neueEintraege: PlanEntry[] = [];
+    let cursor = new Date(2026, 8, 1); // 1. September 2026
+    for (const block of ablauf) {
+      let hinzugefuegt = 0;
+      while (hinzugefuegt < block.tageAnzahl) {
+        const tag = cursor.getDay();
+        if (tag !== 0 && tag !== 6) {
+          const dateStr = fmt(cursor);
+          neueEintraege.push({
+            id: `demo-9999-${dateStr}`,
+            personalnummer: TEST_PERSONALNUMMER,
+            lehrlingName: TEST_NAME,
+            lehrjahr: 2,
+            startDate: dateStr,
+            endDate: dateStr,
+            location: "Linz",
+            type: block.typ,
+            details: block.label,
+          });
+          hinzugefuegt++;
+        }
+        cursor = new Date(cursor);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    }
+
+    const alleEintraege = DataStore.getPlanData().filter(
+      (e) => e.personalnummer !== TEST_PERSONALNUMMER,
+    );
+    const okPlan = await DataStore.setPlanDataAwaited([...alleEintraege, ...neueEintraege]);
+    if (!okPlan) {
+      throw new Error("Anlegen des Beispiel-Kalenders fehlgeschlagen. Details in der Browser-Konsole.");
+    }
+
+    // Zwei Beispiel-To-Dos für den aktuellen Monat (eines erledigt, eines offen)
+    const heute = new Date();
+    const monat = `${heute.getFullYear()}-${String(heute.getMonth() + 1).padStart(2, "0")}`;
+    const alleTodos = DataStore.getTodos().filter((t) => !t.id.startsWith("demo-9999-todo"));
+    const demoTodos: Todo[] = [
+      {
+        id: "demo-9999-todo-1",
+        titel: "Beispiel-Aufgabe: Berichtsheft eintragen",
+        beschreibung: "Beispielhafte, bereits erledigte Aufgabe zur Demonstration.",
+        monat,
+        lehrjahr: 2,
+        erstelltAm: new Date().toISOString(),
+      },
+      {
+        id: "demo-9999-todo-2",
+        titel: "Beispiel-Aufgabe: Werkzeugkatalog durchsehen",
+        beschreibung: "Beispielhafte, noch offene Aufgabe zur Demonstration.",
+        monat,
+        lehrjahr: 2,
+        erstelltAm: new Date().toISOString(),
+      },
+    ];
+    const okTodos = await DataStore.setTodosAwaited([...alleTodos, ...demoTodos]);
+    if (!okTodos) {
+      throw new Error("Anlegen der Beispiel-To-Dos fehlgeschlagen. Details in der Browser-Konsole.");
+    }
+
+    const alleErledigungen = DataStore.getTodoErledigungen().filter(
+      (e) => e.id !== "demo-9999-erledigung-1",
+    );
+    const okErledigungen = await DataStore.setTodoErledigungenAwaited([
+      ...alleErledigungen,
+      {
+        id: "demo-9999-erledigung-1",
+        todoId: "demo-9999-todo-1",
+        personalnummer: TEST_PERSONALNUMMER,
+        monat,
+        erledigtAm: new Date().toISOString(),
+      },
+    ]);
+    if (!okErledigungen) {
+      throw new Error("Speichern der Beispiel-Erledigung fehlgeschlagen. Details in der Browser-Konsole.");
+    }
+  },
+
   // Für den manuellen "Jetzt importieren"-Button im Admin-Bereich: schreibt
   // erst lokal (schnell, für sofortiges UI-Feedback), wartet DANACH aber
   // wirklich auf den Abschluss des Uploads zur Datenbank, bevor die Funktion

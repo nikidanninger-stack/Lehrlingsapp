@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RefreshCcw, Trash2, CalendarX2, Archive, Database, UploadCloud } from "lucide-react";
+import { RefreshCcw, Trash2, CalendarX2, Archive, Database, UploadCloud, UserCog } from "lucide-react";
 import { toast } from "sonner";
 import { DataStore } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
@@ -115,6 +115,15 @@ export function AdminDatenManagementTab() {
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Import fehlgeschlagen");
+    }
+  }
+
+  async function handleTestaccountErstellen() {
+    try {
+      await DataStore.erstelleTestaccountAwaited();
+      toast.success("Test-Account 9999 (EAKON Team) angelegt/aktualisiert.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Anlegen fehlgeschlagen");
     }
   }
 
@@ -282,6 +291,13 @@ export function AdminDatenManagementTab() {
           description="Trägt die Geburtsdaten aus der Excel-Liste bei allen passenden Lehrlingen ein (per Namensabgleich)."
           buttonLabel="Importieren"
           onClick={handleImportGeburtsdaten}
+        />
+        <ActionRow
+          icon={<UserCog size={16} />}
+          title="Test-Account (9999) anlegen"
+          description="Legt einen Demo-Lehrling 'EAKON Team' (Personalnummer 9999) mit gefülltem Beispiel-Kalender und Beispiel-To-Dos an - zum Weiterschicken, z.B. für eine Bewerbung/Präsentation."
+          buttonLabel="Anlegen"
+          onClick={handleTestaccountErstellen}
         />
         <ActionRow
           icon={<Archive size={16} />}
