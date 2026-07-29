@@ -939,8 +939,8 @@ export const DataStore = {
       let hinzugefuegt = 0;
       while (hinzugefuegt < BLOCK_LAENGE_TAGE && cursor <= ausbildungsjahrEnde) {
         const tag = cursor.getDay();
-        if (tag !== 0 && tag !== 6) {
-          const dateStr = fmt(cursor);
+        const dateStr = fmt(cursor);
+        if (tag !== 0 && tag !== 6 && !isAustrianHoliday(dateStr)) {
           neueEintraege.push({
             id: `demo-9999-${dateStr}`,
             personalnummer: TEST_PERSONALNUMMER,
