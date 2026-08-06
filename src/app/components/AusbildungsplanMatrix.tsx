@@ -858,6 +858,12 @@ export function AusbildungsplanMatrix({
                               <div
                                 key={idx}
                                 onMouseDown={() => handleMouseDown(lehrling, d)}
+                                onClick={(e) => {
+                                  if (!activeType) {
+                                    if (entry) showEntryTooltip(e, entry);
+                                    else if (holidayName) showDayTooltip(e, d, holidayName);
+                                  }
+                                }}
                                 onMouseEnter={(e) => {
                                   handleMouseEnterCell(lehrling, d);
                                   if (entry) showEntryTooltip(e, entry);
