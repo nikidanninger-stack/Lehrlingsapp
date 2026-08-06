@@ -382,8 +382,16 @@ export function AusbildungsplanMatrix({
       pendingChangesRef.current.get(cellKey) ??
       entryByPersonAndDate.get(lehrling.personalnummer)?.get(dateStr);
 
+    const HINWEIS_NACH_TYP: Record<string, string> = {
+      "elektriker-st-martin": "Bitte Werkzeugrucksack mitnehmen",
+      "werkstatt-st-martin": "Bitte Werkzeugrucksack mitnehmen",
+    };
+    const details = HINWEIS_NACH_TYP[activeType]
+      ? `${planTypeLabels[activeType]} - ${HINWEIS_NACH_TYP[activeType]}`
+      : planTypeLabels[activeType];
+
     const updatedEntry: PlanEntry = existing
-      ? { ...existing, type: activeType, details: planTypeLabels[activeType], startDate: dateStr, endDate: dateStr }
+      ? { ...existing, type: activeType, details, startDate: dateStr, endDate: dateStr }
       : {
           id: `zelle-${Date.now()}-${Math.random().toString(36).slice(2)}`,
           personalnummer: lehrling.personalnummer,
@@ -393,7 +401,7 @@ export function AusbildungsplanMatrix({
           endDate: dateStr,
           location: lehrling.standort ?? "",
           type: activeType,
-          details: planTypeLabels[activeType],
+          details,
         };
 
     pendingChangesRef.current.set(cellKey, updatedEntry);

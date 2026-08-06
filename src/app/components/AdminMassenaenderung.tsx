@@ -80,6 +80,14 @@ export function AdminMassenaenderung() {
       });
     }
 
+    const HINWEIS_NACH_TYP: Record<string, string> = {
+      "elektriker-st-martin": "Bitte Werkzeugrucksack mitnehmen",
+      "werkstatt-st-martin": "Bitte Werkzeugrucksack mitnehmen",
+    };
+    const standardDetails = HINWEIS_NACH_TYP[type]
+      ? `${planTypeLabels[type]} - ${HINWEIS_NACH_TYP[type]}`
+      : planTypeLabels[type];
+
     const now = Date.now();
     const neueMassenEintraege: PlanEntry[] = betroffeneLehrlinge.map((l, idx) => ({
       id: `massen-${now}-${idx}`,
@@ -90,7 +98,7 @@ export function AdminMassenaenderung() {
       endDate,
       location: location || l.standort || "",
       type,
-      details: details || planTypeLabels[type],
+      details: details || standardDetails,
     }));
 
     const ok = await DataStore.setPlanDataAwaited([...neueEntries, ...neueMassenEintraege]);
