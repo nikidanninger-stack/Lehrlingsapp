@@ -26,7 +26,7 @@ export function AdminMassenaenderung() {
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!startDate.trim() || !endDate.trim()) {
       toast.error("Bitte Start- und Enddatum angeben.");
@@ -93,14 +93,17 @@ export function AdminMassenaenderung() {
       details: details || planTypeLabels[type],
     }));
 
-    DataStore.setPlanData([...neueEntries, ...neueMassenEintraege]);
-    toast.success(
-      `${planTypeLabels[type]} für ${betroffeneLehrlinge.length} Lehrling(e) gesetzt.`,
-    );
-
-    setStartDate("");
-    setEndDate("");
-    setDetails("");
+    const ok = await DataStore.setPlanDataAwaited([...neueEntries, ...neueMassenEintraege]);
+    if (ok) {
+      toast.success(
+        `${planTypeLabels[type]} für ${betroffeneLehrlinge.length} Lehrling(e) gesetzt.`,
+      );
+      setStartDate("");
+      setEndDate("");
+      setDetails("");
+    } else {
+      toast.error("Speichern fehlgeschlagen - siehe Konsole (F12). Bitte nochmal versuchen.");
+    }
   }
 
   return (
