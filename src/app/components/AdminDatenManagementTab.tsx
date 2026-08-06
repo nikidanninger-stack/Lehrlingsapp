@@ -27,6 +27,17 @@ export function AdminDatenManagementTab() {
   async function handleManualSeed() {
     setSeeding(true);
     try {
+      const vorhandeneLehrlinge = DataStore.getLehrlinge();
+      const vorhandenePlanEintraege = DataStore.getPlanData();
+      if (vorhandeneLehrlinge.length > 0 || vorhandenePlanEintraege.length > 0) {
+        toast.error(
+          "Abgebrochen: Es sind bereits Lehrlinge/Plandaten vorhanden. Dieser Button würde ALLE " +
+            "eure manuellen Korrekturen (Feiertage, geänderte Tage usw.) unwiderruflich überschreiben " +
+            "und ist nur für eine erstmalige, leere Datenbank gedacht. Falls wirklich ein kompletter " +
+            "Reset gewünscht ist, bitte zuerst Rücksprache halten.",
+        );
+        return;
+      }
       const mod = await import("../data/seedData");
       await DataStore.importSeedDataAwaited(mod.SEED_LEHRLINGE, mod.SEED_PLAN_DATA);
       DataStore.setLastUpload({
@@ -210,8 +221,11 @@ export function AdminDatenManagementTab() {
           </h3>
         </div>
         <p className="text-sm text-gray-500 mb-4">
-          Lädt die 59 Lehrlinge und den kompletten Ausbildungsplan 2026/2027 direkt in
-          die App. Bestehende Lehrlinge/Plandaten werden dabei überschrieben.
+          Nur für die erstmalige, leere Datenbank gedacht. Lädt die 59 Lehrlinge und den
+          kompletten Ausbildungsplan 2026/2027. Sobald bereits Daten vorhanden sind (also
+          praktisch immer im laufenden Betrieb), <strong>tut dieser Button nichts mehr</strong> -
+          so können eure manuellen Korrekturen (Feiertage, geänderte Tage usw.) nie mehr aus
+          Versehen überschrieben werden.
         </p>
         <Button onClick={handleManualSeed} disabled={seeding} icon={<UploadCloud size={16} />}>
           {seeding ? "Wird importiert…" : "Jetzt importieren"}
