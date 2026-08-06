@@ -114,12 +114,16 @@ export function LehrlingMonatskalender({
     setModalOpen(true);
   }
 
-  function handleDelete(entry: PlanEntry) {
+  async function handleDelete(entry: PlanEntry) {
     if (!confirm(`Eintrag "${entry.details}" wirklich löschen?`)) return;
     const alle = DataStore.getPlanData();
-    DataStore.setPlanData(alle.filter((e) => e.id !== entry.id));
+    const ok = await DataStore.setPlanDataAwaited(alle.filter((e) => e.id !== entry.id));
     setSelectedEntry(null);
-    toast.success("Eintrag gelöscht");
+    if (ok) {
+      toast.success("Eintrag gelöscht");
+    } else {
+      toast.error("Löschen fehlgeschlagen - siehe Konsole (F12)");
+    }
     onDataChanged?.();
   }
 
@@ -337,7 +341,7 @@ function PlanEntryEditModal({
 
   if (!isOpen) return null;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!startDate.trim() || !endDate.trim()) {
       toast.error("Bitte Start- und Enddatum im Format TT.MM.JJJJ angeben.");
@@ -349,16 +353,16 @@ function PlanEntryEditModal({
     }
 
     const alle = DataStore.getPlanData();
+    let ok: boolean;
 
     if (entry) {
-      DataStore.setPlanData(
+      ok = await DataStore.setPlanDataAwaited(
         alle.map((e) =>
           e.id === entry.id
             ? { ...e, startDate, endDate, type, location, details: details || planTypeLabels[type] }
             : e,
         ),
       );
-      toast.success("Eintrag aktualisiert");
     } else {
       const neuerEintrag: PlanEntry = {
         id: `manuell-${Date.now()}`,
@@ -371,10 +375,15 @@ function PlanEntryEditModal({
         type,
         details: details || planTypeLabels[type],
       };
-      DataStore.setPlanData([...alle, neuerEintrag]);
-      toast.success("Eintrag hinzugefügt");
+      ok = await DataStore.setPlanDataAwaited([...alle, neuerEintrag]);
     }
-    onClose();
+
+    if (ok) {
+      toast.success(entry ? "Eintrag aktualisiert" : "Eintrag hinzugefügt");
+      onClose();
+    } else {
+      toast.error("Speichern fehlgeschlagen - siehe Konsole (F12)");
+    }
   }
 
   return (
