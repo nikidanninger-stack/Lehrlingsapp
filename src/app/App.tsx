@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import type { Screen, User } from "./types";
 import { DataStore } from "./data/store";
