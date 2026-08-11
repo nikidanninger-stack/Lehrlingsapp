@@ -26,6 +26,7 @@ export function Feedback({ user }: FeedbackProps) {
         body: JSON.stringify({
           nachricht: nachricht.trim(),
           name: anonym ? null : (name.trim() || user.name),
+          personalnummer: user.personalnummer,
         }),
       });
       if (!res.ok) {
