@@ -42,6 +42,7 @@ const lehrlingNavBase: NavItem[] = [
   { screen: "leitfaden", label: "Leitfaden", icon: BookOpen },
   { screen: "werkzeug", label: "Werkzeuge", icon: Wrench },
   { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
+  { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
   { screen: "profil", label: "Profil", icon: UserCircle },
 ];
 
