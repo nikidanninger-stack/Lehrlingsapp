@@ -51,6 +51,7 @@ export default async function handler(req, res) {
   // ── 2. E-Mail senden ───────────────────────────────────────────────────
   const gmailUser = process.env.GMAIL_USER;
   const gmailPass = process.env.GMAIL_APP_PASSWORD;
+  const feedbackTo = process.env.FEEDBACK_TO || gmailUser;
 
   if (!gmailUser || !gmailPass) {
     return res
@@ -65,7 +66,7 @@ export default async function handler(req, res) {
 
   await transporter.sendMail({
     from: `"LehrlingsApp Feedback" <${gmailUser}>`,
-    to: "niki.danninger@gmail.com",
+    to: feedbackTo,
     subject: `💡 Neue Verbesserungsidee – ${senderName}`,
     html: `
       <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto;">
