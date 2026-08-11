@@ -1,4 +1,4 @@
- // ============================================================================
+// ============================================================================
 // LehrlingsApp – zentrale Datenmodelle
 // ============================================================================
 
@@ -491,7 +491,8 @@ export type Screen =
   | "chatbot"
   | "jahresplanung"
   | "lernapp"
-  | "stundenzettel";
+  | "stundenzettel"
+  | "feedback";
 
 // Letzter Excel/CSV Upload
 export interface LastUploadInfo {
