@@ -1,4 +1,4 @@
-//ximport type { ComponentType } from "react";
+ //ximport type { ComponentType } from "react";
 import {
   LayoutDashboard,
   CalendarDays,
