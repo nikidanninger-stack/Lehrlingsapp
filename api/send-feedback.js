@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { name, nachricht } = req.body ?? {};
+  const { name, nachricht, personalnummer } = req.body ?? {};
 
   if (!nachricht?.trim()) {
     return res.status(400).json({ error: "Nachricht darf nicht leer sein." });
@@ -40,6 +40,7 @@ export default async function handler(req, res) {
       await supabase.from("verbesserungen").insert({
         name: name?.trim() || null,
         nachricht: nachricht.trim(),
+        personalnummer: personalnummer ?? null,
         eingereicht_am: new Date().toISOString(),
       });
     }
