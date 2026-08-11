@@ -22,15 +22,15 @@ export interface NavItem {
   label: string;
   icon: ComponentType<{ size?: number; className?: string }>;
   // Nicht mehr aktiv genutzt (Stundenzettel ist jetzt ein interner Screen,
-  // siehe StundenzettelScreen.tsx). Feld bleibt bestehen, falls man später
-  // wieder zu einem rein externen Link (neuer Tab) zurückwechseln möchte.
+  // siehe StundenzettelScreen.tsx). Feld bleibt bestehen, falls man spÃ¤ter
+  // wieder zu einem rein externen Link (neuer Tab) zurÃ¼ckwechseln mÃ¶chte.
   externalUrl?: string;
 }
 
-// Lehrling behält "Termine" (automatische Ausbildungsplan-Übersicht der
+// Lehrling behÃ¤lt "Termine" (automatische Ausbildungsplan-Ãbersicht der
 // bevorstehenden Abschnitte, siehe LehrlingTermineUebersicht.tsx).
 // "Chatbot" fehlt hier bewusst - wird nur bedingt (siehe getNavItems)
-// hinzugefügt, sobald ein OpenAI-API-Key vom Admin hinterlegt wurde.
+// hinzugefÃ¼gt, sobald ein OpenAI-API-Key vom Admin hinterlegt wurde.
 const lehrlingNavBase: NavItem[] = [
   { screen: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { screen: "lernapp", label: "Lernen", icon: GraduationCap },
@@ -41,10 +41,10 @@ const lehrlingNavBase: NavItem[] = [
   { screen: "ansprechpartner", label: "Ansprechpartner", icon: Users },
   { screen: "leitfaden", label: "Leitfaden", icon: BookOpen },
   { screen: "werkzeug", label: "Werkzeuge", icon: Wrench },
-  { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
-  { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
-  { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
-  { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
+  { screen: "feedback", label: "Ideen & WÃ¼nsche", icon: Lightbulb },
+  { screen: "feedback", label: "Ideen & WÃ¼nsche", icon: Lightbulb },
+  { screen: "feedback", label: "Ideen & WÃ¼nsche", icon: Lightbulb },
+  { screen: "feedback", label: "Ideen & WÃ¼nsche", icon: Lightbulb },
   { screen: "profil", label: "Profil", icon: UserCircle },
 ];
 
@@ -54,9 +54,9 @@ const chatbotNavItem: NavItem = {
   icon: Bot,
 };
 
-// Admin hat KEIN "Termine" mehr (die alte Prüfungs-/Ausflugsverwaltung wurde
-// entfernt). Admin sieht "Chatbot" immer, unabhängig vom Freischalt-Status,
-// damit er den API-Key testen kann, bevor er ihn für Lehrlinge freigibt.
+// Admin hat KEIN "Termine" mehr (die alte PrÃ¼fungs-/Ausflugsverwaltung wurde
+// entfernt). Admin sieht "Chatbot" immer, unabhÃ¤ngig vom Freischalt-Status,
+// damit er den API-Key testen kann, bevor er ihn fÃ¼r Lehrlinge freigibt.
 const adminNav: NavItem[] = [
   { screen: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { screen: "jahresplanung", label: "Jahresplanung", icon: BarChart3 },
@@ -71,9 +71,9 @@ const adminNav: NavItem[] = [
   { screen: "profil", label: "Profil", icon: UserCircle },
 ];
 
-// chatbotEnabledForLehrlinge: wird vom Admin über einen Schalter (im
-// Admin-Zugangsdaten-Bereich) gesetzt, sobald ein gültiger OpenAI-API-Key
-// hinterlegt ist. Solange false, sehen Lehrlinge den Menüpunkt "Chatbot" gar
+// chatbotEnabledForLehrlinge: wird vom Admin Ã¼ber einen Schalter (im
+// Admin-Zugangsdaten-Bereich) gesetzt, sobald ein gÃ¼ltiger OpenAI-API-Key
+// hinterlegt ist. Solange false, sehen Lehrlinge den MenÃ¼punkt "Chatbot" gar
 // nicht.
 export function getNavItems(
   role: UserRole,
@@ -85,4 +85,3 @@ export function getNavItems(
     ? [...lehrlingNavBase.slice(0, 2), chatbotNavItem, ...lehrlingNavBase.slice(2)]
     : lehrlingNavBase;
 }
-import type { ComponentType } from "react";
