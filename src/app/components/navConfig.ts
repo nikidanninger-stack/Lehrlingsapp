@@ -1,4 +1,4 @@
- //ximport type { ComponentType } from "react";
+import type { ComponentType } from "react";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -41,6 +41,8 @@ const lehrlingNavBase: NavItem[] = [
   { screen: "ansprechpartner", label: "Ansprechpartner", icon: Users },
   { screen: "leitfaden", label: "Leitfaden", icon: BookOpen },
   { screen: "werkzeug", label: "Werkzeuge", icon: Wrench },
+  { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
+  { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
   { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
   { screen: "feedback", label: "Ideen & Wünsche", icon: Lightbulb },
   { screen: "profil", label: "Profil", icon: UserCircle },
@@ -98,6 +100,7 @@ import {
   BarChart3,
   GraduationCap,
   Clock,
+  Lightbulb,
 } from "lucide-react";
 import type { Screen, UserRole } from "../types";
 
