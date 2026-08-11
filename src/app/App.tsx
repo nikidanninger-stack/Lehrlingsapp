@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
 import type { Screen, User } from "./types";
 import { DataStore } from "./data/store";
@@ -216,8 +216,10 @@ export default function App() {
         );
       case "lernapp":
         return <LernApp user={user} />;
+      case "feedback":
+        return <Feedback user={user} />;
       default:
-        return null;
+              return null;
     }
   }
 
