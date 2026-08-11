@@ -72,6 +72,7 @@ export default async function handler(req, res) {
       <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #1d4ed8;">💡 Neue Verbesserungsidee / Wunsch</h2>
         <p><strong>Von:</strong> ${senderName}</p>
+        <p><strong>Personalnummer:</strong> ${personalnummer ?? "–"}</p>
         <div style="background: #f0f9ff; border-left: 4px solid #2563eb; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 16px 0;">
           <p style="margin: 0; color: #1e3a5f; white-space: pre-wrap;">${nachricht.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
         </div>
