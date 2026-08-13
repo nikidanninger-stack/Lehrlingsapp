@@ -13,12 +13,6 @@ body,
   height: 100%;
 }
 
-html,
-body {
-  overflow-x: hidden;
-  overscroll-behavior-x: none;
-}
-
 body {
   font-family: "Inter", system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
