@@ -727,6 +727,93 @@ export const DataStore = {
     return { gesetzt, nichtGefunden };
   },
 
+  // Korrigiert die Personalnummern von Lehrlingen, die versehentlich mit
+  // Test-Personalnummern angelegt wurden. Aktualisiert die Personalnummer
+  // NICHT nur beim Lehrling selbst, sondern auch überall dort, wo sie als
+  // Fremdschlüssel verwendet wird (Plandaten, To-Do-Erledigungen,
+  // Krankmeldungen, Lernfortschritt) - sonst würden bestehende Einträge
+  // dieser Person verwaist zurückbleiben.
+  async korrigierePersonalnummern(
+    zuordnungen: { name: string; neuePersonalnummer: string }[],
+  ): Promise<{ korrigiert: string[]; nichtGefunden: string[] }> {
+    const normalize = (s: string) =>
+      s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .sort()
+        .join(" ");
+
+    const alleLehrlinge = DataStore.getLehrlinge();
+    const korrigiert: string[] = [];
+    const nichtGefunden: string[] = [];
+    const alteZuNeuePersonalnummer = new Map<string, string>();
+
+    for (const { name, neuePersonalnummer } of zuordnungen) {
+      const treffer = alleLehrlinge.find((l) => normalize(l.name) === normalize(name));
+      if (!treffer) {
+        nichtGefunden.push(name);
+        continue;
+      }
+      if (treffer.personalnummer === neuePersonalnummer) {
+        korrigiert.push(`${name} (war schon korrekt)`);
+        continue;
+      }
+      alteZuNeuePersonalnummer.set(treffer.personalnummer, neuePersonalnummer);
+      korrigiert.push(`${name}: ${treffer.personalnummer} → ${neuePersonalnummer}`);
+    }
+
+    if (alteZuNeuePersonalnummer.size === 0) {
+      return { korrigiert, nichtGefunden };
+    }
+
+    const neueLehrlinge = alleLehrlinge.map((l) =>
+      alteZuNeuePersonalnummer.has(l.personalnummer)
+        ? { ...l, personalnummer: alteZuNeuePersonalnummer.get(l.personalnummer)! }
+        : l,
+    );
+    const neuePlanEintraege = DataStore.getPlanData().map((e) =>
+      alteZuNeuePersonalnummer.has(e.personalnummer)
+        ? { ...e, personalnummer: alteZuNeuePersonalnummer.get(e.personalnummer)! }
+        : e,
+    );
+    const neueTodoErledigungen = DataStore.getTodoErledigungen().map((t) =>
+      alteZuNeuePersonalnummer.has(t.personalnummer)
+        ? { ...t, personalnummer: alteZuNeuePersonalnummer.get(t.personalnummer)! }
+        : t,
+    );
+    // Krankmeldungen und Lernfortschritt sind rein lokal (nicht mit der
+    // Datenbank synchronisiert) - werden trotzdem der Vollständigkeit halber
+    // im aktuellen Browser mit aktualisiert.
+    const neueKrankmeldungen = DataStore.getKrankmeldungen().map((k) =>
+      alteZuNeuePersonalnummer.has(k.personalnummer)
+        ? { ...k, personalnummer: alteZuNeuePersonalnummer.get(k.personalnummer)! }
+        : k,
+    );
+    const neueLernFortschritte = DataStore.getLernFortschritte().map((f) =>
+      alteZuNeuePersonalnummer.has(f.personalnummer)
+        ? { ...f, personalnummer: alteZuNeuePersonalnummer.get(f.personalnummer)! }
+        : f,
+    );
+
+    const [okLehrlinge, okPlan, okTodos] = await Promise.all([
+      DataStore.setLehrlingeAwaited(neueLehrlinge),
+      DataStore.setPlanDataAwaited(neuePlanEintraege),
+      DataStore.setTodoErledigungenAwaited(neueTodoErledigungen),
+    ]);
+    DataStore.setKrankmeldungen(neueKrankmeldungen);
+    DataStore.setLernFortschritte(neueLernFortschritte);
+
+    if (!okLehrlinge || !okPlan || !okTodos) {
+      throw new Error(
+        "Speichern der korrigierten Personalnummern fehlgeschlagen. Details in der Browser-Konsole.",
+      );
+    }
+    return { korrigiert, nichtGefunden };
+  },
+
   // Repariert die Werkzeug-Fotos: Ein früherer Import-Button hat versehentlich
   // alle Werkzeuge in der Datenbank durch eine veraltete, fotolose Liste
   // ersetzt. Die eigentlichen Fotodateien liegen aber unverändert im

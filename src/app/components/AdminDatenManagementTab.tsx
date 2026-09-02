@@ -154,6 +154,39 @@ export function AdminDatenManagementTab() {
     }
   }
 
+  async function handlePersonalnummernKorrigieren() {
+    try {
+      const zuordnungen = [
+        { name: "Raoul Wimberger", neuePersonalnummer: "4097" },
+        { name: "Anid Selimi", neuePersonalnummer: "4098" },
+        { name: "Timo Neundlinger", neuePersonalnummer: "4099" },
+        { name: "Gabi Leach", neuePersonalnummer: "4100" },
+        { name: "Leon Öhlinger", neuePersonalnummer: "4101" },
+        { name: "Maximilian Freudenthaler", neuePersonalnummer: "4102" },
+        { name: "Jan De Kruijff", neuePersonalnummer: "4103" },
+        { name: "Benjamin Hofer", neuePersonalnummer: "4104" },
+        { name: "Abdullah Khatab", neuePersonalnummer: "7221" },
+        { name: "Ali Alshmohali", neuePersonalnummer: "7220" },
+        { name: "Sebastian Lesniewski", neuePersonalnummer: "7219" },
+        { name: "Mowsar Terekbayev", neuePersonalnummer: "7218" },
+        { name: "Adrian Leibetseder", neuePersonalnummer: "2475" },
+        { name: "Lena Gusenbauer", neuePersonalnummer: "4106" },
+        { name: "Nicole Pirker", neuePersonalnummer: "4105" },
+        { name: "Nejla Pasic", neuePersonalnummer: "4108" },
+      ];
+      const { korrigiert, nichtGefunden } = await DataStore.korrigierePersonalnummern(zuordnungen);
+      if (nichtGefunden.length === 0) {
+        toast.success(`Personalnummern korrigiert:\n${korrigiert.join("\n")}`);
+      } else {
+        toast.error(
+          `Korrigiert: ${korrigiert.join(", ")}. NICHT gefunden (Name stimmt nicht mit der App überein oder Person existiert noch nicht): ${nichtGefunden.join(", ")}`,
+        );
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Korrektur fehlgeschlagen");
+    }
+  }
+
   function handleBackup() {
     DataStore.createBackup();
     toast.success("Backup erstellt.");
@@ -362,6 +395,13 @@ export function AdminDatenManagementTab() {
           description="Stellt die Bild-URLs der Werkzeuge anhand der ursprünglichen Datei-Zuordnung wieder her (Fotos liegen weiterhin im Speicher, nur die Verknüpfung fehlte)."
           buttonLabel="Reparieren"
           onClick={handleWerkzeugFotosReparieren}
+        />
+        <ActionRow
+          icon={<UserCog size={16} />}
+          title="Personalnummern korrigieren (1. Lehrjahr)"
+          description="Ersetzt Test-Personalnummern durch die echten Personalnummern für 16 Lehrlinge des 1. Lehrjahres - inkl. aller zugehörigen Plandaten und To-Dos, damit nichts verwaist."
+          buttonLabel="Korrigieren"
+          onClick={handlePersonalnummernKorrigieren}
         />
         <ActionRow
           icon={<Archive size={16} />}
