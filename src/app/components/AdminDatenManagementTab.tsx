@@ -187,6 +187,33 @@ export function AdminDatenManagementTab() {
     }
   }
 
+  async function handleNejlaAnlegen() {
+    try {
+      const alle = DataStore.getLehrlinge();
+      if (alle.some((l) => l.personalnummer === "4108")) {
+        toast.error("Personalnummer 4108 ist bereits vergeben.");
+        return;
+      }
+      const ok = await DataStore.setLehrlingeAwaited([
+        ...alle,
+        {
+          personalnummer: "4108",
+          name: "Nejla Pasic",
+          lehrjahr: 1,
+          standort: "Linz",
+          beruf: "Technische Zeichnerin",
+        },
+      ]);
+      if (ok) {
+        toast.success("Nejla Pasic (4108) angelegt.");
+      } else {
+        toast.error("Anlegen fehlgeschlagen. Details in der Browser-Konsole.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Anlegen fehlgeschlagen");
+    }
+  }
+
   function handleBackup() {
     DataStore.createBackup();
     toast.success("Backup erstellt.");
@@ -402,6 +429,13 @@ export function AdminDatenManagementTab() {
           description="Ersetzt Test-Personalnummern durch die echten Personalnummern für 16 Lehrlinge des 1. Lehrjahres - inkl. aller zugehörigen Plandaten und To-Dos, damit nichts verwaist."
           buttonLabel="Korrigieren"
           onClick={handlePersonalnummernKorrigieren}
+        />
+        <ActionRow
+          icon={<UserCog size={16} />}
+          title="Nejla Pasic anlegen"
+          description="Legt Nejla Pasic (1. Lehrjahr, Linz, Technische Zeichnerin, Personalnummer 4108) neu an - sie fehlt bisher komplett."
+          buttonLabel="Anlegen"
+          onClick={handleNejlaAnlegen}
         />
         <ActionRow
           icon={<Archive size={16} />}
