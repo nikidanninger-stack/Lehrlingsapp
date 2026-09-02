@@ -166,7 +166,7 @@ export function AdminDatenManagementTab() {
         { name: "Jan De Kruijff", neuePersonalnummer: "4103" },
         { name: "Benjamin Hofer", neuePersonalnummer: "4104" },
         { name: "Abdullah Khatab", neuePersonalnummer: "7221" },
-        { name: "Ali Alshmohali", neuePersonalnummer: "7220" },
+        { name: "Ali Alshomali", neuePersonalnummer: "7220" },
         { name: "Sebastian Lesniewski", neuePersonalnummer: "7219" },
         { name: "Mowsar Terekbayev", neuePersonalnummer: "7218" },
         { name: "Adrian Leibetseder", neuePersonalnummer: "2475" },
