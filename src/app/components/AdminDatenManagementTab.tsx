@@ -214,6 +214,18 @@ export function AdminDatenManagementTab() {
     }
   }
 
+  async function handleDeutschlandLehrlingeAnlegen() {
+    try {
+      await DataStore.legeDeutschlandLehrlingAn("78506", "Eric Bültel", 1);
+      await DataStore.legeDeutschlandLehrlingAn("78505", "Philipp Schallus", 1);
+      toast.success(
+        "Eric Bültel (78506) und Philipp Schallus (78505) angelegt, Kalender für das ganze Ausbildungsjahr gefüllt.",
+      );
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Anlegen fehlgeschlagen");
+    }
+  }
+
   function handleBackup() {
     DataStore.createBackup();
     toast.success("Backup erstellt.");
@@ -436,6 +448,13 @@ export function AdminDatenManagementTab() {
           description="Legt Nejla Pasic (1. Lehrjahr, Linz, Technische Zeichnerin, Personalnummer 4108) neu an - sie fehlt bisher komplett."
           buttonLabel="Anlegen"
           onClick={handleNejlaAnlegen}
+        />
+        <ActionRow
+          icon={<UserCog size={16} />}
+          title="Eric Bültel & Philipp Schallus anlegen"
+          description="Legt beide neu an (1. Lehrjahr, Deutschland, Mechatroniker Kältetechnik, Personalnummern 78506/78505) und füllt ihren Kalender für das ganze Ausbildungsjahr mit 'Lehre Deutschland', inkl. der bekannten Betriebsurlaub-Zeiträume."
+          buttonLabel="Anlegen"
+          onClick={handleDeutschlandLehrlingeAnlegen}
         />
         <ActionRow
           icon={<Archive size={16} />}

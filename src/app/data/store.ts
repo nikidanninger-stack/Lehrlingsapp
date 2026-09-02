@@ -727,6 +727,76 @@ export const DataStore = {
     return { gesetzt, nichtGefunden };
   },
 
+  // Legt neue Lehrlinge in Deutschland an und füllt ihren Kalender fürs
+  // gesamte Ausbildungsjahr (Sept 2026 - Aug 2027) mit "Lehre Deutschland",
+  // außer an echten Feiertagen (bleiben frei) und den bekannten
+  // Betriebsurlaub-Zeiträumen (Weihnachten/Neujahr + Sommer), die dieselben
+  // sind wie bei den anderen Lehrlingen.
+  async legeDeutschlandLehrlingAn(
+    personalnummer: string,
+    name: string,
+    lehrjahr: number,
+  ): Promise<void> {
+    const alle = DataStore.getLehrlinge();
+    if (alle.some((l) => l.personalnummer === personalnummer)) {
+      throw new Error(`Personalnummer ${personalnummer} ist bereits vergeben.`);
+    }
+    const neuerLehrling: Lehrling = {
+      personalnummer,
+      name,
+      lehrjahr,
+      standort: "Deutschland",
+      beruf: "Mechatroniker Kältetechnik",
+    };
+    const okLehrling = await DataStore.setLehrlingeAwaited([...alle, neuerLehrling]);
+    if (!okLehrling) {
+      throw new Error(`Anlegen von ${name} fehlgeschlagen. Details in der Browser-Konsole.`);
+    }
+
+    const BETRIEBSURLAUB_DATEN = new Set([
+      "21.12.2026", "22.12.2026", "23.12.2026", "24.12.2026",
+      "28.12.2026", "29.12.2026", "30.12.2026", "31.12.2026",
+      "04.01.2027", "05.01.2027",
+      "05.07.2027", "06.07.2027", "07.07.2027", "08.07.2027", "09.07.2027",
+      "12.07.2027", "13.07.2027", "14.07.2027", "15.07.2027", "16.07.2027",
+      "19.07.2027", "20.07.2027", "21.07.2027", "22.07.2027", "23.07.2027",
+      "26.07.2027", "27.07.2027", "28.07.2027", "29.07.2027", "30.07.2027",
+    ]);
+
+    const fmt = (d: Date) => {
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      return `${dd}.${mm}.${d.getFullYear()}`;
+    };
+
+    const ende = new Date(2027, 7, 31); // 31. August 2027
+    const neueEintraege: PlanEntry[] = [];
+    for (let cursor = new Date(2026, 8, 1); cursor <= ende; cursor.setDate(cursor.getDate() + 1)) {
+      const tag = cursor.getDay();
+      if (tag === 0 || tag === 6) continue; // Wochenende
+      const dateStr = fmt(cursor);
+      if (isAustrianHoliday(dateStr)) continue; // echter Feiertag
+      const istBetriebsurlaub = BETRIEBSURLAUB_DATEN.has(dateStr);
+      neueEintraege.push({
+        id: `deutschland-${personalnummer}-${dateStr}`,
+        personalnummer,
+        lehrlingName: name,
+        lehrjahr,
+        startDate: dateStr,
+        endDate: dateStr,
+        location: "Deutschland",
+        type: istBetriebsurlaub ? "betriebsurlaub" : "lehre-deutschland",
+        details: istBetriebsurlaub ? "Betriebsurlaub" : "Lehre Deutschland",
+      });
+    }
+
+    const alleEintraege = DataStore.getPlanData().filter((e) => e.personalnummer !== personalnummer);
+    const okPlan = await DataStore.setPlanDataAwaited([...alleEintraege, ...neueEintraege]);
+    if (!okPlan) {
+      throw new Error(`Anlegen des Kalenders für ${name} fehlgeschlagen. Details in der Browser-Konsole.`);
+    }
+  },
+
   // Korrigiert die Personalnummern von Lehrlingen, die versehentlich mit
   // Test-Personalnummern angelegt wurden. Aktualisiert die Personalnummer
   // NICHT nur beim Lehrling selbst, sondern auch überall dort, wo sie als
