@@ -5,6 +5,7 @@ import { DataStore } from "../data/store";
 import { GlassCard } from "./ui/GlassCard";
 import { Button } from "./ui/Button";
 import { isSupabaseConfigured } from "../lib/supabase";
+import { AdminHtmlPlanImport } from "./AdminHtmlPlanImport";
 
 export function AdminDatenManagementTab() {
   const [busy, setBusy] = useState(false);
@@ -231,6 +232,8 @@ export function AdminDatenManagementTab() {
           {seeding ? "Wird importiert…" : "Jetzt importieren"}
         </Button>
       </GlassCard>
+
+      <AdminHtmlPlanImport />
 
       <GlassCard className="p-6 border-2 border-purple-300">
         <div className="flex items-center gap-2 mb-1">
