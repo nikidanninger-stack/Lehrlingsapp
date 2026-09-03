@@ -140,20 +140,20 @@ export default function App() {
       navigator.serviceWorker?.removeEventListener("message", handleServiceWorkerMessage);
   }, []);
 
+  if (!user) {
+    return (
+      <>
+        <LoginScreen onLogin={setUser} dataReady={ready} />
+        <Toaster position="top-center" richColors />
+      </>
+    );
+  }
+
   if (!ready) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100 flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
       </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <>
-        <LoginScreen onLogin={setUser} />
-        <Toaster position="top-center" richColors />
-      </>
     );
   }
 

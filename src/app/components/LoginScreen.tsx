@@ -8,6 +8,7 @@ import { Button } from "./ui/Button";
 
 interface LoginScreenProps {
   onLogin: (user: User) => void;
+  dataReady: boolean;
 }
 
 const ADMIN_USERNAME = "admin";
@@ -15,7 +16,7 @@ const ADMIN_PASSWORD = "test123";
 
 type Mode = "lehrling" | "admin";
 
-export function LoginScreen({ onLogin }: LoginScreenProps) {
+export function LoginScreen({ onLogin, dataReady }: LoginScreenProps) {
   const [mode, setMode] = useState<Mode>("lehrling");
   const [personalnummer, setPersonalnummer] = useState("");
   const [username, setUsername] = useState("");
@@ -36,7 +37,11 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     setLoading(false);
 
     if (!lehrling) {
-      setError("Personalnummer nicht gefunden.");
+      setError(
+        dataReady
+          ? "Personalnummer nicht gefunden."
+          : "Daten werden gerade noch geladen - bitte kurz warten und nochmal versuchen.",
+      );
       return;
     }
 
@@ -71,7 +76,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   function finishLogin(user: User) {
-    if (rememberMe) {
+    if (rememberMe && user.role === "admin") {
       DataStore.saveCurrentUser(user);
     }
     onLogin(user);
@@ -198,15 +203,17 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
               </p>
             )}
 
-            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              Angemeldet bleiben (Personalnummer/Login nicht erneut eingeben)
-            </label>
+            {mode === "admin" && (
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                Angemeldet bleiben (Login nicht erneut eingeben)
+              </label>
+            )}
 
             <Button type="submit" disabled={loading} className="w-full">
               {mode === "lehrling" ? "Als Lehrling anmelden" : "Als Admin anmelden"}
