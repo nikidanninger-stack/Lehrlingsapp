@@ -72,15 +72,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   function finishLogin(user: User) {
     onLogin(user);
     toast.success(`Willkommen, ${user.name}!`);
-
-    // Donnerstags-Erinnerung an die Berufsschule
-    if (new Date().getDay() === 4) {
-      setTimeout(() => {
-        toast.info(
-          "Erinnerung: Nächste Woche Berufsschule – Denke an deine Unterlagen!",
-        );
-      }, 2000);
-    }
   }
 
   function handleSubmit(e: React.FormEvent) {
