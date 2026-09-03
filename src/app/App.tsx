@@ -69,7 +69,7 @@ function screenFromUrl(url: string): Screen {
 
 export default function App() {
   const [ready, setReady] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => DataStore.getSavedCurrentUser());
   const [screen, setScreen] = useState<Screen>("dashboard");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -158,6 +158,7 @@ export default function App() {
   }
 
   function handleLogout() {
+    DataStore.clearSavedCurrentUser();
     setUser(null);
     setScreen("dashboard");
   }

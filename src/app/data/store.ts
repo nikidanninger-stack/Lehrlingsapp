@@ -14,6 +14,7 @@ import type {
   LastUploadInfo,
   Todo,
   TodoErledigung,
+  User,
 } from "../types";
 import { isWeekend, isAustrianHoliday } from "./holidays";
 import {
@@ -65,6 +66,7 @@ const KEYS = {
   initialized: "lehrlingsapp_initialized",
   chatbotApiKey: "chatbot_api_key",
   chatbotHistory: "chatbot_history",
+  currentUser: "lehrlingsapp_current_user",
 } as const;
 
 // ----------------------------------------------------------------------------
@@ -596,6 +598,27 @@ export const DataStore = {
 
   getBackup(): Record<string, unknown> | null {
     return readJSON<Record<string, unknown> | null>(KEYS.backup, null);
+  },
+
+  // ---- Angemeldet bleiben (Sitzung merken) --------------------------------
+  // Speichert die eingeloggte Person lokal auf dem Gerät, damit man beim
+  // nächsten Öffnen der App nicht erneut die Personalnummer eingeben muss.
+  // Bewusst NICHT sensibel (nur Personalnummer/Rolle/Name - kein Passwort),
+  // daher unbedenklich im Browser-Speicher.
+  saveCurrentUser(user: User): void {
+    writeJSON(KEYS.currentUser, user);
+  },
+
+  getSavedCurrentUser(): User | null {
+    return readJSON<User | null>(KEYS.currentUser, null);
+  },
+
+  clearSavedCurrentUser(): void {
+    try {
+      localStorage.removeItem(KEYS.currentUser);
+    } catch {
+      // ignore
+    }
   },
 
   // ---- Cache leeren -------------------------------------------------------

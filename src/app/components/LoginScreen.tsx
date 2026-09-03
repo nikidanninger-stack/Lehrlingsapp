@@ -22,6 +22,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   function handleLehrlingLogin() {
     setError(null);
@@ -70,6 +71,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   function finishLogin(user: User) {
+    if (rememberMe) {
+      DataStore.saveCurrentUser(user);
+    }
     onLogin(user);
     toast.success(`Willkommen, ${user.name}!`);
   }
@@ -193,6 +197,16 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                 {error}
               </p>
             )}
+
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              Angemeldet bleiben (Personalnummer/Login nicht erneut eingeben)
+            </label>
 
             <Button type="submit" disabled={loading} className="w-full">
               {mode === "lehrling" ? "Als Lehrling anmelden" : "Als Admin anmelden"}
