@@ -27,10 +27,9 @@ const DARK_BLUE = "#1A237E";
 const DAY_WIDTH = 11;
 const ROW_HEIGHT = 18;
 const NAME_WIDTH = 140;
-const BERUF_WIDTH = 90;
-const KOMMENTAR_WIDTH = 26;
-const GEBURTSDATUM_WIDTH = 42;
-const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
+const BERUF_WIDTH_DESKTOP = 90;
+const KOMMENTAR_WIDTH_DESKTOP = 26;
+const GEBURTSDATUM_WIDTH_DESKTOP = 42;
 
 function berechneAlter(geburtsdatum: string | undefined): string {
   if (!geburtsdatum) return "";
@@ -115,6 +114,25 @@ export function AusbildungsplanMatrix({
   const [neueKategorieOffen, setNeueKategorieOffen] = useState(false);
   const [neuerName, setNeuerName] = useState("");
   const [neueFarbe, setNeueFarbe] = useState(FARB_VORSCHLAEGE[0]);
+
+  // Am Handy (< lg) werden Beruf/Kommentar/Alter ausgeblendet - sonst bleibt
+  // vom Bildschirm kaum Platz für den eigentlichen Kalender übrig. Nur der
+  // Name bleibt links fixiert sichtbar.
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile(e.matches);
+    handler(mq);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const BERUF_WIDTH = isMobile ? 0 : BERUF_WIDTH_DESKTOP;
+  const KOMMENTAR_WIDTH = isMobile ? 0 : KOMMENTAR_WIDTH_DESKTOP;
+  const GEBURTSDATUM_WIDTH = isMobile ? 0 : GEBURTSDATUM_WIDTH_DESKTOP;
+  const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
   const isPaintingRef = useRef(false);
   const paintedCellsRef = useRef<Set<string>>(new Set());
   const [markierterPersonalnummer, setMarkierterPersonalnummer] = useState<string | null>(null);
@@ -625,33 +643,37 @@ export function AusbildungsplanMatrix({
               >
                 Name
               </div>
-              <div
-                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
-                style={{ left: NAME_WIDTH, width: BERUF_WIDTH, backgroundColor: DARK_BLUE }}
-              >
-                Beruf
-              </div>
-              <div
-                className={`${STICKY_CLASS} z-30 flex items-center justify-center shrink-0`}
-                style={{
-                  left: NAME_WIDTH + BERUF_WIDTH,
-                  width: KOMMENTAR_WIDTH,
-                  backgroundColor: DARK_BLUE,
-                }}
-                title="Kommentar"
-              >
-                <StickyNote size={11} />
-              </div>
-              <div
-                className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
-                style={{
-                  left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
-                  width: GEBURTSDATUM_WIDTH,
-                  backgroundColor: DARK_BLUE,
-                }}
-              >
-                Alter
-              </div>
+              {!isMobile && (
+                <>
+                  <div
+                    className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
+                    style={{ left: NAME_WIDTH, width: BERUF_WIDTH, backgroundColor: DARK_BLUE }}
+                  >
+                    Beruf
+                  </div>
+                  <div
+                    className={`${STICKY_CLASS} z-30 flex items-center justify-center shrink-0`}
+                    style={{
+                      left: NAME_WIDTH + BERUF_WIDTH,
+                      width: KOMMENTAR_WIDTH,
+                      backgroundColor: DARK_BLUE,
+                    }}
+                    title="Kommentar"
+                  >
+                    <StickyNote size={11} />
+                  </div>
+                  <div
+                    className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
+                    style={{
+                      left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
+                      width: GEBURTSDATUM_WIDTH,
+                      backgroundColor: DARK_BLUE,
+                    }}
+                  >
+                    Alter
+                  </div>
+                </>
+              )}
               <div style={{ width: totalWidth }} />
             </div>
 
@@ -745,95 +767,99 @@ export function AusbildungsplanMatrix({
                             </>
                           )}
                         </div>
-                        <div
-                          onDoubleClick={(e) =>
-                            editable &&
-                            setBearbeitetesFeld({
-                              personalnummer: lehrling.personalnummer,
-                              feld: "beruf",
-                              wert: lehrling.beruf ?? "",
-                              x: e.clientX,
-                              y: e.clientY,
-                            })
-                          }
-                          className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
-                          style={{
-                            left: NAME_WIDTH,
-                            width: BERUF_WIDTH,
-                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
-                            borderRight: "1px solid #ddd",
-                            cursor: editable ? "pointer" : "default",
-                          }}
-                          title={editable ? (lehrling.beruf || "Doppelklick zum Bearbeiten") : lehrling.beruf ?? ""}
-                        >
-                          {lehrling.beruf ?? ""}
-                        </div>
-                        <div
-                          onDoubleClick={(e) =>
-                            editable &&
-                            setBearbeitetesFeld({
-                              personalnummer: lehrling.personalnummer,
-                              feld: "kommentar",
-                              wert: lehrling.kommentar ?? "",
-                              x: e.clientX,
-                              y: e.clientY,
-                            })
-                          }
-                          onMouseEnter={(e) => {
-                            if (lehrling.kommentar) {
-                              setTooltip({
-                                x: e.clientX,
-                                y: e.clientY,
-                                title: "Kommentar",
-                                subtitle: lehrling.kommentar,
-                              });
-                            }
-                          }}
-                          onMouseLeave={() => setTooltip(null)}
-                          className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0`}
-                          style={{
-                            left: NAME_WIDTH + BERUF_WIDTH,
-                            width: KOMMENTAR_WIDTH,
-                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
-                            borderRight: "1px solid #ddd",
-                            cursor: editable ? "pointer" : "default",
-                          }}
-                          title={!lehrling.kommentar && editable ? "Doppelklick, um einen Kommentar zu schreiben" : ""}
-                        >
-                          <StickyNote
-                            size={12}
-                            className={lehrling.kommentar ? "text-amber-500" : "text-gray-300"}
-                            fill={lehrling.kommentar ? "currentColor" : "none"}
-                          />
-                        </div>
-                        <div
-                          onDoubleClick={(e) =>
-                            editable &&
-                            setBearbeitetesFeld({
-                              personalnummer: lehrling.personalnummer,
-                              feld: "geburtsdatum",
-                              wert: lehrling.geburtsdatum ?? "",
-                              x: e.clientX,
-                              y: e.clientY,
-                            })
-                          }
-                          className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0 text-[9px] text-gray-600 truncate`}
-                          style={{
-                            left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
-                            width: GEBURTSDATUM_WIDTH,
-                            backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
-                            borderRight: "2px solid #aaa",
-                          }}
-                          title={
-                            lehrling.geburtsdatum
-                              ? `Geburtsdatum: ${lehrling.geburtsdatum}${editable ? " (Doppelklick zum Bearbeiten)" : ""}`
-                              : editable
-                                ? "Doppelklick, um das Geburtsdatum einzutragen"
-                                : ""
-                          }
-                        >
-                          {lehrling.geburtsdatum ? berechneAlter(lehrling.geburtsdatum) : ""}
-                        </div>
+                        {!isMobile && (
+                          <>
+                            <div
+                              onDoubleClick={(e) =>
+                                editable &&
+                                setBearbeitetesFeld({
+                                  personalnummer: lehrling.personalnummer,
+                                  feld: "beruf",
+                                  wert: lehrling.beruf ?? "",
+                                  x: e.clientX,
+                                  y: e.clientY,
+                                })
+                              }
+                              className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
+                              style={{
+                                left: NAME_WIDTH,
+                                width: BERUF_WIDTH,
+                                backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                                borderRight: "1px solid #ddd",
+                                cursor: editable ? "pointer" : "default",
+                              }}
+                              title={editable ? (lehrling.beruf || "Doppelklick zum Bearbeiten") : lehrling.beruf ?? ""}
+                            >
+                              {lehrling.beruf ?? ""}
+                            </div>
+                            <div
+                              onDoubleClick={(e) =>
+                                editable &&
+                                setBearbeitetesFeld({
+                                  personalnummer: lehrling.personalnummer,
+                                  feld: "kommentar",
+                                  wert: lehrling.kommentar ?? "",
+                                  x: e.clientX,
+                                  y: e.clientY,
+                                })
+                              }
+                              onMouseEnter={(e) => {
+                                if (lehrling.kommentar) {
+                                  setTooltip({
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                    title: "Kommentar",
+                                    subtitle: lehrling.kommentar,
+                                  });
+                                }
+                              }}
+                              onMouseLeave={() => setTooltip(null)}
+                              className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0`}
+                              style={{
+                                left: NAME_WIDTH + BERUF_WIDTH,
+                                width: KOMMENTAR_WIDTH,
+                                backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                                borderRight: "1px solid #ddd",
+                                cursor: editable ? "pointer" : "default",
+                              }}
+                              title={!lehrling.kommentar && editable ? "Doppelklick, um einen Kommentar zu schreiben" : ""}
+                            >
+                              <StickyNote
+                                size={12}
+                                className={lehrling.kommentar ? "text-amber-500" : "text-gray-300"}
+                                fill={lehrling.kommentar ? "currentColor" : "none"}
+                              />
+                            </div>
+                            <div
+                              onDoubleClick={(e) =>
+                                editable &&
+                                setBearbeitetesFeld({
+                                  personalnummer: lehrling.personalnummer,
+                                  feld: "geburtsdatum",
+                                  wert: lehrling.geburtsdatum ?? "",
+                                  x: e.clientX,
+                                  y: e.clientY,
+                                })
+                              }
+                              className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0 text-[9px] text-gray-600 truncate`}
+                              style={{
+                                left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
+                                width: GEBURTSDATUM_WIDTH,
+                                backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
+                                borderRight: "2px solid #aaa",
+                              }}
+                              title={
+                                lehrling.geburtsdatum
+                                  ? `Geburtsdatum: ${lehrling.geburtsdatum}${editable ? " (Doppelklick zum Bearbeiten)" : ""}`
+                                  : editable
+                                    ? "Doppelklick, um das Geburtsdatum einzutragen"
+                                    : ""
+                              }
+                            >
+                              {lehrling.geburtsdatum ? berechneAlter(lehrling.geburtsdatum) : ""}
+                            </div>
+                          </>
+                        )}
                         <div className="relative flex" style={{ width: totalWidth }}>
                           {isHighlighted && (
                             <div
