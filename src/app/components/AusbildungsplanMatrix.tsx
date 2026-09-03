@@ -87,9 +87,9 @@ function dayInfo(date: Date): { isSaturday: boolean; isSunday: boolean; holidayN
   return { isSaturday: day === 6, isSunday: day === 0, holidayName: getHolidayName(fmt(date)) };
 }
 
-// Sticky-Klassen: nur ab lg (Desktop) fixiert, auf Mobile ganz normal im Fluss
-const STICKY_LEFT_CLASS = "static lg:sticky lg:left-0";
-const STICKY_CLASS = "static lg:sticky";
+// Sticky-Klassen: jetzt auf allen Bildschirmgrößen aktiv (vorher nur ab lg/Desktop)
+const STICKY_LEFT_CLASS = "sticky left-0";
+const STICKY_CLASS = "sticky";
 
 // Ein paar Vorschlagsfarben für neue, selbst angelegte Kategorien
 const FARB_VORSCHLAEGE = [
