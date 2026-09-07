@@ -12,7 +12,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 // Ein "Zurück"-Button oben lässt jederzeit zur LehrlingsApp zurückkehren.
 // ----------------------------------------------------------------------------
 
-const STUNDENZETTEL_URL = "https://reduce-mint-67086786.figma.site";
+const STUNDENZETTEL_URL = "https://hauser-zeiterfassung.niki-danninger.workers.dev";
 
 interface StundenzettelScreenProps {
   onBack: () => void;
