@@ -81,6 +81,11 @@ function fmt(date: Date): string {
   return `${dd}.${mm}.${date.getFullYear()}`;
 }
 
+function parseDateStr(dateStr: string): Date {
+  const [dd, mm, yyyy] = dateStr.split(".").map(Number);
+  return new Date(yyyy, mm - 1, dd);
+}
+
 function dayInfo(date: Date): { isSaturday: boolean; isSunday: boolean; holidayName: string | null } {
   const day = date.getDay();
   return { isSaturday: day === 6, isSunday: day === 0, holidayName: getHolidayName(fmt(date)) };
@@ -477,10 +482,39 @@ export function AusbildungsplanMatrix({
         commitPendingChanges();
       }
     }
+    function handleGlobalTouchMove(e: TouchEvent) {
+      if (!isPaintingRef.current) return;
+      const touch = e.touches[0];
+      if (!touch) return;
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      const cellEl = el?.closest<HTMLElement>("[data-cell-personalnummer]");
+      if (!cellEl) return;
+      const personalnummer = cellEl.dataset.cellPersonalnummer;
+      const dateStr = cellEl.dataset.cellDate;
+      if (!personalnummer || !dateStr) return;
+      const lehrling = lehrlinge.find((l) => l.personalnummer === personalnummer);
+      if (!lehrling) return;
+      e.preventDefault();
+      paintCell(lehrling, parseDateStr(dateStr));
+    }
+    function handleGlobalTouchEnd() {
+      if (isPaintingRef.current) {
+        isPaintingRef.current = false;
+        commitPendingChanges();
+      }
+    }
     window.addEventListener("mouseup", handleGlobalMouseUp);
-    return () => window.removeEventListener("mouseup", handleGlobalMouseUp);
+    window.addEventListener("touchmove", handleGlobalTouchMove, { passive: false });
+    window.addEventListener("touchend", handleGlobalTouchEnd);
+    window.addEventListener("touchcancel", handleGlobalTouchEnd);
+    return () => {
+      window.removeEventListener("mouseup", handleGlobalMouseUp);
+      window.removeEventListener("touchmove", handleGlobalTouchMove);
+      window.removeEventListener("touchend", handleGlobalTouchEnd);
+      window.removeEventListener("touchcancel", handleGlobalTouchEnd);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeType]);
+  }, [activeType, lehrlinge]);
 
   return (
     <div className="space-y-3">
@@ -883,7 +917,13 @@ export function AusbildungsplanMatrix({
                             return (
                               <div
                                 key={idx}
+                                data-cell-personalnummer={lehrling.personalnummer}
+                                data-cell-date={dateStr}
                                 onMouseDown={() => handleMouseDown(lehrling, d)}
+                                onTouchStart={(e) => {
+                                  if (activeType) e.preventDefault();
+                                  handleMouseDown(lehrling, d);
+                                }}
                                 onClick={(e) => {
                                   if (!activeType) {
                                     if (entry) showEntryTooltip(e, entry);
@@ -902,6 +942,7 @@ export function AusbildungsplanMatrix({
                                   backgroundColor: bg,
                                   borderRight: "0.5px solid rgba(0,0,0,.08)",
                                   flexShrink: 0,
+                                  touchAction: activeType ? "none" : undefined,
                                 }}
                               />
                             );
