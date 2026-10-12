@@ -148,6 +148,18 @@ export function AusbildungsplanMatrix({
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  // Echte Handy-Breite (< 640 px): dort dürfen Namen zweizeilig umbrechen
+  const [isSchmal, setIsSchmal] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 640 : false,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setIsSchmal(e.matches);
+    handler(mq);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   // Touch-Geräte ohne Maus: keine schwebenden Hover-Tooltips (die bleiben am
   // Handy sonst "kleben"), stattdessen Info-Leiste beim Antippen.
   const [kannHover, setKannHover] = useState(
@@ -171,7 +183,22 @@ export function AusbildungsplanMatrix({
   const monatH = isMobile ? 18 : 14;
   const tagH = isMobile ? 18 : 14;
   const rowH = isMobile ? 28 : ROW_HEIGHT;
-  const nameW = isMobile ? 112 : NAME_WIDTH;
+  // Griff zum Verschieben + Löschen nur am Desktop mit Maus
+  const zeigeMausWerkzeuge = editable && kannHover && !isMobile;
+
+  // Namensspalte so breit wie der längste Name, damit nichts abgeschnitten wird.
+  // Am Handy schmaler, dafür darf der Name in zwei Zeilen umbrechen.
+  const laengsterNameBreite = useMemo(() => {
+    if (typeof document === "undefined") return 0;
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx) return 0;
+    ctx.font = "11px Arial";
+    return lehrlinge.reduce((max, l) => Math.max(max, ctx.measureText(l.name).width), 0);
+  }, [lehrlinge]);
+  const symbolBreite = (zeigeMausWerkzeuge ? 26 : 0) + (onOpenLehrling ? (isMobile ? 26 : 19) : 0) + 10;
+  const nameW = isSchmal
+    ? 132
+    : Math.min(300, Math.max(NAME_WIDTH, Math.ceil(laengsterNameBreite) + symbolBreite));
 
   const BERUF_WIDTH = isMobile ? 0 : BERUF_WIDTH_DESKTOP;
   const KOMMENTAR_WIDTH = isMobile ? 0 : KOMMENTAR_WIDTH_DESKTOP;
@@ -851,7 +878,7 @@ export function AusbildungsplanMatrix({
                         }}
                       >
                         <div
-                          draggable={editable && kannHover && bearbeiteterName?.personalnummer !== lehrling.personalnummer}
+                          draggable={zeigeMausWerkzeuge && bearbeiteterName?.personalnummer !== lehrling.personalnummer}
                           onClick={() =>
                             setMarkierterPersonalnummer((aktuell) =>
                               aktuell === lehrling.personalnummer ? null : lehrling.personalnummer,
@@ -869,9 +896,9 @@ export function AusbildungsplanMatrix({
                           onDoubleClick={() =>
                             editable && setBearbeiteterName({ personalnummer: lehrling.personalnummer, wert: lehrling.name })
                           }
-                          className={`${STICKY_LEFT_CLASS} z-10 flex items-center gap-1 pl-1 pr-0.5 shrink-0 truncate group ${
-                            isMobile ? "text-[12px]" : "text-[11px]"
-                          } ${editable && kannHover ? "cursor-grab active:cursor-grabbing" : ""}`}
+                          className={`${STICKY_LEFT_CLASS} z-10 flex items-center gap-1 pl-1 pr-0.5 shrink-0 overflow-hidden group ${
+                            isSchmal ? "text-[11px] leading-[1.15]" : "text-[11px]"
+                          } ${zeigeMausWerkzeuge ? "cursor-grab active:cursor-grabbing" : ""}`}
                           style={{
                             width: nameW,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
@@ -898,8 +925,12 @@ export function AusbildungsplanMatrix({
                             />
                           ) : (
                             <>
-                              {editable && kannHover && <span className="text-gray-300 shrink-0 select-none">⠿</span>}
-                              <span className="truncate flex-1">{lehrling.name}</span>
+                              {zeigeMausWerkzeuge && <span className="text-gray-300 shrink-0 select-none">⠿</span>}
+                              <span
+                                className={`flex-1 min-w-0 ${isSchmal ? "line-clamp-2 break-words whitespace-normal" : "whitespace-nowrap"}`}
+                              >
+                                {lehrling.name}
+                              </span>
                               {onOpenLehrling && (
                                 <button
                                   type="button"
@@ -917,7 +948,7 @@ export function AusbildungsplanMatrix({
                                   <CalendarDays size={isMobile ? 14 : 11} />
                                 </button>
                               )}
-                              {editable && kannHover && (
+                              {zeigeMausWerkzeuge && (
                                 <button
                                   type="button"
                                   onClick={(e) => {
