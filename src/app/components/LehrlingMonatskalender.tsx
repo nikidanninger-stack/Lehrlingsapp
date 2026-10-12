@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { PlanEntry } from "../types";
@@ -50,6 +50,47 @@ function findEntryForDate(entries: PlanEntry[], date: Date): PlanEntry | null {
   return null;
 }
 
+// Hex-Farbe (#RRGGBB oder #RGB) als halbtransparente Hintergrundfarbe
+function tint(hex: string | undefined, alpha: number): string | undefined {
+  if (!hex || !hex.startsWith("#")) return undefined;
+  let h = hex.slice(1);
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  if (h.length !== 6) return undefined;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  if ([r, g, b].some(Number.isNaN)) return undefined;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// Ausbildungsjahr, in dem die Plandaten liegen
+const PLAN_START = new Date(2026, 8, 1);
+const PLAN_ENDE = new Date(2027, 7, 31);
+
+function heute(): Date {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function heuteImPlan(): boolean {
+  const h = heute();
+  return h >= PLAN_START && h <= PLAN_ENDE;
+}
+
+function startMonat(): Date {
+  const heute = new Date();
+  if (heute >= PLAN_START && heute <= PLAN_ENDE) {
+    return new Date(heute.getFullYear(), heute.getMonth(), 1);
+  }
+  return new Date(PLAN_START);
+}
+
+interface MonatsAbschnitt {
+  von: Date;
+  bis: Date;
+  entry: PlanEntry;
+}
+
 export function LehrlingMonatskalender({
   planData,
   editable = false,
@@ -59,12 +100,16 @@ export function LehrlingMonatskalender({
   standort,
   onDataChanged,
 }: LehrlingMonatskalenderProps) {
-  const [anchor, setAnchor] = useState(() => new Date(2026, 8, 1));
-  const [selectedEntry, setSelectedEntry] = useState<PlanEntry | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [anchor, setAnchor] = useState(startMonat);
+  // Beim Öffnen gleich den heutigen Tag anzeigen (falls im Ausbildungsjahr)
+  const [selectedEntry, setSelectedEntry] = useState<PlanEntry | null>(() =>
+    heuteImPlan() ? findEntryForDate(planData, heute()) : null,
+  );
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => (heuteImPlan() ? heute() : null));
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEntry, setModalEntry] = useState<PlanEntry | null>(null);
   const [modalPrefillDate, setModalPrefillDate] = useState<string | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const planTypeLabels = getMergedLabels();
   const planTypeBarColors = getMergedColors();
 
@@ -80,6 +125,57 @@ export function LehrlingMonatskalender({
   ];
   while (cells.length % 7 !== 0) cells.push(null);
 
+  // Einträge pro Tag dieses Monats einmal berechnen
+  const entryProTag = useMemo(() => {
+    const map = new Map<number, PlanEntry | null>();
+    for (let d = 1; d <= daysInMonth; d++) {
+      map.set(d, findEntryForDate(planData, new Date(year, month, d)));
+    }
+    return map;
+  }, [planData, year, month, daysInMonth]);
+
+  // Aufeinanderfolgende Tage mit gleichem Eintrag zusammenfassen (Wochenenden
+  // und Feiertage unterbrechen einen Block nicht)
+  const abschnitte = useMemo(() => {
+    const liste: MonatsAbschnitt[] = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const entry = entryProTag.get(d);
+      if (!entry) continue;
+      const datum = new Date(year, month, d);
+      const letzter = liste[liste.length - 1];
+      const gleich =
+        letzter &&
+        letzter.entry.type === entry.type &&
+        (letzter.entry.details ?? "") === (entry.details ?? "") &&
+        (letzter.entry.location ?? "") === (entry.location ?? "");
+      if (gleich) {
+        // Lücke nur aus Wochenende/Feiertag? Dann gleicher Block
+        let nurFreieTage = true;
+        for (let z = letzter.bis.getDate() + 1; z < d; z++) {
+          const zwischen = new Date(year, month, z);
+          const frei =
+            zwischen.getDay() === 0 || zwischen.getDay() === 6 || !!getHolidayName(fmt(zwischen));
+          if (!frei || entryProTag.get(z)) {
+            nurFreieTage = false;
+            break;
+          }
+        }
+        if (nurFreieTage) {
+          letzter.bis = datum;
+          continue;
+        }
+      }
+      liste.push({ von: datum, bis: datum, entry });
+    }
+    return liste;
+  }, [entryProTag, year, month, daysInMonth]);
+
+  const genutzteTypen = useMemo(() => {
+    const set = new Set<string>();
+    abschnitte.forEach((a) => set.add(a.entry.type));
+    return Array.from(set);
+  }, [abschnitte]);
+
   function shiftMonth(delta: number) {
     setAnchor(new Date(year, month + delta, 1));
     setSelectedEntry(null);
@@ -87,18 +183,31 @@ export function LehrlingMonatskalender({
   }
 
   function goToToday() {
-    setAnchor(new Date());
-    setSelectedEntry(null);
-    setSelectedDate(null);
+    const h = heute();
+    setAnchor(new Date(h.getFullYear(), h.getMonth(), 1));
+    setSelectedEntry(findEntryForDate(planData, h));
+    setSelectedDate(h);
   }
 
   function handleDayClick(date: Date, entry: PlanEntry | null) {
-    if (entry) {
-      setSelectedEntry(entry);
-      setSelectedDate(null);
-    } else if (editable) {
-      setSelectedDate(date);
-      setSelectedEntry(null);
+    setSelectedDate(date);
+    setSelectedEntry(entry);
+  }
+
+  // Wischen nach links/rechts wechselt den Monat (Handy)
+  function handleTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touchStartRef.current = t ? { x: t.clientX, y: t.clientY } : null;
+  }
+  function handleTouchEnd(e: React.TouchEvent) {
+    const startPunkt = touchStartRef.current;
+    touchStartRef.current = null;
+    const t = e.changedTouches[0];
+    if (!startPunkt || !t) return;
+    const dx = t.clientX - startPunkt.x;
+    const dy = t.clientY - startPunkt.y;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      shiftMonth(dx < 0 ? 1 : -1);
     }
   }
 
@@ -127,143 +236,191 @@ export function LehrlingMonatskalender({
     onDataChanged?.();
   }
 
+  const heuteStr = fmt(heute());
+  const ausgewaehltStr = selectedDate ? fmt(selectedDate) : null;
+
+  function zeitraum(a: MonatsAbschnitt): string {
+    const kurz = (d: Date) => `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.`;
+    return a.von.getTime() === a.bis.getTime() ? kurz(a.von) : `${kurz(a.von)} – ${kurz(a.bis)}`;
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={() => shiftMonth(-1)}
             aria-label="Vorheriger Monat"
-            className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 text-gray-600 transition-colors"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={20} />
           </button>
-          <span className="text-sm font-semibold text-gray-700 min-w-[160px] text-center capitalize">
+          <span className="text-base sm:text-sm font-semibold text-gray-700 min-w-[130px] sm:min-w-[160px] text-center capitalize">
             {firstOfMonth.toLocaleDateString("de-AT", { month: "long", year: "numeric" })}
           </span>
           <button
             onClick={() => shiftMonth(1)}
             aria-label="Nächster Monat"
-            className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200 text-gray-600 transition-colors"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={20} />
           </button>
         </div>
         <button
           onClick={goToToday}
-          className="text-xs font-semibold text-blue-700 hover:underline"
+          className="px-3 py-1.5 rounded-lg border border-blue-200 text-xs font-semibold text-blue-700 hover:bg-blue-50 active:bg-blue-100"
         >
           Heute
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
-        {WOCHENTAGE.map((d) => (
-          <div key={d}>{d}</div>
-        ))}
-      </div>
+      <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="space-y-1">
+        <div className="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-gray-500">
+          {WOCHENTAGE.map((d) => (
+            <div key={d}>{d}</div>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-7 gap-1">
-        {cells.map((date, idx) => {
-          if (!date) return <div key={idx} className="aspect-square sm:aspect-[4/3]" />;
+        <div className="grid grid-cols-7 gap-1">
+          {cells.map((date, idx) => {
+            if (!date) return <div key={idx} className="aspect-square sm:aspect-[4/3]" />;
 
-          const entry = findEntryForDate(planData, date);
-          const isToday = fmt(date) === fmt(new Date());
-          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
-          const holidayName = getHolidayName(fmt(date));
-          const barColor = entry ? planTypeBarColors[entry.type] : undefined;
+            const entry = entryProTag.get(date.getDate()) ?? null;
+            const dateStr = fmt(date);
+            const isToday = dateStr === heuteStr;
+            const isSelected = dateStr === ausgewaehltStr;
+            const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+            const holidayName = getHolidayName(dateStr);
+            const barColor = entry ? planTypeBarColors[entry.type] : undefined;
+            const hintergrund = holidayName
+              ? "#FEF2F2"
+              : entry
+                ? (tint(barColor, 0.14) ?? "#FFFFFF")
+                : isWeekend
+                  ? "#F9FAFB"
+                  : "#FFFFFF";
 
-          return (
-            <button
-              key={idx}
-              onClick={() => handleDayClick(date, entry)}
-              className={`aspect-square sm:aspect-[4/3] rounded-lg border p-1.5 flex flex-col items-start justify-start text-left transition-all ${
-                isToday
-                  ? "border-blue-400 ring-2 ring-blue-200"
-                  : holidayName
-                    ? "border-red-100"
-                    : isWeekend
-                      ? "border-gray-100"
-                      : "border-gray-200"
-              } ${entry || editable ? "hover:shadow-md cursor-pointer" : "cursor-default"}`}
-              style={{
-                backgroundColor: holidayName
-                  ? "#FEF2F2"
-                  : isWeekend
-                    ? "#F9FAFB"
-                    : "#FFFFFF",
-              }}
-              title={holidayName ?? entry?.details}
-            >
-              <span
-                className={`text-[11px] ${
-                  isToday ? "font-bold text-blue-700" : "text-gray-500"
+            return (
+              <button
+                key={idx}
+                onClick={() => handleDayClick(date, entry)}
+                aria-label={`${date.toLocaleDateString("de-AT", { weekday: "long", day: "numeric", month: "long" })}${
+                  entry ? `: ${planTypeLabels[entry.type] ?? entry.details}` : holidayName ? `: ${holidayName}` : ""
                 }`}
+                className={`relative aspect-square sm:aspect-[4/3] rounded-lg border p-1 sm:p-1.5 flex flex-col items-start justify-start text-left transition-all overflow-hidden ${
+                  isSelected
+                    ? "border-blue-600 ring-2 ring-blue-300"
+                    : isToday
+                      ? "border-blue-400 ring-2 ring-blue-200"
+                      : holidayName
+                        ? "border-red-100"
+                        : isWeekend
+                          ? "border-gray-100"
+                          : "border-gray-200"
+                } hover:shadow-md cursor-pointer`}
+                style={{ backgroundColor: hintergrund }}
+                title={holidayName ?? entry?.details}
               >
-                {date.getDate()}
-              </span>
-              {entry && (
                 <span
-                  className="mt-1 w-full text-[9px] leading-tight rounded px-1 py-0.5 truncate text-white font-medium"
-                  style={{ backgroundColor: barColor }}
+                  className={`text-xs sm:text-[11px] leading-none ${
+                    isToday
+                      ? "font-bold text-white bg-blue-600 rounded-full w-5 h-5 flex items-center justify-center -ml-0.5 -mt-0.5"
+                      : isWeekend || holidayName
+                        ? "text-gray-400"
+                        : "text-gray-600"
+                  }`}
                 >
-                  {planTypeLabels[entry.type]}
+                  {date.getDate()}
                 </span>
-              )}
-              {holidayName && !entry && (
-                <span className="mt-1 text-[8px] text-red-500 leading-tight truncate w-full">
-                  {holidayName}
-                </span>
-              )}
-            </button>
-          );
-        })}
+                {entry && (
+                  <>
+                    {/* Handy: farbiger Balken ohne Text (Text passt dort nicht rein) */}
+                    <span
+                      className="sm:hidden absolute left-1 right-1 bottom-1 h-1.5 rounded-full"
+                      style={{ backgroundColor: barColor }}
+                    />
+                    {/* Ab Tablet: Balken mit Beschriftung */}
+                    <span
+                      className="hidden sm:block mt-1 w-full text-[9px] leading-tight rounded px-1 py-0.5 truncate text-white font-medium"
+                      style={{ backgroundColor: barColor }}
+                    >
+                      {planTypeLabels[entry.type]}
+                    </span>
+                  </>
+                )}
+                {holidayName && !entry && (
+                  <>
+                    <span className="sm:hidden absolute left-1 right-1 bottom-1 h-1.5 rounded-full bg-red-300" />
+                    <span className="hidden sm:block mt-1 text-[8px] text-red-500 leading-tight truncate w-full">
+                      {holidayName}
+                    </span>
+                  </>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <p className="sm:hidden text-center text-[11px] text-gray-400 pt-1">
+          Tippe auf einen Tag für Details · wische für den nächsten Monat
+        </p>
       </div>
 
       {/* Detail-Panel für ausgewählten Tag mit Eintrag */}
       {selectedEntry && (
-        <div className="rounded-xl border border-gray-200 bg-white/70 p-4">
+        <div
+          className="rounded-xl border bg-white/80 p-4"
+          style={{ borderColor: tint(planTypeBarColors[selectedEntry.type], 0.5) ?? "#E5E7EB" }}
+        >
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-semibold text-gray-400 mb-1">
-                {selectedEntry.startDate} – {selectedEntry.endDate}
+                {selectedDate
+                  ? selectedDate.toLocaleDateString("de-AT", {
+                      weekday: "long",
+                      day: "2-digit",
+                      month: "long",
+                    })
+                  : `${selectedEntry.startDate} – ${selectedEntry.endDate}`}
+                {selectedDate && fmt(selectedDate) === heuteStr ? " · Heute" : ""}
               </p>
-              <p className="font-semibold text-gray-800">{selectedEntry.details}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{selectedEntry.location}</p>
+              <p className="font-semibold text-gray-800 break-words">{selectedEntry.details}</p>
+              {selectedEntry.location && (
+                <p className="text-sm text-gray-500 mt-0.5">{selectedEntry.location}</p>
+              )}
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
               <span
-                className="text-xs text-white font-medium rounded-full px-3 py-1"
+                className="text-xs text-white font-medium rounded-full px-3 py-1 whitespace-nowrap"
                 style={{ backgroundColor: planTypeBarColors[selectedEntry.type] }}
               >
                 {planTypeLabels[selectedEntry.type]}
               </span>
               {editable && (
-                <>
+                <div className="flex items-center gap-1">
                   <button
                     onClick={() => openEditModal(selectedEntry)}
                     aria-label="Bearbeiten"
-                    className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500"
+                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-500"
                   >
-                    <Pencil size={15} />
+                    <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => handleDelete(selectedEntry)}
                     aria-label="Löschen"
-                    className="p-1.5 rounded-lg hover:bg-red-50 text-red-500"
+                    className="p-2 rounded-lg hover:bg-red-50 text-red-500"
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={16} />
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Panel für ausgewählten leeren Tag (nur editierbar) */}
-      {editable && selectedDate && !selectedEntry && (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white/50 p-4 flex items-center justify-between">
+      {/* Ausgewählter Tag ohne Eintrag */}
+      {selectedDate && !selectedEntry && (
+        <div className="rounded-xl border border-dashed border-gray-300 bg-white/50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <p className="text-sm text-gray-500">
             {selectedDate.toLocaleDateString("de-AT", {
               weekday: "long",
@@ -271,29 +428,84 @@ export function LehrlingMonatskalender({
               month: "long",
               year: "numeric",
             })}{" "}
-            – kein Eintrag vorhanden.
+            –{" "}
+            {getHolidayName(fmt(selectedDate)) ??
+              (selectedDate.getDay() === 0 || selectedDate.getDay() === 6
+                ? "Wochenende"
+                : "kein Eintrag vorhanden")}
+            .
           </p>
-          <Button size="sm" icon={<Plus size={14} />} onClick={() => openNewModal(selectedDate)}>
-            Eintrag hinzufügen
-          </Button>
+          {editable && (
+            <Button size="sm" icon={<Plus size={14} />} onClick={() => openNewModal(selectedDate)}>
+              Eintrag hinzufügen
+            </Button>
+          )}
         </div>
       )}
 
-      {/* Legende */}
-      <div className="flex flex-wrap gap-3 pt-1">
-        {(Object.keys(planTypeLabels) as (keyof typeof planTypeLabels)[]).map((type) => (
-          <span key={type} className="flex items-center gap-1.5 text-xs text-gray-500">
-            <span
-              className="w-2.5 h-2.5 rounded-sm"
-              style={{ backgroundColor: planTypeBarColors[type] }}
-            />
-            {planTypeLabels[type]}
-          </span>
-        ))}
-      </div>
+      {/* Monatsübersicht als Liste – am Handy viel besser lesbar als die Kacheln */}
+      {abschnitte.length > 0 && (
+        <div className="rounded-xl border border-gray-200 bg-white/70 overflow-hidden">
+          <p className="px-4 pt-3 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+            Überblick {firstOfMonth.toLocaleDateString("de-AT", { month: "long" })}
+          </p>
+          <ul className="divide-y divide-gray-100">
+            {abschnitte.map((a) => {
+              const h = heute();
+              const laeuftHeute = h >= a.von && h <= a.bis;
+              return (
+                <li key={`${a.entry.id}-${a.von.getTime()}`}>
+                  <button
+                    type="button"
+                    onClick={() => handleDayClick(a.von, a.entry)}
+                    className={`w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 active:bg-gray-100 ${
+                      laeuftHeute ? "bg-blue-50/60" : ""
+                    }`}
+                  >
+                    <span
+                      className="w-1.5 self-stretch rounded-full shrink-0"
+                      style={{ backgroundColor: planTypeBarColors[a.entry.type] }}
+                    />
+                    <span className="w-[88px] shrink-0 text-xs font-semibold text-gray-500 tabular-nums">
+                      {zeitraum(a)}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-medium text-gray-800 truncate">
+                        {a.entry.details || planTypeLabels[a.entry.type]}
+                      </span>
+                      {a.entry.location && (
+                        <span className="block text-xs text-gray-500 truncate">{a.entry.location}</span>
+                      )}
+                    </span>
+                    {laeuftHeute && (
+                      <span className="shrink-0 text-[10px] font-bold uppercase text-blue-700">Jetzt</span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {/* Legende: nur Typen, die in diesem Monat vorkommen */}
+      {genutzteTypen.length > 0 && (
+        <div className="flex flex-wrap gap-x-3 gap-y-1.5 pt-1">
+          {genutzteTypen.map((type) => (
+            <span key={type} className="flex items-center gap-1.5 text-xs text-gray-500">
+              <span
+                className="w-2.5 h-2.5 rounded-sm"
+                style={{ backgroundColor: planTypeBarColors[type] }}
+              />
+              {planTypeLabels[type] ?? type}
+            </span>
+          ))}
+        </div>
+      )}
 
       {editable && personalnummer && (
         <PlanEntryEditModal
+          key={`${modalEntry?.id ?? "neu"}-${modalPrefillDate ?? ""}-${modalOpen ? "offen" : "zu"}`}
           isOpen={modalOpen}
           onClose={() => {
             setModalOpen(false);

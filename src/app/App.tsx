@@ -126,6 +126,31 @@ export default function App() {
     void boot();
   }, []);
 
+  // Wenn die App länger im Hintergrund war (z.B. Handy gesperrt, anderer Tab)
+  // und wieder angezeigt wird, frische Daten vom Server holen. Sonst arbeitet
+  // ein lange offener Tab mit veraltetem Stand und könnte beim nächsten
+  // Speichern Änderungen von anderen Geräten wieder überschreiben.
+  useEffect(() => {
+    if (!ready) return;
+    let zuletztGeladen = Date.now();
+    let laeuft = false;
+    async function handleVisibility() {
+      if (document.visibilityState !== "visible" || laeuft) return;
+      if (Date.now() - zuletztGeladen < 60_000) return;
+      laeuft = true;
+      try {
+        await DataStore.loadFromSupabase();
+        zuletztGeladen = Date.now();
+      } catch (err) {
+        console.warn("Daten-Aktualisierung im Hintergrund fehlgeschlagen:", err);
+      } finally {
+        laeuft = false;
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [ready]);
+
   // Falls die App bereits offen ist und der Nutzer auf eine Push-
   // Benachrichtigung klickt, schickt der Service Worker eine Nachricht statt
   // die Seite neu zu laden - hier reagieren wir darauf mit einem Screen-Wechsel.

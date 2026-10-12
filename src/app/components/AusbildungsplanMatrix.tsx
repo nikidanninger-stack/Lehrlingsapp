@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { StickyNote, Trash2 } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, StickyNote, Trash2, X } from "lucide-react";
 import type { Lehrling, PlanEntry } from "../types";
 import { getMergedLabels, getMergedColors, getVersteckteKategorien } from "./ui/TypeBadge";
 import { getHolidayName } from "../data/holidays";
@@ -59,7 +59,19 @@ interface AusbildungsplanMatrixProps {
   highlightPersonalnummer?: string;
   editable?: boolean;
   onDataChanged?: () => void;
+  /** Öffnet den Einzelkalender eines Lehrlings (Kalender-Symbol neben dem Namen) */
+  onOpenLehrling?: (personalnummer: string) => void;
 }
+
+interface ZellInfo {
+  name: string;
+  datum: string;
+  titel: string;
+  ort: string;
+  farbe?: string;
+}
+
+const WOCHENTAG_KURZ = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
 
 function getAusbildungsjahrRange(): { start: Date; end: Date } {
   return { start: new Date(2026, 8, 1), end: new Date(2027, 7, 31) };
@@ -108,11 +120,13 @@ export function AusbildungsplanMatrix({
   highlightPersonalnummer,
   editable = false,
   onDataChanged,
+  onOpenLehrling,
 }: AusbildungsplanMatrixProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { start, end } = useMemo(() => getAusbildungsjahrRange(), []);
   const days = useMemo(() => daysBetweenInclusive(start, end), [start, end]);
-  const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const [tooltip, setTooltipRaw] = useState<TooltipState | null>(null);
+  const [zellInfo, setZellInfo] = useState<ZellInfo | null>(null);
   const [activeType, setActiveType] = useState<string | "leer" | null>(null);
   const [, forceRepaint] = useState(0);
   const [tick, setTick] = useState(0);
@@ -134,10 +148,35 @@ export function AusbildungsplanMatrix({
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  // Touch-Geräte ohne Maus: keine schwebenden Hover-Tooltips (die bleiben am
+  // Handy sonst "kleben"), stattdessen Info-Leiste beim Antippen.
+  const [kannHover, setKannHover] = useState(
+    typeof window !== "undefined" ? window.matchMedia("(hover: hover)").matches : true,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover)");
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => setKannHover(e.matches);
+    handler(mq);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  function setTooltip(t: TooltipState | null) {
+    if (t && !kannHover) return;
+    setTooltipRaw(t);
+  }
+
+  // Am Handy größere Zellen, damit man sie mit dem Finger treffen kann
+  const dayW = isMobile ? 18 : DAY_WIDTH;
+  const monatH = isMobile ? 18 : 14;
+  const tagH = isMobile ? 18 : 14;
+  const rowH = isMobile ? 28 : ROW_HEIGHT;
+  const nameW = isMobile ? 112 : NAME_WIDTH;
+
   const BERUF_WIDTH = isMobile ? 0 : BERUF_WIDTH_DESKTOP;
   const KOMMENTAR_WIDTH = isMobile ? 0 : KOMMENTAR_WIDTH_DESKTOP;
   const GEBURTSDATUM_WIDTH = isMobile ? 0 : GEBURTSDATUM_WIDTH_DESKTOP;
-  const LABEL_WIDTH = NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
+  const LABEL_WIDTH = nameW + BERUF_WIDTH + KOMMENTAR_WIDTH + GEBURTSDATUM_WIDTH;
   const isPaintingRef = useRef(false);
   const paintedCellsRef = useRef<Set<string>>(new Set());
   const [markierterPersonalnummer, setMarkierterPersonalnummer] = useState<string | null>(null);
@@ -353,19 +392,58 @@ export function AusbildungsplanMatrix({
     return markers;
   }, [days]);
 
-  const totalWidth = days.length * DAY_WIDTH;
+  const totalWidth = days.length * dayW;
 
-  function scrollToToday() {
-    const todayIdx = days.findIndex((d) => fmt(d) === fmt(new Date()));
+  const todayIdx = useMemo(() => days.findIndex((d) => fmt(d) === fmt(new Date())), [days]);
+
+  function scrollToToday(smooth = false) {
     if (todayIdx >= 0 && scrollRef.current) {
-      scrollRef.current.scrollLeft = Math.max(0, todayIdx * DAY_WIDTH - 200);
+      // Heute etwas links im sichtbaren Bereich, damit man die kommenden Tage sieht
+      const sichtbar = scrollRef.current.clientWidth - LABEL_WIDTH;
+      const ziel = Math.max(0, todayIdx * dayW - Math.min(200, sichtbar * 0.25));
+      scrollRef.current.scrollTo({ left: ziel, behavior: smooth ? "smooth" : "auto" });
     }
   }
 
+  // Sprung zum vorherigen/nächsten Monatsanfang
+  function springeMonat(richtung: -1 | 1) {
+    const el = scrollRef.current;
+    if (!el) return;
+    const aktuellerIdx = Math.round(el.scrollLeft / dayW);
+    const ziele = monthMarkers.map((m) => m.index);
+    let zielIdx: number | undefined;
+    if (richtung === 1) zielIdx = ziele.find((i) => i > aktuellerIdx + 1);
+    else zielIdx = [...ziele].reverse().find((i) => i < aktuellerIdx - 1) ?? 0;
+    if (zielIdx === undefined) zielIdx = ziele[ziele.length - 1] ?? 0;
+    el.scrollTo({ left: zielIdx * dayW, behavior: "smooth" });
+  }
+
+  // Beim ersten Anzeigen und wenn sich die Zellbreite (Handy/Desktop) ändert
   useEffect(() => {
     scrollToToday();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dayW]);
+
+  function zeigeZellInfo(lehrling: Lehrling, date: Date, entry: PlanEntry | null | undefined, holidayName: string | null) {
+    const datum = `${WOCHENTAG_KURZ[date.getDay()]} ${fmt(date)}`;
+    if (entry) {
+      setZellInfo({
+        name: lehrling.name,
+        datum,
+        titel: entry.details || planTypeLabels[entry.type] || entry.type,
+        ort: entry.location,
+        farbe: planTypeBarColors[entry.type],
+      });
+    } else {
+      const { isSaturday, isSunday } = dayInfo(date);
+      setZellInfo({
+        name: lehrling.name,
+        datum,
+        titel: holidayName ?? (isSaturday || isSunday ? "Wochenende" : "Kein Eintrag"),
+        ort: "",
+      });
+    }
+  }
 
   function showEntryTooltip(e: React.MouseEvent, entry: PlanEntry) {
     setTooltip({
@@ -517,16 +595,42 @@ export function AusbildungsplanMatrix({
   }, [activeType, lehrlinge]);
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="text-sm text-gray-500">
-          {fmt(start)} – {fmt(end)} · {lehrlinge.length} Lehrlinge
+    <div className="flex flex-col gap-3">
+      {/* Navigation: Heute + Monat vor/zurück */}
+      <div className="order-1 flex items-center justify-between flex-wrap gap-2">
+        <p className="text-xs sm:text-sm text-gray-500">
+          {fmt(start)} – {fmt(end)} · {lehrlinge.length} {lehrlinge.length === 1 ? "Lehrling" : "Lehrlinge"}
         </p>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => springeMonat(-1)}
+            aria-label="Vorheriger Monat"
+            className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 active:bg-gray-100"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToToday(true)}
+            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-blue-700 hover:bg-blue-50 active:bg-blue-100"
+          >
+            Heute
+          </button>
+          <button
+            type="button"
+            onClick={() => springeMonat(1)}
+            aria-label="Nächster Monat"
+            className="p-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 active:bg-gray-100"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Kalender-Übersicht */}
       <div
-        className="border border-gray-300 rounded-lg overflow-hidden bg-white relative"
+        className="order-3 border border-gray-300 rounded-lg overflow-hidden bg-white relative"
         style={{ fontFamily: "Arial, sans-serif" }}
       >
         {tooltip && (
@@ -612,14 +716,14 @@ export function AusbildungsplanMatrix({
         >
           <div style={{ width: LABEL_WIDTH + totalWidth, minWidth: "100%" }}>
             {/* Monats-Kopfzeile */}
-            <div className={`${STICKY_CLASS} top-0 z-20 flex`} style={{ height: 14, backgroundColor: DARK_BLUE }}>
+            <div className={`${STICKY_CLASS} top-0 z-20 flex`} style={{ height: monatH, backgroundColor: DARK_BLUE }}>
               <div className={`${STICKY_LEFT_CLASS} z-30 shrink-0`} style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }} />
               <div className="relative" style={{ width: totalWidth }}>
                 {monthMarkers.map((m) => (
                   <div
                     key={m.index}
-                    className="absolute top-0 h-full flex items-center text-[8px] font-semibold text-white pl-1"
-                    style={{ left: m.index * DAY_WIDTH, borderLeft: "2px solid rgba(255,255,255,.3)" }}
+                    className={`absolute top-0 h-full flex items-center font-semibold text-white pl-1 whitespace-nowrap ${isMobile ? "text-[10px]" : "text-[8px]"}`}
+                    style={{ left: m.index * dayW, borderLeft: "2px solid rgba(255,255,255,.3)" }}
                   >
                     {m.label}
                   </div>
@@ -630,9 +734,14 @@ export function AusbildungsplanMatrix({
             {/* Tages-Kopfzeile */}
             <div
               className={`${STICKY_CLASS} z-20 flex text-white`}
-              style={{ top: 14, height: 14, backgroundColor: DARK_BLUE, fontSize: 8 }}
+              style={{ top: monatH, height: tagH, backgroundColor: DARK_BLUE, fontSize: isMobile ? 9 : 8 }}
             >
-              <div className={`${STICKY_LEFT_CLASS} z-30 shrink-0`} style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }} />
+              <div
+                className={`${STICKY_LEFT_CLASS} z-30 shrink-0 flex items-center pl-1 text-[10px] font-bold`}
+                style={{ width: LABEL_WIDTH, backgroundColor: DARK_BLUE }}
+              >
+                {isMobile ? "Name" : ""}
+              </div>
               {days.map((d, idx) => {
                 const isToday = fmt(d) === fmt(new Date());
                 const { isSaturday, isSunday, holidayName } = dayInfos[idx];
@@ -654,7 +763,7 @@ export function AusbildungsplanMatrix({
                     onMouseEnter={holidayName ? (e) => showDayTooltip(e, d, holidayName) : undefined}
                     className="flex items-center justify-center shrink-0"
                     style={{
-                      width: DAY_WIDTH,
+                      width: dayW,
                       backgroundColor: isToday ? "#5C6BC0" : bg,
                       color: isToday ? "#fff" : color,
                       fontWeight: isToday ? 700 : 400,
@@ -666,29 +775,30 @@ export function AusbildungsplanMatrix({
               })}
             </div>
 
-            {/* Namens-Header-Zeile */}
+            {/* Namens-Header-Zeile (am Handy in die Tageszeile integriert) */}
+            {!isMobile && (
             <div
               className={`${STICKY_CLASS} z-20 flex text-white text-[9px] font-bold`}
               style={{ top: 28, height: 16, backgroundColor: DARK_BLUE }}
             >
               <div
                 className={`${STICKY_LEFT_CLASS} z-30 flex items-center pl-1 shrink-0`}
-                style={{ width: NAME_WIDTH, backgroundColor: DARK_BLUE }}
+                style={{ width: nameW, backgroundColor: DARK_BLUE }}
               >
                 Name
               </div>
-              {!isMobile && (
+              {(
                 <>
                   <div
                     className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
-                    style={{ left: NAME_WIDTH, width: BERUF_WIDTH, backgroundColor: DARK_BLUE }}
+                    style={{ left: nameW, width: BERUF_WIDTH, backgroundColor: DARK_BLUE }}
                   >
                     Beruf
                   </div>
                   <div
                     className={`${STICKY_CLASS} z-30 flex items-center justify-center shrink-0`}
                     style={{
-                      left: NAME_WIDTH + BERUF_WIDTH,
+                      left: nameW + BERUF_WIDTH,
                       width: KOMMENTAR_WIDTH,
                       backgroundColor: DARK_BLUE,
                     }}
@@ -699,7 +809,7 @@ export function AusbildungsplanMatrix({
                   <div
                     className={`${STICKY_CLASS} z-30 flex items-center pl-1 shrink-0`}
                     style={{
-                      left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
+                      left: nameW + BERUF_WIDTH + KOMMENTAR_WIDTH,
                       width: GEBURTSDATUM_WIDTH,
                       backgroundColor: DARK_BLUE,
                     }}
@@ -710,6 +820,7 @@ export function AusbildungsplanMatrix({
               )}
               <div style={{ width: totalWidth }} />
             </div>
+            )}
 
             {/* Lehrjahr-Gruppen + Lehrlings-Zeilen */}
             {[1, 2, 3, 4].map((lj) => {
@@ -733,14 +844,14 @@ export function AusbildungsplanMatrix({
                         key={lehrling.personalnummer}
                         className="flex border-b"
                         style={{
-                          height: ROW_HEIGHT,
+                          height: rowH,
                           borderColor: "#eee",
                           outline: isHighlighted ? "2px solid #1976D2" : undefined,
                           outlineOffset: isHighlighted ? "-1px" : undefined,
                         }}
                       >
                         <div
-                          draggable={editable && bearbeiteterName?.personalnummer !== lehrling.personalnummer}
+                          draggable={editable && kannHover && bearbeiteterName?.personalnummer !== lehrling.personalnummer}
                           onClick={() =>
                             setMarkierterPersonalnummer((aktuell) =>
                               aktuell === lehrling.personalnummer ? null : lehrling.personalnummer,
@@ -758,15 +869,19 @@ export function AusbildungsplanMatrix({
                           onDoubleClick={() =>
                             editable && setBearbeiteterName({ personalnummer: lehrling.personalnummer, wert: lehrling.name })
                           }
-                          className={`${STICKY_LEFT_CLASS} z-10 flex items-center gap-1 pl-1 pr-0.5 shrink-0 text-[11px] truncate group ${
-                            editable ? "cursor-grab active:cursor-grabbing" : ""
-                          }`}
+                          className={`${STICKY_LEFT_CLASS} z-10 flex items-center gap-1 pl-1 pr-0.5 shrink-0 truncate group ${
+                            isMobile ? "text-[12px]" : "text-[11px]"
+                          } ${editable && kannHover ? "cursor-grab active:cursor-grabbing" : ""}`}
                           style={{
-                            width: NAME_WIDTH,
+                            width: nameW,
                             backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                             borderRight: "1px solid #ddd",
                           }}
-                          title={editable ? `${lehrling.name} (ziehen zum Verschieben, doppelklicken zum Umbenennen)` : lehrling.name}
+                          title={
+                            editable && kannHover
+                              ? `${lehrling.name} · Nr. ${lehrling.personalnummer} (ziehen zum Verschieben, doppelklicken zum Umbenennen)`
+                              : `${lehrling.name} · Nr. ${lehrling.personalnummer}`
+                          }
                         >
                           {bearbeiteterName?.personalnummer === lehrling.personalnummer ? (
                             <input
@@ -783,9 +898,26 @@ export function AusbildungsplanMatrix({
                             />
                           ) : (
                             <>
-                              {editable && <span className="text-gray-300 shrink-0 select-none">⠿</span>}
+                              {editable && kannHover && <span className="text-gray-300 shrink-0 select-none">⠿</span>}
                               <span className="truncate flex-1">{lehrling.name}</span>
-                              {editable && (
+                              {onOpenLehrling && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onOpenLehrling(lehrling.personalnummer);
+                                  }}
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  className={`shrink-0 rounded text-blue-500 hover:text-blue-700 hover:bg-blue-50 ${
+                                    isMobile ? "p-1" : "p-0.5 opacity-60 group-hover:opacity-100"
+                                  }`}
+                                  title="Einzelkalender öffnen"
+                                  aria-label={`Kalender von ${lehrling.name} öffnen`}
+                                >
+                                  <CalendarDays size={isMobile ? 14 : 11} />
+                                </button>
+                              )}
+                              {editable && kannHover && (
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -816,7 +948,7 @@ export function AusbildungsplanMatrix({
                               }
                               className={`${STICKY_CLASS} z-10 flex items-center pl-1 shrink-0 text-[9px] text-gray-600 truncate`}
                               style={{
-                                left: NAME_WIDTH,
+                                left: nameW,
                                 width: BERUF_WIDTH,
                                 backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                                 borderRight: "1px solid #ddd",
@@ -850,7 +982,7 @@ export function AusbildungsplanMatrix({
                               onMouseLeave={() => setTooltip(null)}
                               className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0`}
                               style={{
-                                left: NAME_WIDTH + BERUF_WIDTH,
+                                left: nameW + BERUF_WIDTH,
                                 width: KOMMENTAR_WIDTH,
                                 backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                                 borderRight: "1px solid #ddd",
@@ -877,7 +1009,7 @@ export function AusbildungsplanMatrix({
                               }
                               className={`${STICKY_CLASS} z-10 flex items-center justify-center shrink-0 text-[9px] text-gray-600 truncate`}
                               style={{
-                                left: NAME_WIDTH + BERUF_WIDTH + KOMMENTAR_WIDTH,
+                                left: nameW + BERUF_WIDTH + KOMMENTAR_WIDTH,
                                 width: GEBURTSDATUM_WIDTH,
                                 backgroundColor: isHighlighted ? "#E3F2FD" : "#fafafa",
                                 borderRight: "2px solid #aaa",
@@ -921,14 +1053,15 @@ export function AusbildungsplanMatrix({
                                 data-cell-date={dateStr}
                                 onMouseDown={() => handleMouseDown(lehrling, d)}
                                 onTouchStart={(e) => {
-                                  if (activeType) e.preventDefault();
+                                  // Ohne aktiven Typ nichts tun: sonst wird beim Antippen
+                                  // doppelt markiert (Touch + nachgeahmter Mausklick) und
+                                  // schon das Scrollen würde Zeilen markieren.
+                                  if (!activeType) return;
+                                  e.preventDefault();
                                   handleMouseDown(lehrling, d);
                                 }}
-                                onClick={(e) => {
-                                  if (!activeType) {
-                                    if (entry) showEntryTooltip(e, entry);
-                                    else if (holidayName) showDayTooltip(e, d, holidayName);
-                                  }
+                                onClick={() => {
+                                  if (!activeType) zeigeZellInfo(lehrling, d, entry, holidayName);
                                 }}
                                 onMouseEnter={(e) => {
                                   handleMouseEnterCell(lehrling, d);
@@ -937,10 +1070,11 @@ export function AusbildungsplanMatrix({
                                 }}
                                 className={editable ? "hover:ring-1 hover:ring-blue-500 cursor-pointer select-none" : ""}
                                 style={{
-                                  width: DAY_WIDTH,
+                                  width: dayW,
                                   height: "100%",
                                   backgroundColor: bg,
                                   borderRight: "0.5px solid rgba(0,0,0,.08)",
+                                  boxShadow: idx === todayIdx ? "inset 2px 0 0 #3949AB, inset -2px 0 0 #3949AB" : undefined,
                                   flexShrink: 0,
                                   touchAction: activeType ? "none" : undefined,
                                 }}
@@ -958,17 +1092,65 @@ export function AusbildungsplanMatrix({
         </div>
       </div>
 
+      {/* Info-Leiste: zeigt den zuletzt angetippten Tag (vor allem fürs Handy) */}
+      {zellInfo && !activeType && (
+        <div className="order-4 flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2.5">
+          <span
+            className="mt-1 w-3 h-3 rounded-sm shrink-0 border border-black/10"
+            style={{ backgroundColor: zellInfo.farbe ?? "#fff" }}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-gray-500">
+              <span className="font-semibold text-gray-700">{zellInfo.name}</span> · {zellInfo.datum}
+            </p>
+            <p className="text-sm font-semibold text-gray-800 break-words">{zellInfo.titel}</p>
+            {zellInfo.ort && <p className="text-xs text-gray-500">{zellInfo.ort}</p>}
+          </div>
+          <button
+            type="button"
+            onClick={() => setZellInfo(null)}
+            aria-label="Info schließen"
+            className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-white"
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
+
       {editable && (
-        <div className="rounded-xl border border-gray-200 bg-white/70 p-3">
-          <p className="text-xs font-semibold text-gray-500 mb-2">
-            {activeType
-              ? `Aktiv: "${activeType === "leer" ? "Leer / Löschen" : planTypeLabels[activeType]}" – klicke und ziehe über Zellen, um mehrere auf einmal zu setzen`
-              : "Typ auswählen, dann klicken und ziehen um Zellen zu setzen"}
-          </p>
-          <div className="flex flex-wrap gap-1.5">
+        <div className="order-2 lg:order-5 rounded-xl border border-gray-200 bg-white/70 p-3">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <p className="text-xs font-semibold text-gray-500">
+              {activeType
+                ? `Aktiv: "${activeType === "leer" ? "Leer / Löschen" : planTypeLabels[activeType]}" – ${
+                    kannHover
+                      ? "klicke und ziehe über Zellen, um mehrere auf einmal zu setzen"
+                      : "tippe oder wische über Tage. Zum Scrollen erst „Fertig“ drücken."
+                  }`
+                : kannHover
+                  ? "Typ auswählen, dann klicken und ziehen um Zellen zu setzen"
+                  : "Zum Bearbeiten Typ wählen – oder einfach auf einen Tag tippen, um Details zu sehen."}
+            </p>
+            {activeType && (
+              <button
+                type="button"
+                onClick={() => setActiveType(null)}
+                className="shrink-0 px-3 py-1 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700"
+              >
+                Fertig
+              </button>
+            )}
+          </div>
+          <div
+            className={
+              isMobile
+                ? "-mx-3 px-3 flex flex-nowrap gap-1.5 overflow-x-auto scroll-thin pb-1"
+                : "flex flex-wrap gap-1.5"
+            }
+          >
             <button
               onClick={() => setActiveType(activeType === "leer" ? null : "leer")}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border-2 transition-all ${
+              className={`shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] border-2 transition-all ${
                 activeType === "leer" ? "border-red-600 bg-red-50" : "border-transparent hover:bg-gray-50"
               }`}
               title="Zellen leeren (z.B. für Feiertage ohne Eintrag)"
@@ -985,7 +1167,7 @@ export function AusbildungsplanMatrix({
             {PALETTE_TYPES.map((t) => (
               <div
                 key={t}
-                className={`flex items-center gap-1 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 transition-all ${
+                className={`shrink-0 flex items-center gap-1 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 transition-all ${
                   activeType === t ? "border-blue-600 bg-blue-50" : "border-transparent hover:bg-gray-50"
                 }`}
               >
@@ -1024,7 +1206,7 @@ export function AusbildungsplanMatrix({
             ))}
 
             {neueKategorieOffen ? (
-              <div className="flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 border-dashed border-blue-300 bg-blue-50/50">
+              <div className="shrink-0 flex items-center gap-1.5 pl-1.5 pr-2 py-1 rounded-md text-[11px] border-2 border-dashed border-blue-300 bg-blue-50/50">
                 <label
                   className="w-3 h-3 rounded-sm shrink-0 cursor-pointer border border-black/10"
                   style={{ backgroundColor: neueFarbe }}
@@ -1069,7 +1251,7 @@ export function AusbildungsplanMatrix({
               <button
                 type="button"
                 onClick={() => setNeueKategorieOffen(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-md text-[11px] border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all"
+                className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md text-[11px] border-2 border-dashed border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 transition-all"
                 title="Neue Aktivität/Kategorie mit eigener Farbe anlegen"
               >
                 + Neue Kategorie
