@@ -23,6 +23,7 @@ import { ChatbotAssistant } from "./components/ChatbotAssistant";
 import { Jahresplanung } from "./components/Jahresplanung";
 import { StundenzettelScreen } from "./components/StundenzettelScreen";
 import { Feedback } from "./components/Feedback";
+import { PushPflichtDialog } from "./components/PushPflichtDialog";
 
 // Placeholder für noch nicht gebaute Screens (werden in kommenden Runden ergänzt)
 function ComingSoon({ title }: { title: string }) {
@@ -262,6 +263,9 @@ export default function App() {
         <Header user={user} onOpenMobileMenu={() => setMobileMenuOpen(true)} />
         <main className="max-w-7xl mx-auto px-4 py-6">{renderScreen()}</main>
       </div>
+      {user.role === "lehrling" && user.personalnummer && (
+        <PushPflichtDialog key={user.personalnummer} personalnummer={user.personalnummer} />
+      )}
       <Toaster position="top-center" richColors />
     </div>
   );

@@ -103,6 +103,42 @@ export async function requestPushPermissionAndSubscribe(
 }
 
 /**
+ * Erlaubnis ist bereits erteilt (z.B. neues Gerät oder neuer Login):
+ * Abo ohne Rückfrage anlegen bzw. mit der aktuellen Personalnummer verknüpfen.
+ */
+export async function ensurePushSubscriptionSilently(personalnummer: string): Promise<boolean> {
+  if (!isPushSupported || !VAPID_PUBLIC_KEY) return false;
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") return false;
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+    const subJson = subscription.toJSON();
+    if (!subJson.endpoint || !subJson.keys?.p256dh || !subJson.keys?.auth) return false;
+    const supabase = getSupabaseClient();
+    if (!supabase) return false;
+    const { error } = await supabase.from("push_subscriptions").upsert(
+      {
+        personalnummer,
+        endpoint: subJson.endpoint,
+        p256dh: subJson.keys.p256dh,
+        auth: subJson.keys.auth,
+      },
+      { onConflict: "endpoint" },
+    );
+    return !error;
+  } catch (err) {
+    console.warn("Push-Abo konnte nicht still gespeichert werden:", err);
+    return false;
+  }
+}
+
+/**
  * Meldet das aktuelle Gerät von Push-Benachrichtigungen ab (z.B. beim Logout
  * oder auf Wunsch des Nutzers) und entfernt den Eintrag aus Supabase.
  */
