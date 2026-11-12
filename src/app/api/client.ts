@@ -281,6 +281,11 @@ export async function syncPlanDataDirect(
 
 // ---- Ansprechpartner -------------------------------------------------------
 
+// Zuständigkeiten für Plan-Kategorien (Abteilungen) werden ohne
+// Schema-Änderung in der bestehenden "responsibilities"-Spalte mit diesem
+// Präfix gespeichert und beim Laden wieder herausgetrennt.
+const KATEGORIE_PREFIX = "kategorie:";
+
 function ansprechpartnerToRow(p: Ansprechpartner): Record<string, unknown> {
   return {
     id: p.id,
@@ -289,12 +294,16 @@ function ansprechpartnerToRow(p: Ansprechpartner): Record<string, unknown> {
     abteilung: p.abteilung,
     phone: p.phone,
     email: p.email,
-    responsibilities: p.responsibilities ?? [],
+    responsibilities: [
+      ...(p.responsibilities ?? []).filter((r) => !r.startsWith(KATEGORIE_PREFIX)),
+      ...(p.kategorien ?? []).map((k) => KATEGORIE_PREFIX + k),
+    ],
     photo: p.photo ?? null,
   };
 }
 
 function rowToAnsprechpartner(row: Record<string, any>): Ansprechpartner {
+  const alle: string[] = Array.isArray(row.responsibilities) ? row.responsibilities : [];
   return {
     id: row.id,
     name: row.name,
@@ -302,7 +311,10 @@ function rowToAnsprechpartner(row: Record<string, any>): Ansprechpartner {
     abteilung: row.abteilung ?? "",
     phone: row.phone ?? "",
     email: row.email ?? "",
-    responsibilities: row.responsibilities ?? [],
+    responsibilities: alle.filter((r) => !r.startsWith(KATEGORIE_PREFIX)),
+    kategorien: alle
+      .filter((r) => r.startsWith(KATEGORIE_PREFIX))
+      .map((r) => r.slice(KATEGORIE_PREFIX.length)),
     photo: row.photo ?? undefined,
   };
 }

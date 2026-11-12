@@ -122,6 +122,13 @@ export interface Ansprechpartner {
   email: string;
   responsibilities: string[]; // ["Ausbildungsplanung", "Prüfungsanmeldung"]
   photo?: string; // URL oder Base64
+  // Plan-Kategorien/Abteilungen aus dem Lehrlingsplan (PlanEntry.type), für
+  // die diese Person zuständig ist, z.B. ["lager-magazin-linz", "einkauf"].
+  // Lehrlinge sehen dadurch pro Abteilung, in der sie laut Plan sind, wen sie
+  // fragen können. Wird in der DB in der bestehenden Spalte
+  // "responsibilities" mit dem Präfix "kategorie:" mitgespeichert (siehe
+  // client.ts), damit keine Schema-Änderung nötig ist.
+  kategorien?: string[];
 }
 
 // Werkzeug (Werkzeugkatalog)
